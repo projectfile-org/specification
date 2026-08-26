@@ -1,0 +1,89 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# A realistic projectfile for a small open-source library (YAML).
+
+$schema: https://projectfile.org/schema/v1.json
+kind: SoftwareSourceCode
+
+identity:
+  namespace: org.example
+  name: cool-widget
+  version: "0.7.2"
+  title:
+    en: "Cool Widget"
+  summary:
+    en: "A small library that does one thing well."
+  created: "2025-11-03"
+  released: "2026-04-18"
+
+repositories:
+  - url: https://github.com/example/cool-widget.git
+    type: git
+
+links:
+  - type: homepage
+    url: https://example.org/cool-widget
+  - type: source-code
+    url: https://github.com/example/cool-widget
+  - type: bugs
+    url: https://github.com/example/cool-widget/issues
+
+license:
+  spdx: Apache-2.0
+  file: LICENSE
+
+copyright:
+  year: 2025
+
+people:
+  - family-names: Example
+    given-names: Alice
+    email: alice@example.org
+    roles: [founder, maintainer, copyright]
+    from: "2025-01-01"
+    handles:
+      mastodon: example@social.example.org   # string — the common case
+      github: [alice-example, alicia-labs]   # array  — multiple handles on one platform
+      gpg-key:                               # map    — named sub-keys
+        messaging: B64C122EE16C3746
+        code: 87B15EAD49FD22AB
+  - family-names: Example
+    given-names: Bob
+    email: bob@example.org
+    roles: [author]
+organizations:
+  - name: Example Foundation
+    email: info@example.org
+    url: https://example.org
+    roles: [founder, copyright]
+
+keywords:
+  - widget
+  - ui
+  - lightweight
+
+technologies:
+  - typescript
+  - node
+  - react
+
+requirements:
+  runtime:
+    node: ">=24"
+
+org:
+  projectfile:
+    operating-system: [linux, darwin]
+    architecture: [amd64, arm64]
+
+com:
+  example:
+    funding:
+      github: ["example"]
+    ci:
+      runner: linux-amd64
+      cache: true

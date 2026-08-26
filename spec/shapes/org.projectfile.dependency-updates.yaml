@@ -1,0 +1,31 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.dependency-updates extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Shared source of truth for automated dependency update configuration.
+# Dependency-update generators read from here first, then apply their own
+# tool-specific extras (open-prs-limit, extends presets, etc.).
+
+org:
+  projectfile:
+    dependency-updates:
+      schedule: weekly  # OPTIONAL  daily | weekly | monthly
+      automerge: false  # OPTIONAL  global automerge default
+      reviewers: [alice]  # OPTIONAL  people aliases applied to all ecosystems
+      labels: [dependencies]  # OPTIONAL  labels applied to all update PRs
+
+      # Per-ecosystem overrides. Ecosystem names follow the dependabot/Renovate vocabulary.
+      # Absent = derive from technology tags.
+      ecosystems:
+        - name: npm  # REQUIRED  npm|pip|composer|cargo|maven|gradle|gomod|nuget|docker|github-actions|...
+          schedule: daily  # OPTIONAL  overrides global schedule for this ecosystem
+          automerge: true  # OPTIONAL  overrides global automerge for this ecosystem
+          labels: [dependencies, javascript]  # OPTIONAL  overrides global labels
+        - name: docker
+          schedule: monthly

@@ -1,0 +1,39 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  `matrix.exclude` SUBTRACTS cells from the axes product, so a CELL node runs
+  once per SURVIVING cell: the fan-out is the grid minus every combination an
+  entry matches. The driver is a grid that is not fully buildable (the Go
+  toolchain has no `darwin/riscv64` target) — subtracting the corner keeps ONE
+  node owning the tool, where a second node for the survivor would multi-home it.
+
+input:
+  matrix:
+    axes:
+      GOOS: [linux, darwin]
+      GOARCH: [amd64, arm64, riscv64]
+    exclude:
+      - GOOS: darwin
+        GOARCH: riscv64
+  nodes:
+    source-is-valid: # SOURCE — once, before the cells
+      needs:
+        golangci-lint: true
+    binaries-built: # CELL — once per surviving cell
+      goal: true
+      matrix: true
+      needs:
+        source-is-valid: true
+        build-binaries: true
+
+expect:
+  runs: [golangci-lint, build-binaries] # distinct set
+  counts:
+    golangci-lint: 1 # SOURCE — once total
+    build-binaries: 5 # |GOOS| × |GOARCH| = 6, minus the one excluded cell
+  before:
+    - [golangci-lint, build-binaries] # the source check precedes the cells

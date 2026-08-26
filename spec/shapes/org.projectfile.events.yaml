@@ -1,0 +1,63 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.events extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# This namespace is the vendor-AGNOSTIC OUTBOUND event surface — the dual of
+# org.projectfile.ci's inbound triggers. Where `ci` says "run WHEN a push/tag/
+# schedule fires", `events` says "NOTIFY when a goal finished / failed". The
+# same declaration is lowered by cooperating consumers to their own transport:
+#   m6e         -> a desktop notification (notify-send), locally.
+#   GitHub /    -> an outbound webhook step (a curl POST) appended to each goal
+#   Forgejo        workflow, gated on the webhook variable being set.
+#
+# THE ENVELOPE IS THE CONTRACT. Every plane emits the SAME neutral JSON, so the
+# transport is pure configuration:
+#   {"event":"goal.failed","project":"ns/proj","goal":"published",
+#    "status":"failure","url":"<run-url|''>","ts":"<rfc3339>","payload":{}}
+# Because the body is fixed and the sink is a URL, attaching a new backend
+# (Apprise, Node-RED, Kafka) is a different URL — not new code.
+#
+# ---------------------------------------------------------------------------
+# Phase 1 — convention over configuration
+# ---------------------------------------------------------------------------
+# The MERE PRESENCE of this subtree opts the project in. Two built-in events
+# (goal.succeeded, goal.failed) fan to two built-in sinks (a desktop notice
+# locally, the webhook in CI). The only knob is the webhook variable NAME.
+
+# The zero-config form: declaring the block (even empty) opts in; the webhook
+# sink keys off the default variable EVENTS_WEBHOOK_URL.
+#
+#   org.projectfile.events: {}
+
+# The explicit form: name a DIFFERENT forge variable for the webhook target.
+webhook:
+  # An explicit runtime-env binding — NEVER a literal URL. `env` names the forge
+  # variable/secret; its VALUE (which may carry a token) lives in the forge
+  # variable store and the shell environment, not in the committed projectfile.
+  # The object `{ env: NAME }` form (not a bare `${NAME}` string) keeps a runtime
+  # env reference distinct from a generation-time `${<pf-path>}` projectfile
+  # reference — the two have opposite failure semantics. Omit the whole block to
+  # use the default EVENTS_WEBHOOK_URL. The webhook only fires when the variable
+  # is non-empty at run time (secure default).
+  url:
+    env: EVENTS_WEBHOOK_URL
+
+# ---------------------------------------------------------------------------
+# RESERVED for a later revision (NOT part of phase 1) — shown for direction
+# only; a phase-1 schema rejects these keys. A future revision adds named
+# sinks and per-event routing additively:
+#
+#   sinks:
+#     desktop: { adapter: desktop }
+#     chat:    { adapter: webhook, url: ${EVENTS_WEBHOOK_URL} }
+#     alerts:  { adapter: apprise, url: ${APPRISE_URL} }
+#   on:
+#     goal.succeeded: [desktop]
+#     goal.failed:    [desktop, chat, alerts]
+# ---------------------------------------------------------------------------

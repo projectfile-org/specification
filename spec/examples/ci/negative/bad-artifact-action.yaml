@@ -1,0 +1,20 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — an `action` manifest that also declares an `artifact`.
+# The generic build-artifact hand-off (`artifact:`) is for plain `run:` tools; an
+# action handles its OWN artifact (the `container-build` OCI tar uploads itself), so
+# the two are contradictory. The manifest's `dependentSchemas.action`
+# (`artifact: false`) MUST reject it.
+
+nodes:
+  image-is-built:
+    needs:
+      container-build: true
+tools:
+  container-build:
+    action: container-build
+    artifact: dist                                # <- an action uploads its own tar: rejected

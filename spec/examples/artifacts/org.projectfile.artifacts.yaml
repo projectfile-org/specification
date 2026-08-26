@@ -1,0 +1,80 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture — the bare VALUE of an org.projectfile.artifacts subtree.
+# Validated against ../../schema/org.projectfile.artifacts.v1.json (MUST pass).
+#
+# A map of NAMED artifacts a project produces. Each entry declares a `kind` plus
+# the address fields that kind is addressed by. Referenced from any string in the
+# document via §3.8 interpolation — by name for one artifact
+# (`${org.projectfile.artifacts.cli.command}`), or by the map selector for every
+# artifact of a kind (`${org.projectfile.artifacts{kind=image}.ref}`).
+#
+# Deliberately exercises every registered kind, because the point of the
+# namespace is that ONE project can ship several unrelated things at once and a
+# consumer must be able to pick out just the ones it cares about.
+
+# An executable — addressed by the name a user TYPES, which is not the project's
+# own name here. `path` is the build output a size analyzer measures in place;
+# `module` is what `go install` fetches.
+cli:
+  kind: binary
+  summary: the command-line reader
+  command: pf-cli
+  path: dist/pf-cli
+  module: kiota.ch/projectfile/cli
+
+# A published container image — one pull reference, registry host included.
+image:
+  kind: image
+  ref: kiota.ch/b19/ubuntu/noble:latest
+
+# A second image of the same kind: `{kind=image}` fans out to BOTH refs, in
+# artifact-name order, which is how a generator writes one `docker pull` line per
+# published image without knowing how many there are.
+image-resolute:
+  kind: image
+  ref: kiota.ch/b19/ubuntu/resolute:latest
+
+# A registry package. `registry` is what distinguishes two packages of the same
+# kind, so `{kind=package,registry=npm}` picks exactly this one.
+npm-package:
+  kind: package
+  registry: npm
+  name: "@projectfile/reader"
+
+pypi-package:
+  kind: package
+  registry: pypi
+  name: projectfile-reader
+
+# An importable library, addressed by module path rather than registry name.
+library:
+  kind: module
+  summary: the document backend
+  module: kiota.ch/projectfile/core/v2
+
+# A long-running service — addressed by what it LISTENS on, since that is what a
+# user connects to. A bare number is the whole declaration for one port; a named
+# entry distinguishes several.
+database:
+  kind: service
+  summary: MySQL-compatible database
+  ports:
+    - 3306
+    - port: 9104
+      name: metrics
+      protocol: tcp
+
+# A deployed site — what a page auditor (lighthouse / linkinator) fetches.
+frontpage:
+  kind: website
+  url: https://projectfile.org
+
+# A release bundle on disk.
+sbom:
+  kind: archive
+  path: dist/sbom.tar.gz

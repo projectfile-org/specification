@@ -1,0 +1,36 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.dei extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# The DEI.md file originates in the CHAOSS project / badging DEI Project Badge.
+# Reporting-concerns contact is reused from the top-level people array using
+# roles: [community] (then maintainer, then any email) — no new links[type].
+# Navigational URLs (e.g. a public DEI.md link from the project site) go in
+# top-level links[].
+
+org:
+  projectfile:
+    dei:
+      enabled: true  # REQUIRED  gates generation — off by default; namespace
+                     #           present without enabled:true is a no-op
+      scope: "the example repo and its community spaces"  # OPTIONAL  descriptive prose
+      last-reviewed: 2026-07-23  # OPTIONAL  stamps 'Last Reviewed: YYYY-MM-DD';
+                                 #           absent ⇒ '[Enter Date]' placeholder
+      metrics:  # OPTIONAL  open map; a metric absent here renders SAMPLE bullets
+        project-access:  # https://chaoss.community/?p=4953
+          - "All virtual meetings are transcribed; video is not required."
+          - "Translation services are provided for all website pages."
+        communication-transparency:  # https://chaoss.community/?p=4957
+          - "All project documentation is publicly available."
+        newcomer-experiences:  # https://chaoss.community/?p=4891
+          - "Weekly newcomer orientation sessions and office hours."
+        inclusive-leadership:  # https://chaoss.community/?p=3522
+          - "Our governance document is reviewed and affirmed yearly."
+        other:  # OPTIONAL  non-CHAOSS efforts section
+          - "An accessibility audit against WCAG 2.1 AA is in progress."

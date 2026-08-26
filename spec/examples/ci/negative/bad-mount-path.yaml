@@ -1,0 +1,23 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a `mounts` entry whose `to` is NOT an absolute
+# container path. `to` names where the source lands INSIDE the container, so it
+# MUST be absolute (`^/.+`); a relative path (`.cache/grype/db`) is ambiguous
+# against the container's working dir and MUST be rejected by
+# spec/schema/org.projectfile.ci.v1.json.
+
+nodes:
+  source-is-secure:
+    needs:
+      grype-image: true
+tools:
+  grype-image:
+    image: D9T_GO_TOOLS_IMAGE
+    run: auto-grype
+    mounts:
+      - from: grype-db
+        to: .cache/grype/db   # <- relative, not an absolute container path: rejected

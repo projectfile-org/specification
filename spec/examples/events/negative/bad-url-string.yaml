@@ -1,0 +1,15 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture — MUST FAIL against ../../../schema/org.projectfile.events.v1.json.
+# The bare `${VAR}` STRING form is retired: a runtime-env reference must be the
+# explicit object binding `url: { env: NAME }` (D6), so it is never confused with
+# a generation-time ${<pf-path>} projectfile reference (a pf ref is an in-document
+# generation-time lookup, a secret env an out-of-document runtime forge value). A
+# string value at `webhook.url` no longer validates.
+
+webhook:
+  url: ${EVENTS_WEBHOOK_URL}

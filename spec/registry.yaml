@@ -1,0 +1,658 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Non-normative registry of known extension namespaces.
+# See spec/v1.md Section 6.5.
+#
+# This registry exists for discoverability only — there is no gate-keeping.
+# To add an entry, open a pull request with the shape below and a one-line
+# rationale in the commit message. Inclusion does not imply endorsement.
+#
+# Entry shape (quoted key under `namespaces:` so dots remain literal):
+#   "reverse.dns.path":
+#     owner:   string   # who controls the reverse-DNS
+#     docs:    URL       # stable documentation URL for the extension
+#     summary: string    # one-line purpose
+#     status:  "proposed" | "draft" | "stable" | "deprecated"
+#     shape:   path       # OPTIONAL  relative path to an illustrative YAML fragment
+#                         #           in spec/shapes/{namespace}.yaml
+#     links:   seq        # OPTIONAL  who consumes / produces this namespace, for
+#                         #           discoverability. Contributed by pull request,
+#                         #           advisory only — not an endorsement.
+#       - url:   URL        # where the tool/project lives
+#         title: string     # display name
+#         role:  string     # consumer | producer | reference
+#                           #   consumer  = a tool/project that READS the namespace
+#                           #   producer  = a tool/project that WRITES/generates it
+#                           #   reference = docs / spec / further reading
+
+namespaces:
+  "org.projectfile.spec":
+    owner: "projectfile.org"
+    docs: "https://projectfile.org/spec/v1"
+    summary: >-
+      Self-description extension used by the specification repository to declare
+      which spec versions live alongside the file.
+    status: draft
+
+  "org.projectfile.health":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/health"
+    summary: >-
+      Shared shape for declaring application health-check surfaces (liveness,
+      readiness, startup probes). Vendor-specific extensions (org.k8s.health,
+      io.docker.health) SHOULD overlay this namespace rather than duplicate it.
+      See spec/v1.md Section 6.6.
+    status: proposed
+    shape: shapes/org.projectfile.health.yaml
+
+  "org.projectfile.architecture":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/spec/v1#platform-targeting"
+    summary: >-
+      Platform targeting for a project: org.projectfile.architecture (CPU arch
+      set) and its companion org.projectfile.operating-system (OS set). The
+      cartesian product is the project's supported platform set, lowered by
+      consumers to their native form (e.g. linux/amd64 linux/arm64). Values
+      follow the OCI image-spec vocabulary. These replaced the former
+      requirements.operating-system / requirements.arch reserved subkeys, which
+      were demoted to extension-namespace fields because platform targeting is a
+      build/distribution concern, not a runtime requirement (spec §4.8a).
+      Opaque to the core JSON Schema (§3.7). Co-declared in one fragment.
+    status: proposed
+    shape: shapes/org.projectfile.platform.yaml
+
+  # --- package registry / publish configuration ---
+
+  "com.npmjs.registry":
+    owner: "community — convention for npm registry and publish configuration"
+    docs: "https://docs.npmjs.com/cli/v10/configuring-npm/npmrc"
+    summary: >-
+      npm registry URL, scope routing, publish access level, dist-tag, and
+      provenance attestation. Maps to .npmrc and package.json publishConfig.
+      Scope names in the scopes mapping omit the leading "@".
+    status: proposed
+    shape: shapes/com.npmjs.registry.yaml
+
+  "org.packagist.registry":
+    owner: "community — convention for Composer repository and stability settings"
+    docs: "https://getcomposer.org/doc/05-repositories.md"
+    summary: >-
+      Composer repository list, minimum-stability, and prefer-stable flags.
+      Maps to the repositories and config sections of composer.json. Consumers
+      generating composer.json SHOULD merge these values rather than replace
+      the existing repositories array.
+    status: proposed
+    shape: shapes/org.packagist.registry.yaml
+
+  "org.packagist.composer":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/packagist/composer"
+    summary: >-
+      Composer project-metadata passthrough for composer.json sync: carries the
+      composer-only fields that have no native projectfile slot so a project
+      regenerated from projectfile alone still round-trips composer.json —
+      type, minimum-stability, prefer-stable, and abandoned. Core name/deps/
+      requirements map to reserved projectfile fields; this namespace is the
+      ecosystem-only remainder.
+    status: proposed
+    shape: shapes/org.packagist.composer.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: consumer
+
+  "org.python.index":
+    owner: "community — convention for pip / uv / twine index configuration"
+    docs: "https://pip.pypa.io/en/stable/topics/configuration/"
+    summary: >-
+      Python package index URLs for install (pip, uv) and publish (twine, uv
+      publish). Maps to pip.ini / pip.conf, uv.toml [index] tables, and .pypirc.
+      extra-indexes is a sequence so multiple private indexes can coexist.
+    status: proposed
+    shape: shapes/org.python.index.yaml
+
+  "org.python.pep621":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/python/pep621"
+    summary: >-
+      PEP 621 project-metadata passthrough for pyproject.toml sync: carries the
+      Python-only fields that have no native projectfile slot so a project
+      regenerated from projectfile alone still round-trips pyproject.toml —
+      readme, scripts, gui-scripts, entry-points, optional-dependencies,
+      dynamic, and classifiers. Core name/version/deps/runtime metadata maps to
+      reserved projectfile fields; this namespace is the ecosystem-only
+      remainder.
+    status: proposed
+    shape: shapes/org.python.pep621.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: consumer
+
+  # --- ignore file generation ---
+
+  "org.projectfile.ignores":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/ignores"
+    summary: >-
+      Declares which ignore files to generate and the patterns each one carries.
+      Every pattern is declared — a consumer derives none from technology tags,
+      so each line traces to an `include` in the document or in a fragment it
+      merged. `exclude` subtracts, which is the only way to lose an inherited
+      pattern: `includes` deep-merge unions lists (§4.9a). Flat-file targets
+      (.gitignore, .dockerignore, .containerignore, .npmignore, .claudeignore,
+      .textlintignore, .fdignore) render one pattern per line; the yamllint
+      target renders an `ignore:` block inside the .yamllint config (it has no
+      standalone ignore file). Vulnerability IDs (CVE/GHSA) are NOT handled
+      here — see org.projectfile.vulnerabilities.
+    status: proposed
+    shape: shapes/org.projectfile.ignores.yaml
+
+  "org.projectfile.editors":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/editors"
+    summary: >-
+      Editor/IDE ignore rules for .gitignore generation — distinct from stack
+      tags (editors describe developer tooling, not project technology). An
+      explicit `use` list is authoritative; when absent the projectfile CLI
+      auto-detects editors by probing the project directory for known markers
+      (.idea/, .vscode/, .vimrc, .emacs, *.sublime-project). Recognised tags:
+      idea, vscode, vim, emacs, sublimetext.
+    status: proposed
+    shape: shapes/org.projectfile.editors.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: consumer
+
+  # --- vulnerability suppression (tool-agnostic scanner ignores) ---
+
+  "org.projectfile.vulnerabilities":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/vulnerabilities"
+    summary: >-
+      Tool-agnostic list of suppressed vulnerability IDs (CVE/GHSA) that fans
+      the same set out to every scanner ignore file the project runs:
+      .trivyignore (trivy), .grype.yaml (grype), osv-scanner.toml (osv). Declare
+      a known-unfixable vuln once and every scanner drops it, so trivy, grype
+      and osv can never disagree on whether it gates publish. `generate` opts a
+      project out of scanners it does not run (default: all).
+    status: proposed
+    shape: shapes/org.projectfile.vulnerabilities.yaml
+
+
+  # --- build image + argument surface ---
+
+  "org.projectfile.build":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/build"
+    summary: >-
+      The BUILD-ARGUMENT surface a project's container build depends on, declared
+      ONCE and lowered to BOTH the local make plane (m6e) and a forge CI plane
+      (the ci-resolver). Carries only what `docker build` consumes: registry-host
+      building blocks and a FLAT map of build-args, where a `FROM` image ref is
+      just one such arg with its registry + tag interpolated in place. `registries`
+      are the registry-host building blocks (loud `*.invalid` sentinel default,
+      real value from the environment / `vars.<NAME>`); `args` are build arguments
+      (a literal scalar, the `@base` version sentinel, forward-if-set, or a
+      file-read value); `env` are forwarded process-env NAMES (no values). Every
+      key is a VARIABLE NAME and every value an expression over other such
+      variables — vendor-neutral; a generator substitutes its own spelling. Tool-
+      run images (the container a tool executes in) are NOT a build concern —
+      they live under `org.projectfile.ci.images`. Has a dedicated standalone
+      schema (schema/org.projectfile.build.v1.json).
+    status: stable
+    shape: shapes/org.projectfile.build.yaml
+
+  # --- environment variable contract ---
+
+  "org.projectfile.env":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/env"
+    summary: >-
+      Declares the environment variable contract for the project: required and
+      optional vars with descriptions, examples, and allowed-value lists.
+      Replaces .env.example; tooling can validate a running environment or
+      populate secret stores. Variables marked secret=true are omitted from
+      generated .env.example files.
+    status: proposed
+    shape: shapes/org.projectfile.env.yaml
+
+  # --- release configuration ---
+
+  "org.projectfile.release":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/release"
+    summary: >-
+      Release conventions: tag format and prefix, changelog style,
+      commit-message convention, and branch-to-channel mappings. Consumed by
+      semantic-release, release-please, and similar automation. Vendor CI
+      extensions (com.github.actions, etc.) SHOULD overlay this namespace
+      rather than duplicate its fields.
+    status: proposed
+    shape: shapes/org.projectfile.release.yaml
+
+  # --- observability ---
+
+  "org.opentelemetry.resource":
+    owner: "community — convention for OpenTelemetry service resource attributes"
+    docs: "https://opentelemetry.io/docs/specs/semconv/resource/"
+    summary: >-
+      Declares static OpenTelemetry resource attributes (service.name,
+      service.namespace). Tooling can derive OTEL_RESOURCE_ATTRIBUTES from
+      these fields without duplicating identity metadata in environment
+      configuration. service.version is intentionally omitted — consumers
+      SHOULD derive it from identity.version at runtime.
+    status: proposed
+    shape: shapes/org.opentelemetry.resource.yaml
+
+  # --- security policy ---
+
+  "org.projectfile.security":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/security"
+    summary: >-
+      Security policy parameters for SECURITY.md generation: reporting
+      channel, response SLAs, disclosure window, severity model, CVE handling,
+      bug bounty, supported-version table, out-of-scope list, and announcement
+      channels. Named security team members go in the top-level people array
+      using roles: [security].
+    status: proposed
+    shape: shapes/org.projectfile.security.yaml
+
+  # --- community health files ---
+
+  "org.projectfile.code-of-conduct":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/code-of-conduct"
+    summary: >-
+      Code of Conduct declaration: which covenant, scope, and typed URL
+      sequence for enforcement and full-text links. Enforcement contacts go
+      in the people array using roles: [community].
+    status: proposed
+    shape: shapes/org.projectfile.code-of-conduct.yaml
+
+  # --- DEI project statement (CHAOSS / badging) ---
+
+  "org.projectfile.dei":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/dei"
+    summary: >-
+      DEI.md project statement (CHAOSS / badging DEI Project Badge). A marker
+      community-health file like CODE_OF_CONDUCT.md: the bridge renders the
+      fixed CHAOSS boilerplate plus the project's per-metric effort bullets
+      once, then the project owns and edits the body. `enabled` gates
+      generation (off by default — namespace present without enabled:true is a
+      no-op). The four CHAOSS metric sections (project-access,
+      communication-transparency, newcomer-experiences, inclusive-leadership)
+      live in an open `metrics` map so future metrics extend without a schema
+      change; a metric absent from the map falls back to SAMPLE bullets. The
+      reporting-concerns contact is reused from people[roles=community]
+      (then maintainer, then any email) — no new links[type]. Has no standalone
+      schema; like code-of-conduct it is a registry-shape-only extension.
+    status: proposed
+    shape: shapes/org.projectfile.dei.yaml
+
+  # --- project lifecycle status (advisory) ---
+
+  "org.projectfile.status":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/status"
+    summary: >-
+      Advisory project lifecycle status (a single scalar). Recommended values:
+      `active` (default when absent — under active development), `maintained`
+      (stable, receiving maintenance but not active feature work), `deprecated`
+      (sunsetting — do not start new use), `archived` (read-only, end of life).
+      Consumers MAY surface the badge in generated README/health files or gate
+      publish behaviour on it; an unknown value is accepted and treated as
+      opaque. Distinct from the `status:` keyword namespace on `keywords`
+      (a discovery tag) — this is a single declared lifecycle state.
+    status: proposed
+    shape: shapes/org.projectfile.status.yaml
+
+  "org.projectfile.contributing":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/contributing"
+    summary: >-
+      Contribution process parameters for CONTRIBUTING.md generation:
+      contributor-agreement type, review requirements, workflow model
+      (github-flow, git-flow, gitlab-flow, trunk-based, centralized), commit
+      and branch conventions, and typed URL sequence for CLA,
+      coding-standards, review-guide, and first-contribution links. The
+      recommend-to-star and recommend-to-follow toggles (bool | per-key map,
+      both default off) gate the "other ways to support" block: star lines
+      per links[type=source-code] host and author follow/site/funding lines
+      per handle platform.
+    status: proposed
+    shape: shapes/org.projectfile.contributing.yaml
+
+  "org.projectfile.support":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/support"
+    summary: >-
+      Support policy for SUPPORT.md generation: community response-time SLA,
+      typed URL sequence for paid-support and status-page links, and
+      end-of-life date table per version series. Community URLs (docs, forum,
+      chat) live in links[].
+    status: proposed
+    shape: shapes/org.projectfile.support.yaml
+
+  "org.projectfile.citation":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/citation"
+    summary: >-
+      Citation metadata supplement for CITATION.cff and codemeta.json
+      generation. Core metadata (title, authors, version, license, repository)
+      is derived from reserved projectfile fields; this extension adds an
+      archival DOI and a preferred-citation record for software published in a
+      journal or conference.
+    status: proposed
+    shape: shapes/org.projectfile.citation.yaml
+
+  "org.projectfile.funding":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/funding"
+    summary: >-
+      Unified funding configuration: GitHub Sponsors / Patreon / Ko-fi / etc.
+      provider fields for FUNDING.yml generation, plus payment channels, plans,
+      and annual history for fundingjson.org. Entity info is auto-resolved from
+      people and organizations arrays; override with entity-type / entity-role
+      when needed.
+    status: proposed
+    shape: shapes/org.projectfile.funding.yaml
+
+  "org.projectfile.acknowledgements":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/acknowledgements"
+    summary: >-
+      The README's post-licence credits, in four lists: `contributors` (the
+      people who built the project), `thanks` (people or organisations owed a
+      mention), `sponsors` (who funds the work), and `credits` (the projects
+      and technologies this one builds on). Each entry is a name plus an
+      optional url and detail; a bare string names a party with neither. An
+      empty list drops its subheading and an absent namespace drops the whole
+      section — acknowledgement is opt-in, never boilerplate.
+    status: proposed
+    shape: shapes/org.projectfile.acknowledgements.yaml
+
+  "org.projectfile.cli":
+    owner: "projectfile.org (projectfile CLI tooling)"
+    docs: "https://projectfile.org/extensions/org/projectfile/cli"
+    summary: >-
+      Bookkeeping surface for the projectfile CLI: derived[] tracks every
+      field path the CLI has populated via the derivation layer (forge URLs,
+      registry URLs) so subsequent runs can re-derive without trampling user
+      edits, and derive.* toggles disable individual inference passes.
+      Removing a path from derived[] is the user-side opt-out marker. Note:
+      includes[] was promoted to the root-level reserved field `includes`
+      (spec §4.10a).
+    status: proposed
+    shape: shapes/org.projectfile.cli.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: producer
+
+  "org.projectfile.forge":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/forge"
+    summary: >-
+      Portable, tool-agnostic forge-publishing metadata: any conforming tool
+      MAY read it to decide which description / homepage / topics get synced
+      from projectfile to GitHub / GitLab / Forgejo / Gitea repository
+      metadata. Top-level `push = false` is a global kill-switch; `fields.*`
+      flips individual fields; `hosts.<host> = false` opts a single host out
+      without removing it from repositories[]. All toggles default to true so
+      an absent extension matches default behaviour.
+    status: proposed
+    shape: shapes/org.projectfile.forge.yaml
+
+  # --- produced artifacts (what a project OUTPUTS) ---
+
+  "org.projectfile.artifacts":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/artifacts"
+    summary: >-
+      A map of NAMED artifacts a project PRODUCES — the container images it
+      publishes, the packages it ships to a registry, the executables it installs,
+      the services it exposes, the sites it deploys. One neutral home for "what
+      does this project give me", answering both a CI tool that needs pointing at
+      an output and a documentation generator that needs to say how to install the
+      thing and how to call it. Each entry carries a `kind` plus the address fields
+      that kind is addressed by (`ref` for an image, `command`/`path` for a binary,
+      `registry`/`name` for a package, `module` for a library, `ports` for a
+      service, `url` for a site). `kind` is an open vocabulary and stays ADVISORY
+      for lowering — a resolver MUST NOT branch on it — while being load-bearing
+      for documentation and for the kind selector. Named keys let each consumer
+      reference its OWN artifact independently, retiring the stringly-typed
+      space-separated `M6E_ARTIFACTS` list that could not say WHICH artifact a tool
+      wanted. Referenced from any string via the §3.8 sigil: by name
+      (`${org.projectfile.artifacts.<name>.path}`), or by the MAP selector for
+      every artifact of a kind (`${org.projectfile.artifacts{kind=image}.ref}`) —
+      curly braces, because artifacts is a mapping of named keys and a list
+      operator (`[kind=image]`) on it is a malformed address. The map selector
+      yields every match, which is what lets a shared fragment document a project
+      publishing one image per matrix cell without naming a cell, and what makes
+      such a fragment self-guarding: a recipe addressing an artifact the consumer
+      does not declare resolves to nothing and its output is dropped. Sibling of
+      org.projectfile.ignores / .vulnerabilities. Has a dedicated standalone schema
+      (schema/org.projectfile.artifacts.v1.json).
+    status: proposed
+    shape: shapes/org.projectfile.artifacts.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/ci-resolver"
+        title: "ci-resolver (pf-ci)"
+        role: consumer
+      - url: "https://codeberg.org/projectfile/bridge"
+        title: "bridge (pf-bridge)"
+        role: consumer
+
+  # --- continuous integration ---
+
+  "org.projectfile.ci":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/ci"
+    summary: >-
+      Vendor-agnostic CI intent expressed as a DAG of free-named state NODES
+      (e.g. code-is-valid, html-built, image-scanned). Each node carries a
+      single `needs` key unifying edges to other nodes and leaf tool
+      invocations — every entry is a Make target, the resolver does not
+      distinguish them (Make does); a node name is an opaque label, while tool
+      names are the only vendor-resolvable references (so node naming is free,
+      with a recommended past-participle convention). Override grammar (also
+      the include-merge contract): false drops an entry, true enables it,
+      {args: "…"} enables with args ({} == true). A node flagged `goal: true`
+      is a default run target (when none is flagged, every graph sink is). An
+      optional `matrix.axes` declares a cartesian product; a node flagged
+      `matrix: true` is a CELL run once per cell, a non-flagged node
+      downstream of a cell is a JOIN run once after all cells (fan-in), the
+      rest are SOURCE run once before — the vendor-neutral form of
+      strategy.matrix. Carries no runner/image/parallelism opinion — that
+      vendor mechanism lives in org.{vendor}.ci. Cooperating consumers lower
+      the same graph: m6e→make, t4n→Tekton, GitHub/Forgejo→workflow jobs. Has
+      a dedicated standalone schema (schema/org.projectfile.ci.v1.json) for
+      cross-vendor interop.
+    status: proposed
+    shape: shapes/org.projectfile.ci.yaml
+
+  # --- outbound lifecycle events ---
+
+  "org.projectfile.events":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/events"
+    summary: >-
+      Vendor-agnostic OUTBOUND lifecycle-event surface — the dual of
+      org.projectfile.ci's inbound triggers. Where `ci` runs WHEN a push/tag/
+      schedule fires, `events` NOTIFIES when a goal finished or failed. Declared
+      ONCE and lowered by cooperating consumers to their own transport: m6e to a
+      desktop notification, GitHub/Forgejo to an outbound webhook step appended
+      to each goal workflow. Both planes emit the SAME neutral JSON envelope
+      ({event, project, goal, status, url, ts, payload}) — the envelope is the
+      contract, so the transport is pure configuration and a future Apprise /
+      Node-RED / Kafka sink is a different URL, not new code. Phase 1 is minimal
+      (convention over configuration): the mere presence of the subtree opts a
+      project in, fanning two built-in events (goal.succeeded, goal.failed) to
+      two built-in sinks (desktop locally, a webhook in CI). The webhook target
+      is a forge VARIABLE named by a `${VAR}` reference; the URL VALUE lives in
+      the forge (never committed), and an opted-in repo with no variable set
+      emits nothing (secure default). The richer sinks{} / on{} subscription
+      surface is reserved for a later revision. Has a dedicated standalone schema
+      (schema/org.projectfile.events.v1.json).
+    status: proposed
+    shape: shapes/org.projectfile.events.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/ci-resolver"
+        title: "ci-resolver (pf-ci)"
+        role: producer
+
+  # --- workflow conventions ---
+
+  "org.projectfile.conventions":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/conventions"
+    summary: >-
+      Cross-cutting workflow conventions read by multiple generators:
+      commit-style, workflow model, style-guide-url (top-level or
+      per-technology-tag), and the fragment-assembly defaults (documents
+      shells + flat parents list) consumed by pf-bridge-fragments.
+      org.projectfile.release and org.projectfile.contributing read from
+      here — neither duplicates these fields.
+    status: proposed
+    shape: shapes/org.projectfile.conventions.yaml
+
+  # --- dependency update automation ---
+
+  "org.projectfile.dependency-updates":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/dependency-updates"
+    summary: >-
+      Shared source of truth for automated dependency update configuration:
+      global schedule, automerge default, reviewer assignments, labels, and
+      per-ecosystem overrides. com.github.dependabot generators read from here
+      first, then apply their own tool-specific extras.
+    status: proposed
+    shape: shapes/org.projectfile.dependency-updates.yaml
+
+  # --- platform integrations: GitHub ---
+
+  "org.projectfile.codeowners":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/codeowners"
+    summary: >-
+      Ordered `entries` mapping glob patterns to code owners for CODEOWNERS
+      generation. Owner values are aliases from the top-level people array or
+      "@org/team" strings. CODEOWNERS pattern resolution is last-match-wins per
+      path, so order general rules before specific ones — the `entries` list is
+      semantically ordered and reordering changes meaning. Consumed by the
+      projectfile CLI CODEOWNERS bridge.
+    status: proposed
+    shape: shapes/org.projectfile.codeowners.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: consumer
+
+  "com.github.dependabot":
+    owner: "community — convention for .github/dependabot.yml generation"
+    docs: >-
+      https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+    summary: >-
+      Dependabot-specific extras: open-prs-limit, target-branch, and
+      per-ecosystem ignore rules. Schedule, reviewers, labels, and ecosystem
+      list come from org.projectfile.dependency-updates.
+    status: proposed
+    shape: shapes/com.github.dependabot.yaml
+
+  # --- AI / automated-system use policy ---
+
+  "org.projectfile.ai":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/ai"
+    summary: >-
+      A project’s stance on AI and LLM use, over three independent
+      directions. INBOUND: `attitude` (encouraged | allowed | neutral |
+      discouraged | prohibited) as the default for every entry of the
+      `activities` map (channels — pull-requests, commit-messages,
+      bug-reports, discussions, code-review, security-reports; content —
+      code, code-comments, documentation, translations, prose, images, audio,
+      video; tasks — refactoring, bug-fixing, tests, grammar-tools) — one
+      vocabulary, so an absent activity key means exactly `attitude`;
+      `autonomy` (any | assisted | none) for what kind of use is permitted;
+      `applies-to` (everyone | contributors) for whom it binds; the
+      disclosure trio `disclose-required` / `disclose-trailer` /
+      `disclose-details`; `obligations`, the duties a contributor keeps when
+      a tool was involved; the gates `issue-required` and `excluded-labels`;
+      `enforcement`, the escalation ladder for a violation; and `statement`,
+      free localized prose carrying the reason the enums cannot. INTERNAL:
+      `project-use`, a map of the same activity keys to an autonomy token,
+      declaring how the project itself uses AI. OUTBOUND: `content-signals`,
+      consent values from contentsignals.org (IETF aipref), order-preserving
+      and open-vocabulary. Unknown activity keys are accepted and preserved.
+      An absent namespace means NO DECLARED POLICY and MUST NOT be rendered
+      as a permissive default. Includes the org.projectfile.ai.skills
+      sub-namespace for agent-runnable skill manifests. Consumed by Bridges
+      to render the policy file — `filename`, default AI_POLICY.md — and to
+      cross-reference it from README and CONTRIBUTING.
+    status: proposed
+    shape: shapes/org.projectfile.ai.yaml
+
+  # --- localization ---
+
+  "org.projectfile.i18n":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/i18n"
+    summary: >-
+      The languages a project publishes its generated documents in, as BCP 47
+      tags, plus the project's primary language (default-language, defaults to
+      "en"). One document-level list every localizable renderer honours: each
+      declared language yields a variant of every community health file
+      (README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT) placed under
+      docs/<lang>/ — docs/es/CONTRIBUTING.md. The canonical file (in the
+      default language) renders at the root and is not named in `languages`;
+      when default-language is not "en", the English copy moves under
+      docs/en/. LICENSE is deliberately outside the set: a licence's legal
+      force lives in its canonical text. Localized prose comes from per-language
+      templates named with the tag infix (CONTRIBUTING.es.md.tmpl); a language
+      with no template for a file is skipped rather than emitted with a
+      default-language body.
+    status: proposed
+    shape: shapes/org.projectfile.i18n.yaml
+
+  # --- README generation ---
+
+  "org.projectfile.readme":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/readme"
+    summary: >-
+      README.md generation control: ordered list of named template blocks
+      that compose the output. Each block resolves to a project-local
+      template (.projectfile/templates/readme.md/<block>.tmpl), an embedded
+      built-in, or an extras entry. Reserved fields (identity, links, people,
+      license) supply template data. Silent skip on unknown block names
+      allows project-local-only blocks.
+    status: proposed
+    shape: shapes/org.projectfile.readme.yaml
+    links:
+      - url: "https://codeberg.org/projectfile/cli"
+        title: "projectfile-cli"
+        role: consumer
+
+  # --- Fragment assembly ---
+
+  "org.projectfile.fragments":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/fragments"
+    summary: >-
+      Explicit override for pf-bridge-fragments document assembly. When
+      present, its documents[] is used verbatim and the conventions-driven
+      defaults (org.projectfile.conventions.fragments) are ignored. The
+      common case needs no declaration here — documents shells live in a
+      conventions include and parents in conventions.fragments. The renderer
+      concatenates fragments (SPDX stripped, H1 demoted to H3) under Project
+      and Inherited sections, carrying an SPDX header from the projectfile.
+    status: proposed
+    shape: shapes/org.projectfile.fragments.yaml

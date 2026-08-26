@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  An explicit goal runs only its needs-closure; a sink node outside that
+  closure (a mutating `formatted` node) does NOT run.
+
+input:
+  nodes:
+    code-is-valid:
+      needs: {shellcheck: true, eslint: true}
+    html-built:
+      needs: {astro-build: true}
+    html-checked:
+      needs:
+        html-built: true
+        html-validate: true
+    formatted:                       # a sink, but not in published's closure
+      needs: {eslint-fix: true}
+    published:
+      goal: true
+      needs: [code-is-valid, html-checked]
+
+expect:
+  # eslint-fix is excluded because `formatted` is not reachable from `published`.
+  runs: [shellcheck, eslint, astro-build, html-validate]

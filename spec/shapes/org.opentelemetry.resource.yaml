@@ -1,0 +1,16 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.opentelemetry.resource extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  opentelemetry:
+    resource:
+      service-name: my-api  # OPTIONAL  maps to OTel resource attribute service.name
+      service-namespace: org.example  # OPTIONAL  maps to OTel resource attribute service.namespace
+      # service.version is intentionally absent — derive it from identity.version at runtime

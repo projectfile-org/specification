@@ -1,0 +1,60 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.contributing extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# commit-style and workflow live in org.projectfile.conventions — read from there.
+# style-guide-url lives in org.projectfile.conventions (top-level or per-technology-tag).
+# Community URLs (docs, forum, chat) live in top-level links[].
+# Navigational URLs go in top-level links[]:
+#   - { type: cla,                url: "https://..." }
+#   - { type: first-contribution, url: "https://..." }
+#
+# recommend-to-star and recommend-to-follow share one grammar: a bool OR a
+# per-key map. A consuming tool (e.g. pf-cli, the projectfile CLI) reads them
+# to decide which "other ways to support the project" lines CONTRIBUTING.md
+# emits. Both default OFF — an absent toggle recommends nothing.
+#
+#   recommend-to-<x>: true                     # recommend everything available
+#   recommend-to-<x>: false                    # recommend nothing (same as absent)
+#   recommend-to-<x>:                          # recommend ONLY the keys mapped to
+#     <key-a>: true                              true; absent AND false keys are
+#     <key-b>: false                             both omitted ("showing only
+#                                               specified").
+#
+#   - recommend-to-star keys are link HOSTS taken from links[type=source-code]
+#     (github.com, codeberg.org, kiota.ch, ...). Each true host gets its own
+#     "Star the project on <host>" line; bool true emits one line per mirror.
+#   - recommend-to-follow keys are handle PLATFORMS (mastodon, bluesky, github,
+#     codeberg, linkedin, rss), plus the literal "site" (an author's url) and
+#     "funding" (a FUNDING.md pointer). Bool true surfaces every author
+#     follow / site / social and the funding line at once.
+
+org:
+  projectfile:
+    contributing:
+      contributor-agreement: dco  # OPTIONAL  cla | dco | none
+      min-reviewers: 2  # OPTIONAL  approvals required to merge
+      good-first-issue-label: "good first issue"  # OPTIONAL  label for newcomer tasks
+      pr-template: true  # OPTIONAL  also generate .github/pull_request_template.md
+
+      # OPTIONAL  recommend starring. Default OFF. Bool form: one "Star the
+      # project on <host>" line per links[type=source-code] mirror (false/absent
+      # = none). Map form keys are link hosts.
+      recommend-to-star: true
+
+      # OPTIONAL  recommend following the author / supporting the project.
+      # Default OFF. Bool form surfaces every author handle, author site,
+      # project social, and the funding line (false/absent = none). Map form
+      # keys are handle platforms plus "site" and "funding".
+      recommend-to-follow:
+        mastodon: true
+        github: true
+        codeberg: true
+        site: true
+        funding: false

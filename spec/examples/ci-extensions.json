@@ -1,0 +1,34 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "includes": [
+    "https://presets.projectfile.org/ci/container-service.yaml"
+  ],
+  "identity": {
+    "namespace": "org.example",
+    "name": "ci-extensions"
+  },
+  "license": {
+    "spdx": "MIT"
+  },
+  "technologies": ["docker", "shell"],
+  "org": {
+    "projectfile": {
+      "ci": {
+        "nodes": {
+          "code-is-valid": {
+            "needs": {
+              "yamllint": false,
+              "shellcheck": true
+            }
+          },
+          "image-scanned": {
+            "needs": {
+              "image-built": true,
+              "trivy": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

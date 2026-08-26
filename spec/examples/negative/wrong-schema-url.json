@@ -1,0 +1,7 @@
+{
+  "$schema": "https://example.com/some-other-schema.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "wrong-schema"
+  }
+}

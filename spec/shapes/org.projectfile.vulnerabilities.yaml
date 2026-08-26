@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.vulnerabilities extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  projectfile:
+    vulnerabilities:
+      # generate selects which scanner ignore files to emit. Keys are the
+      # scanner extKeys ("trivy", "grype", "osv"). OPTIONAL — when omitted,
+      # every scanner that has at least one suppressed ID gets a file
+      # ("specify once, fan out everywhere").
+      generate: [trivy, grype, osv]
+
+      # suppress is the tool-agnostic list of vulnerability IDs (CVE/GHSA) to
+      # drop from every scanner's report. Each entry fans out to:
+      #   .trivyignore       (trivy — one ID per line; reason dropped)
+      #   .grype.yaml        (grype — ignore[].vulnerability; reason as comment)
+      #   osv-scanner.toml   (osv — [[IgnoredVulns]] id/reason)
+      # A bare string is accepted as shorthand for an entry with just an id.
+      suppress:
+        - id: CVE-2026-31608
+          reason: unfixable kernel headers shipped by linux-libc-dev
+        - id: CVE-2025-40190

@@ -1,0 +1,33 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.acknowledgements extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Four lists, each optional and each dropped when empty; an absent namespace
+# drops the whole acknowledgements section. Financial support channels (where
+# to donate) belong in org.projectfile.funding / FUNDING.yml — this namespace
+# is who to CREDIT, not how to pay.
+
+org:
+  projectfile:
+    acknowledgements:
+      contributors:  # the people who built the project
+        - name: Jane Doe
+          url: https://example.com/jane
+          detail: the original build system
+        - Sam Smith  # a bare string: a name with no link or detail
+      thanks:  # people or organisations owed a mention
+        - name: The Ubuntu community
+          url: https://discourse.ubuntu.com
+      sponsors:  # who funds the work
+        - name: Acme Corp
+          url: https://acme.example
+          detail: server time and CI runners
+      credits:  # the projects and technologies this one builds on
+        - name: BuildKit
+          url: https://github.com/moby/buildkit

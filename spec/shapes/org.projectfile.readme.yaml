@@ -1,0 +1,201 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.readme extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Controls README.md generation: which sections appear and in what order.
+# Template data comes from reserved projectfile fields (identity, links,
+# people, license, etc.). Project-local templates live under:
+#   .projectfile/templates/readme.md/<block-name>.tmpl
+#
+# The languages a readme is published in are NOT declared here: they come
+# from the document-level org.projectfile.i18n namespace, so one list drives
+# README.<lang>.md and every other community health file alike. The
+# `languages` block below renders the cross-link bar for that list.
+#
+# ---------------------------------------------------------------------------
+# Block resolution
+# ---------------------------------------------------------------------------
+#
+# For each block name in `blocks`, the consumer resolves content in order:
+#
+#   1. Project-local template:
+#      .projectfile/templates/readme.md/<name>.tmpl
+#      — when present, takes precedence over everything else.
+#
+#   2. Built-in template:
+#      <name>.tmpl shipped with the tool (e.g. pf-cli embedded).
+#
+#   3. Extras entry:
+#      the `extras` sequence is searched for a matching `name`;
+#      its `content` value (localized-string) is rendered as-is.
+#
+#   4. Skip silently:
+#      no template and no extras match — the block is omitted.
+#      This allows projects to declare blocks like `special-psa`
+#      that exist only as project-local templates.
+#
+# The full projectfile document is available as template data.
+# Templates use Go text/template syntax with missingkey=zero.
+#
+# ---------------------------------------------------------------------------
+# Default block list (when `blocks` is absent)
+# ---------------------------------------------------------------------------
+#
+#   basics        title + summary/description
+#   badges        shields.io badges (driven by readme.shields below)
+#   logo          identity.logo if present
+#   links         categorized link groups
+#   policies      community health file links
+#   installation  optional — project-local template or docs/ include
+#   usage         optional — project-local template or docs/ include
+#   license       SPDX expression + link to LICENSE file
+#
+# ---------------------------------------------------------------------------
+# Built-in block names (conventional, not closed)
+# ---------------------------------------------------------------------------
+#
+#   basics        # {{ identity.title }}, {{ identity.summary }}
+#   badges        # rendered from readme.shields when present
+#   logo          # image from identity.logo.medium or identity.logo
+#   links         # categorized groups from top-level links[]
+#   policies      # links to CONTRIBUTING.md, SECURITY.md, etc.
+#   artifacts     # what the project SHIPS, from org.projectfile.artifacts
+#   installation  # install instructions (accepts a command section, below)
+#   quick-start   # fastest path to a running result (command section)
+#   usage         # usage examples (command section)
+#   building      # how to build from source (command section)
+#   features      # bullet list of capabilities
+#   configuration # config summary table
+#   roadmap       # planned features link
+#   contributing  # contribution welcome + link to CONTRIBUTING.md
+#   community     # support channels
+#   security      # one-liner pointing to SECURITY.md
+#   license       # SPDX expression + link to LICENSE
+#   credits       # acknowledgments
+#   toc           # table of contents
+
+org:
+  projectfile:
+    readme:
+      # Ordered list of named template blocks that compose the README.
+      # Each entry is a block name resolved per the algorithm above.
+      # When absent, the consumer uses its built-in default list.
+      blocks:
+        - basics
+        - badges
+        - logo
+        - links
+        - policies
+        - installation
+        - usage
+        - license
+
+      # Optional inline blocks for one-off content that does not warrant
+      # a dedicated template file. Each entry has:
+      #   name     REQUIRED — block identifier, referenced in `blocks`
+      #   content  REQUIRED — localized-string, rendered as-is
+      extras:
+        - name: special-psa
+          content:
+            en: |
+              ## Important Notice
+
+              This project is in early development.
+            es: |
+              ## Aviso Importante
+
+              Este proyecto está en desarrollo temprano.
+            uk: |
+              ## Важливе повідомлення
+
+              Цей проект на ранній стадії розробки.
+
+      # Optional badges rendered by the built-in `badges` block as
+      # markdown `[![alt](img)](href)`. Each entry has:
+      #   name   REQUIRED — identity, and the alt-text fallback
+      #   img    REQUIRED — badge image URL
+      #   href   OPTIONAL — link target; omit for an unlinked indicator
+      #   alt    OPTIONAL — alt text; defaults to `name`
+      # Every field is interpolated (§3.8), so a badge is pure data: a shared
+      # include fragment declares the URL once and each consumer answers the
+      # field references from its own document. A consumer SHOULD drop a shield
+      # whose img/href still carries an unresolved reference rather than publish
+      # a broken image, and SHOULD deduplicate by `name` with the last entry
+      # winning — since includes union sequences and cannot delete, redeclaring
+      # a name is the only way a project overrides an inherited badge.
+      # With no entry here, the `badges` block renders empty and is
+      # silently skipped.
+      shields-base: https://img.shields.io   # OPTIONAL — badge-service host
+      shields:
+        - name: license
+          img: ${org.projectfile.readme.shields-base}/badge/license-${license.spdx}-4c1
+          href: LICENSE
+          alt: License
+
+      # -------------------------------------------------------------------
+      # Command sections: installation, quick-start, usage, building
+      # -------------------------------------------------------------------
+      # Each of these four blocks renders inline when declared here, else falls
+      # back to a companion-file link (INSTALL.md, QUICKSTART.md, USAGE.md,
+      # BUILD.md).
+      #
+      # A section is a LIST of groups, not a single block of commands, because a
+      # project ships several things and the ways to install them are
+      # ALTERNATIVES rather than steps: `npm install foo` and `docker pull foo`
+      # inside one fenced block invites a reader to run both. Shape of one group:
+      #   name      OPTIONAL identity for override (see below); never displayed
+      #   prefix    OPTIONAL localized-string prose before the code block
+      #   commands  list of command lines, rendered as one fenced block
+      #   postfix   OPTIONAL localized-string prose after the code block
+      #   syntax    OPTIONAL fenced-block info string; default "sh"
+      #
+      # Commands, prose, and badge URLs are interpolated (§3.8): any
+      # ${<fieldpath>} resolves against the merged document, and anything that
+      # is not a resolvable field address is left verbatim, so a shell $VAR or
+      # a build-system ${VAR} is never touched.
+      #
+      # The DROP rule is what makes a shared fragment work: a group whose declared
+      # commands all still carry an unresolved reference is dropped whole — lead-in
+      # sentence included — and a section left with no group falls back to its
+      # companion file. So a fragment may declare a recipe for every ecosystem a
+      # fleet knows, unconditionally, as long as each command names the ARTIFACT it
+      # installs (org.projectfile.artifacts). Only the projects that declare that
+      # artifact can answer the reference, so each renders exactly its own
+      # instructions with no per-project text and no conditional.
+      #
+      # A command referencing an artifact kind that resolves to SEVERAL values
+      # (`{kind=image}` on a project publishing one image per matrix cell) is
+      # emitted once per value.
+      #
+      # Includes union sequences, so a section declared in a shared fragment is
+      # inherited by every project that includes it. Overriding one group means
+      # redeclaring its `name`: last wins, and the position is kept so an override
+      # never reorders the section. An unnamed group never collides — a fragment
+      # that bothers to name a group is the one asking to be overridable.
+      registry: kiota.ch           # OPTIONAL — interpolation variable, not a
+      tag: latest                  # parsed field: referenced by the artifact
+                                   # declarations that build a pull reference
+      installation:
+        - name: image
+          prefix: "Pull the published image from the registry:"
+          commands:
+            - docker pull ${org.projectfile.artifacts{kind=image}.ref}
+        - name: npm
+          prefix: "Or add the package to your project:"
+          commands:
+            - npm install ${org.projectfile.artifacts{kind=package,registry=npm}.name}
+      usage:
+        - name: base-image
+          prefix: "Build on top of this image:"
+          syntax: dockerfile
+          commands:
+            - FROM ${org.projectfile.artifacts{kind=image}.ref}
+      quick-start:
+        - commands:
+            - ${org.projectfile.artifacts{kind=binary}.command} --help

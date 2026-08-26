@@ -1,0 +1,30 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture — the bare VALUE of an org.projectfile.build subtree.
+# Validated against ../../schema/org.projectfile.build.v1.json (MUST pass).
+# Exercises every block: registries, every args value rule (a literal, an
+# `@base` version sentinel, an empty forward-if-set, a bare scalar, and a
+# `file` read), and env. Tool-run images live under org.projectfile.ci.images,
+# not here.
+
+registries:
+  B19_DOCKER_REGISTRY: registry.invalid
+
+args:
+  B19_VERBOSITY: warn
+  B19_COLOR: ""
+  B19_GO_VERSION: "@base"
+  B19_GCC_SERIES: 16           # a bare scalar (number) coerces to its literal string "16"
+  B19_UBUNTU_HASH:
+    file: .container/foundation/deps/ubuntu/{B19_UBUNTU_SERIES}.sha256.deps
+
+env:
+  - GOPROXY
+
+mounts:
+  - from: npm                       # managed volume -> $(XDG_CACHE_HOME)/npm
+    to: /root/.npm

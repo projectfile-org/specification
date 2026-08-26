@@ -1,0 +1,42 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture (YAML) — a projectfile carrying the vendor-agnostic CI
+# intent (org.projectfile.ci) as a DAG. The subtree is opaque to v1.json
+# (§3.7), so this MUST validate against the main schema. The subtree's own
+# contract lives in spec/schema/org.projectfile.ci.v1.json and is exercised
+# separately by the fixtures under examples/ci/.
+#
+# `includes` (spec §4.9a) shows the composition pattern: a reusable CI DAG
+# preset is merged first, then this document tunes it (base/local wins). A
+# preset author ships the common nodes/tools once; consumers don't copy them.
+
+$schema: https://projectfile.org/schema/v1.json
+
+includes:
+  - https://presets.projectfile.org/ci/container-service.yaml
+
+identity:
+  namespace: org.example
+  name: ci-extensions
+
+license:
+  spdx: MIT
+
+technologies: [docker, shell]
+
+org:
+  projectfile:
+    ci:
+      nodes:
+        code-is-valid:
+          needs:
+            yamllint: false       # drop a tool the included preset enabled
+            shellcheck: true      # ensure a tool is in the set
+        image-scanned:
+          needs:
+            image-built: true     # `image-built` comes from the included preset
+            trivy: true

@@ -1,0 +1,77 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.build extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# This namespace carries the BUILD-ARGUMENT surface a project's container build
+# consumes — declared ONCE here, lowered to BOTH the local make plane (m6e, as
+# `export VAR ?= …` + `--build-arg`) and a forge CI plane (the ci-resolver, as
+# `${{ vars.VAR || '…' }}`). It carries only what `docker build` consumes:
+# registry-host building blocks and a FLAT map of build-args, where a `FROM`
+# image ref is just one such arg with its registry + tag interpolated in place.
+# Images a TOOL RUNS IN do NOT live here — they live under
+# `org.projectfile.ci.images`, referenced by `org.projectfile.ci.tools.<t>.image`.
+#
+# The shape is vendor-NEUTRAL: every key is a VARIABLE NAME whose VALUE is an
+# expression in OTHER such variables (`${NAME}`), so a generator substitutes its
+# own spelling. No key names a registry host, a forge, or a CI engine.
+
+org:
+  projectfile:
+    build:
+
+      # registries — the registry-host building blocks every image var composes
+      # against. Map of VAR NAME -> default value; the default is a LOUD
+      # `*.invalid` sentinel so a misconfigured workspace fails VISIBLY (an
+      # unresolvable host) instead of silently pulling the wrong image. The real
+      # value comes from the environment / forge `vars.<NAME>`, the single source
+      # of truth shared across planes. Each namespace declares its own.
+      registries:
+        B19_DOCKER_REGISTRY: registry.invalid
+
+      # args — build-arguments delivered into the container build. Map of NAME ->
+      # one of three value rules:
+      #   {default: "@base"}  -> the deployment base-image version variable
+      #                          (m6e $(M6E_BASE_IMAGE_DEFAULT_VERSION); forge
+      #                          ${{ vars.M6E_BASE_IMAGE_DEFAULT_VERSION || 'latest' }})
+      #   {default: ""}       -> NO default; forwarded only when set in the
+      #                          environment (an undefined var must not clobber a
+      #                          Dockerfile default with an empty string)
+      #   {default: <lit>}    -> a literal default, always forwarded
+      #   {file: <path>}      -> the arg VALUE is read at build time from a file
+      #                          (a runtime read-step), the path MAY embed
+      #                          `{<axis>}` matrix placeholders. For a per-cell
+      #                          digest pin computed out of band.
+      args:
+        B19_VERBOSITY: {default: warn}
+        B19_COLOR: {default: ""}
+        B19_GO_VERSION: {default: "@base"}
+        B19_UBUNTU_HASH:
+          file: .container/foundation/deps/ubuntu/{B19_UBUNTU_SERIES}.sha256.deps
+
+      # env — process environment variable NAMES forwarded into the build (and
+      # the tool runs) when set — the build-time analogue of a tool manifest's
+      # `env:`. Names only, never values (no secrets). The canonical case is a
+      # private package proxy a module-resolving build step honours (GOPROXY).
+      env:
+        - GOPROXY
+
+      # mounts — build-time bind/cache mounts the container build backend binds
+      # while building the image (the same {from, to} model a tool manifest's
+      # `mounts` uses, applied to the BUILD step). The canonical case is a
+      # package-manager cache a buildah/buildx backend mounts into the build
+      # context, so a regenerable cache is never baked into the immutable image.
+      #   from: a bare NAME (no `/`) -> a managed volume (m6e binds
+      #         $(XDG_CACHE_HOME)/<name>); a real PATH (~/…, ./…, /…) -> a host
+      #         bind, verbatim, m6e-only (a forge build has no such host path).
+      #   to:   the absolute container mountpoint.
+      mounts:
+        - from: npm                       # managed volume -> $(XDG_CACHE_HOME)/npm
+          to: /root/.npm
+        - from: ./.container/deps         # real host path -> bind verbatim (m6e-only)
+          to: /deps

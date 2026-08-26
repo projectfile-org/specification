@@ -1,0 +1,428 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.ci extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# This namespace is the vendor-AGNOSTIC CI intent expressed as a directed
+# acyclic graph (DAG) PLUS the tool manifests that realise its leaves. The graph,
+# the nodes, and a tool's container image+entrypoint are NEUTRAL — the same
+# go-tools image runs the scan whether m6e, GitHub or Forgejo drives it.
+#
+# The MACHINE that runs the work (runner label, credentials, parallelism, timeout)
+# is NOT neutral — but it is carried here too, QUARANTINED into a per-target
+# DEPLOYMENT overlay keyed by target name (`gha:` / `forgejo:`, see the bottom of
+# this shape). Co-locating it with the DAG keeps ONE file authoritative; keying it
+# by target keeps it OUT of the neutral graph — a generator for a target it does
+# not own simply ignores the key. (`m6e` has no top-level overlay: its deployment
+# IS the local make/docker run, so its per-tool knobs ride the manifest `m6e:` key.)
+#
+# Litmus test for every key here:
+#   "Is this still true if a DIFFERENT vendor runs my CI?"
+#       True  -> it belongs in the NEUTRAL graph: the DAG, a tool's image+manifest.
+#       False -> it belongs INSIDE a per-target overlay (`gha:`/`forgejo:`): the
+#                runner, token scopes, credentials, timeout, the build backend.
+#
+# ---------------------------------------------------------------------------
+# The model: NODES and NEEDS
+# ---------------------------------------------------------------------------
+# The graph is a map of NODES. A node is a STATE the project reaches:
+#   nodes:
+#     <node>:
+#       needs:  <target>           # scalar shorthand — one target, == [<target>] (OPTIONAL)
+#       # OR
+#       needs:  [<target>, ...]    # sequence form — Make targets, no args  (OPTIONAL)
+#       # OR
+#       needs:                     # mapping form — Make targets with grammar (OPTIONAL)
+#         <target>: true           # enable, no args
+#         <target>: false          # disable (suppresses an inherited dep/tool)
+#         <target>: {args: "..."}  # enable with args
+#
+# A node name is an OPAQUE label — no consumer interprets it. The RECOMMENDED
+# (non-normative) convention is a past-participle state, "<thing>-<happened>":
+# `code-is-valid`, `html-built`, `image-scanned`, `published`. Names are FREE;
+# there is no fixed vocabulary (no privileged `built`/`tested`).
+#
+# Every entry in `needs` is a Make target — bolt-on tool recipes and sibling
+# DAG nodes are resolved identically. The reader does not distinguish them;
+# Make does. A `needs` entry that names another declared node creates a DAG
+# ordering edge; an entry that names a bolt-on tool recipe is the leaf that
+# actually runs. "Building" is just running a build tool — no special node type.
+#
+# Override grammar (also the include-merge contract, spec §4.9a):
+#     false        -> drop this target from the node
+#     true         -> enable, no args
+#     {args: "…"}  -> enable + pass args  ({} is tolerated as true)
+# A reusable preset can `include` tool sets; a local document disables one with
+# `false`. base/local always wins over includes.
+#
+# `goal: true` (per node, OPTIONAL) opts a node in as a terminal CI milestone. When
+# ANY node is flagged the goal set is EXACTLY the flagged nodes; when NONE is,
+# every graph sink is a goal. Leave mutating nodes (a `formatted` node running
+# *-fix tools) UNFLAGGED so they stay out of the closure — CI checks but never
+# rewrites the tree.
+#
+# Each goal is a SEPARATE pipeline: a vendor lowering emits ONE workflow file per
+# goal (`<goal>.yml`), named for the goal and triggered by that goal's own surface
+# (its `when:` + the `schedule:`/`dispatch:` it carries — see TRIGGERS below). A
+# `publish` goal and a `midnight-audit` goal are independent files with independent
+# triggers, not branches of one mega-"CI" workflow. Goals are expected to be
+# disjoint terminal milestones; a node shared by two goals' closures renders in both
+# files. Per-goal generation therefore REQUIRES explicit `goal: true` flags (the
+# inferred-every-sink fallback is for the single combined view only).
+#
+# ---------------------------------------------------------------------------
+# The build MATRIX (OPTIONAL)
+# ---------------------------------------------------------------------------
+# `matrix.axes` declares a map of injected-variable -> value list; the cell set
+# is the cartesian PRODUCT of all axes. A node flagged `matrix: true` is a CELL,
+# realised once per cell with that cell's axis values injected. Three timing
+# classes fall out, the vendor-neutral form of GitHub/Tekton/Forgejo strategy:
+#     SOURCE  not in any cell's closure          -> runs once, BEFORE the cells
+#     CELL    flagged `matrix: true`             -> runs once PER product cell
+#     JOIN    downstream of a cell, NOT flagged  -> runs once, AFTER every cell
+# The JOIN (e.g. a multiarch manifest fan-in) is a non-flagged node that `needs`
+# a cell — it gets the fan-in for free and must NOT inherit the cell's fan-out.
+# The axis KEY is the LITERAL build variable delivered into the cell (no alias
+# layer): it lowers 1:1 to `${{ matrix.<KEY> }}` / a Tekton matrix param, and an
+# m6e cell sub-make reads it as a command-line variable. The grid is adjustable
+# in two subtractive/decorative ways only — `overrides` binds extra variables onto
+# matching cells, `exclude` drops cells the grid cannot build; neither MINTS a cell
+# (the GitHub `include` behaviour is refused). See examples/ci/matrix.yaml.
+#
+# `exclude` takes partial cells: every cell carrying all of an entry's axis KEY=value
+# pairs is removed. It keeps an unbuildable corner out of ONE node instead of forcing
+# a second node — `{GOOS: [linux, darwin], GOARCH: [amd64, arm64, riscv64]}` mints
+# `darwin/riscv64`, which no toolchain targets. An entry keyed on a non-axis field,
+# an entry matching no cell, or a set of entries emptying the product is refused.
+#
+# A node may instead carry its OWN axes (`matrix: {axes: {...}}`) to fan over a
+# DIFFERENT dimension than the global set — so two artifact classes coexist in one
+# pipeline (binaries over {GOOS, GOARCH}, the image build over the global series).
+# Per-node axes are ISOLATED: a global-matrix node never inherits them and vice
+# versa. The object form needs no top-level matrix; `matrix: true` still requires one.
+# It takes the same `exclude` list, but no `overrides` (a global-matrix feature).
+#
+# A CELL node MAY cap its OWN fan-out with `max-parallel: <n>` (>=1) — the portable
+# `strategy.max-parallel`. It throttles just that node's cells (a sibling matrix stays
+# fully parallel); the motivating case is a resource-hungry cell like an image build
+# where two concurrent container builds starve the runner, so `1` serialises them.
+# Capping the matrix product is AGNOSTIC (how many cells materialise at once); the
+# runner mechanism realising each cell still lives in org.{vendor}.ci.
+#
+# The cap is only as portable as the ENGINE, though, and one big engine does not
+# implement it: Forgejo (and Gitea) expand a matrix statically into independent job
+# rows, then dispatch each to any runner with a free slot — no scheduler stage sits
+# between expansion and dispatch for a cap to act in, so `max-parallel` renders and is
+# ignored. A CELL node that must not run two cells together ANYWHERE therefore says
+# `serialise: <AXIS-KEY>` instead: the lowering walks that axis one job per value,
+# chained by `needs` (the one ordering primitive every engine honours), plus a JOIN
+# under the authored node name so no downstream `needs:` changes. Only the named axis
+# is walked — the others keep fanning inside each link, which is what a memory-bound
+# build wants (one series at a time, its arches together). It names a GLOBAL axis; on
+# a node with its own (isolated) axes it is an error, and naming an axis the project
+# does not declare is a NO-OP, as with `without` and `pin`.
+#
+#   matrix:
+#     axes:
+#       B19_PHP_SERIES: ["8.3", "8.4", "8.5"]
+#       PHP_SAPI:       [cli, fpm]
+#   nodes:
+#     image-built:  {matrix: true, max-parallel: 1, needs: {container-build: true}} # CELL (global axes)
+#     bins-built:   {matrix: {axes: {GOOS: [linux, darwin], GOARCH: [amd64, arm64]}},
+#                    needs: {build-binaries: true}}                             # CELL (own axes)
+#     published:    {needs: [source-is-valid, image-built]}                     # JOIN (fan-in)
+#
+# ---------------------------------------------------------------------------
+# Tool MANIFESTS (OPTIONAL): the `tools:` map
+# ---------------------------------------------------------------------------
+# The DAG names leaves; a manifest says HOW one runs. Each entry is keyed by the
+# tool's Make-target name (as it appears in `needs`) and carries:
+#     image:   VAR NAME from `org.projectfile.ci.images` (absent => host runner).
+#              The generator resolves it to a nested CI variable expression
+#              (`${{ vars.<NAME> || vars.<PARENT> || '<default-path>' }}`).
+#              No registry path or forge expression in the source — those are
+#              added by the generator from the declared ci.images chain.
+#     run:     entrypoint; defaults to the bare tool name. A generator MUST NOT
+#              synthesise a prefix — a toolset's `auto-<name>` wrapper convention
+#              is expressed by setting `run` explicitly (it is content, not spec)
+#     guard:   ADVISORY EXISTENCE predicate — a path/glob that, when NOTHING in the
+#              tree matches it, makes the tool pointless; the run is SKIPPED soft-green
+#              (never blocks a downstream needs). m6e lowers it to a recipe skip-prelude;
+#              a forge MAY lower it to a path filter. (Existence: DOES-IT-EXIST.)
+#     inputs:  ADVISORY CHANGE predicate — path globs naming the files the tool READS.
+#              When every match is UNCHANGED since the tool last SUCCEEDED an engine MAY
+#              skip the run and replay the green result. The freshness key is engine-
+#              defined and folds in more than file contents (m6e: content hash keyed by
+#              image digest + config; a forge: on.push.paths / paths-filter). A skip
+#              replays only a prior SUCCESS, never a failure. (Change: HAS-IT-CHANGED —
+#              the complement of guard.)
+#     tags:    ADVISORY open-vocabulary labels (e.g. lint, test, fast) — for
+#              documentation/filtering only; no lowering semantics
+#     description: ADVISORY free-prose note on what the tool does (the manifest
+#              sibling of a node's `description`) — surfaced by doc/help generators,
+#              no lowering semantics
+#     gha / forgejo: lowering MEMBERSHIP, keyed by the target name directly
+#              (siblings of `m6e:`, no `targets:` wrapper). Opt-out — absent =>
+#              the tool runs on that target, an explicit `false` removes it.
+#              Avoids a 1:1 vendor mirror: a doc *-fix is m6e-only (CI never
+#              commits a reformat), npm trusted publishing is gha-only, a `fetch`
+#              cache warm-up is pointless on an ephemeral cloud runner.
+#     fuse:    CO-LOCATION group name (e.g. `live`). Tools sharing a group AND
+#              connected by `needs` collapse into ONE forge job running each
+#              member's `run` as an ordered step (a compose stack cannot span jobs
+#              on an ephemeral runner). m6e keeps them separate recipes. No `image`
+#              forbidden — a fused member may still ship a container.
+#     action:  ci-actions library entry this tool lowers to on a forge
+#              (`container-build` today; checkout/publish later) — the pragmatic
+#              remainder of a not-yet-a-plain-image tool, NOT a capability. No `image`.
+#     emit:    the semantic EVENT this tool reports once it has succeeded
+#              (`ci.image.published`) — WHAT it produced, which a goal event cannot
+#              say (no image, no tag, no digest, and it fires for every other goal).
+#              A generator lowers it to one emission right after this tool's own step,
+#              filling the envelope's reserved `payload` with that tool's facts (for a
+#              registry push: image, tag cascade, digest, matrix cell). Per-TOOL, so it
+#              fires with the tool even when later steps of a fused group follow.
+#     args: build arguments — a map of build-arg NAME -> {source: ref}, naming WHERE
+#              the value comes from. Four sources: {var: NAME} a runtime CI variable
+#              (-> ${{ vars.NAME }}); {get: image.namespace|image.name} a generation-time
+#              literal derived from the basename split (the identity args); {file: PATH}
+#              a per-cell value read from a repo file (path may embed {<axis>}); {ci: version}
+#              an abstract CI fact the target supplies. Exactly one source per name. For a
+#              container-build action these lower to --build-arg. Merges additively across
+#              includes. Distinct from a needs-entry {args: "..."} positional override.
+#     mounts: the UNIFIED mount list (one concept, no separate caches) — a list of
+#              {from, to, mode}. `to` is the absolute container mountpoint; `from`
+#              discriminates: a bare NAME is a regenerable managed volume (a scanner DB, a
+#              pkg cache — m6e binds $(XDG_CACHE_HOME)/<from>, a forge keys its own cache by
+#              the name; a run-tool NAME lowers to a single mount at `mode` + actions/cache,
+#              a container-build NAME to a build-context bind satisfied EMPTY on CI). A real
+#              PATH (~/…, ./…, /…) is a host bind only m6e satisfies — forges IGNORE it
+#              (replaces m6e.mounts). `mode` is `read-only` (default — a scan reads a
+#              shared DB) or `read-write` (a *-db-update writer that refreshes it in place).
+#     env: NAMES of runner env vars to FORWARD into the tool's execution context
+#              (names only, never values — no secrets). The canonical case is a proxy
+#              a compiler tool honours (GOPROXY). A name the target's `credentials`
+#              overlay supplies is bound to that SECRET ref; otherwise it is left to
+#              the runner's inherited environment.
+#     set-env: a NAME -> literal VALUE map the tool SETS on its job's env (the values-
+#              bearing sibling of `env`). For non-secret, deployment-stable values a
+#              tool needs at run (the compose-runtime vars a fused live stack interpolates).
+#              Values MAY embed {<axis>} placeholders lowered per cell. MUST NOT carry secrets.
+#     artifact: a path this tool PRODUCES (a built binary) and a downstream tool CONSUMES.
+#              The producer uploads it as a per-cell artifact; any tool whose `needs` reaches
+#              it auto-downloads to the SAME path. The plain-`run:` analogue of the
+#              container-build OCI-tar edge. Forbidden with `action`.
+#     reports: a path/glob of DIAGNOSTIC files this tool EMITS (a scanner's SARIF/JSON).
+#              Upload-ONLY, distinct from `artifact`: no consumer, and the upload is rendered
+#              guarded `if: always()` with missing files tolerated (a fail-closed scan still
+#              publishes its report). Forbidden with `action`.
+#     when: STEP-ORDERING predicate — the sole value `always` runs the step even if an earlier
+#              step in the same job FAILED (the canonical case is a fused `live` teardown after
+#              a failing test). Distinct from a NODE's `when:{events}` trigger predicate. m6e
+#              keeps teardown as a separate recipe.
+#     m6e: m6e target key (OPAQUE to gha/forgejo). A BOOLEAN is lowering membership (false opts
+#              out of make); an OBJECT `{prefer-local: true}` makes the m6e run prefer the HOST
+#              binary over the container — it runs `command -v` on the FIRST WORD of `run:` and,
+#              on hit, runs the tool on the host (no image); on miss, the container image.
+# A leaf with no manifest falls back to `auto-<name>` on the host runner.
+#
+# EVERYTHING IS A TOOL — no privileged build/live/checkout capability class. A
+# tool ships a container (`image`+`run`) or runs on the host: lint, scan-source,
+# image-scan, format, dc-up, test. Two ORTHOGONAL attributes adjust how a tool
+# lowers, neither a class:
+#   * `fuse: <group>` CO-LOCATES connected same-group tools into one forge job of
+#     ordered run-steps (a compose stack cannot span jobs on an ephemeral runner);
+#     m6e keeps them as separate recipes (its daemon persists between them).
+#   * `action: <lib>` lowers the tool to a pinned ci-actions ref on a forge — the
+#     pragmatic remainder of a tool not yet a plain image (`container-build` now;
+#     checkout/publish later), reducible to an ordinary tool once its image exists.
+# The image hand-off is an OCI archive tar: `container-build` emits `image-<cell>.tar`
+# and an ordinary image-scan tool (auto-grype/auto-trivy/auto-dockle) consumes it
+# DAEMONLESSLY; the build→scan wiring is DERIVED from the scanner's `needs` edge to
+# `container-build`, carried per-target by that target's artifact mechanism (GitHub
+# artifact, Tekton workspace). NEVER lower an `action` tool to `make` on a forge —
+# that is only m6e's native realisation of the same leaf.
+# Manifests are RECOMMENDED to ship from the d9t *-tools image that satisfies
+# them, merged in via the document root `includes:` (the def travels with its
+# image); the spec defines only the shape.
+#
+# ---------------------------------------------------------------------------
+# Workflow TRIGGERS (OPTIONAL): a GOAL node's `schedule:` / `dispatch:`
+# ---------------------------------------------------------------------------
+# Beyond the default push/pull-request surface, a goal MAY add a manual-run button
+# and/or a cron schedule. These are vendor-NEUTRAL INTENT ("this pipeline can be run
+# by hand / runs on a timer"), so they live in the neutral subtree, NOT a per-target
+# overlay. Because each goal lowers to its OWN file, the trigger DATA lives on the
+# GOAL node — it is that file's surface. m6e ignores them (a local `make` has no
+# button or timer). Trigger fields on a non-goal node are rejected (dead config).
+#
+#   nodes:
+#     midnight-audit:
+#       goal: true
+#       when: {events: [schedule]}   # this goal's file fires only on the timer
+#       schedule:                    # cron timers (GHA/Forgejo on: schedule)
+#         - cron: "0 3 * * *"        # POSIX 5-field, UTC
+#       dispatch:                    # the dispatch button (GHA/Forgejo workflow_dispatch)
+#         inputs:                    # OPTIONAL parametrised-build form (-> ${{ inputs.X }})
+#           environment: {type: choice, options: [staging, prod], default: staging}
+#           verbose:     {type: boolean, default: false}
+#
+# Input types are the NEUTRAL subset GHA and Forgejo render identically: string,
+# boolean, choice (requires `options`), number. A GHA-only `environment` type is
+# excluded on purpose. `type` defaults to string; a `default` MUST satisfy its type.
+#
+# A goal's `schedule:`/`dispatch:` is what adds the event to its file's `on:`. A
+# node's `when: {events: [dispatch|schedule]}` only NARROWS which nodes run on that
+# event (a per-job `if:`); gating on an event no goal declares is rejected (the gate
+# would be a dead branch). With no `when` gate, every node in the goal's closure runs
+# on the manual/scheduled run too (a full nightly build, or the button runs all).
+#
+# The REF tokens are the other half of that vocabulary: `tag` fires on any tag push,
+# `push:<branch>` on a push to that exact branch, and `preview` on a push to a branch
+# that is NOT the project default — the token for a node that must run on a branch
+# nobody can name ahead of time. The default branch is read from
+# `repositories[role=origin].branch` (§4.3a); a document recording none is assumed to
+# live on `main` or `master`. POLICY over those tokens stays the consumer’s, as always:
+# `when: {events: [tag, preview]}` on a publish node is what makes a tag publish its
+# version cascade while a branch publishes a single preview of it.
+#
+# Cross-project "rebuild when an upstream tag updates" is DELIBERATELY out of scope
+# here: neither forge lets a repo declaratively SUBSCRIBE to another's tags, so it
+# needs a notify mechanism (producer-push via repository_dispatch, or polling) that
+# is tracked separately.
+#
+# Lowering (illustrative — mechanism, not part of this contract):
+#   m6e -> make    node=phony target, needs entries=order-only prerequisites
+#   t4n -> Tekton  node=Task,         needs=runAfter,      tool=Task step
+#   GitHub/Forgejo node=job,          needs=needs,         tool=job step,
+#                  image=container.image, run=step command
+
+org:
+  projectfile:
+    ci:
+      nodes:
+        code-is-valid:                   # entry-level checks (no upstream)
+          needs:
+            shellcheck: true
+            eslint:
+              args: --max-warnings 0
+            stylelint: false             # drop one an included preset enabled
+        html-built:                      # a build is just a tool
+          needs:
+            astro-build: true
+        html-checked:                    # validators that consume the build
+          needs:
+            html-built: true             # node edge — ordered after the artifact
+            html-validate:
+              args: "dist/"
+            linkinator: true
+        formatted:                       # mutating; left UNFLAGGED -> out of the goal closure
+          needs:
+            eslint-fix: true
+        published:                       # pure join / milestone (node edges only)
+          goal: true                     # a default CI goal -> published.yml
+          needs: [code-is-valid, html-checked]
+        midnight-audit:                  # a SEPARATE goal -> midnight-audit.yml
+          goal: true
+          when: {events: [schedule]}     # its file fires only on the timer
+          schedule:                      # the goal owns its trigger (per-goal file)
+            - cron: "0 3 * * *"          # nightly at 03:00 UTC
+          dispatch:                      # + a manual-run button on this file
+            inputs:                      # parametrised build (-> ${{ inputs.X }})
+              environment:
+                type: choice
+                options: [staging, prod]
+                default: staging
+                description: deployment target
+              verbose: {type: boolean, default: false}
+          needs: [grype-image]
+      tools:                             # execution manifests for the leaves above
+        shellcheck:
+          image: D9T_MISC_TOOLS_IMAGE    # VAR NAME from org.projectfile.ci.images
+          inputs: ["**/*.sh", "**/*.bash"]  # CHANGE predicate: skip when no shell file changed since last green
+        eslint:
+          image: D9T_JS_TOOLS_IMAGE
+          run: auto-eslint
+        astro-build:
+          run: make astro-build
+        eslint-fix:
+          image: D9T_JS_TOOLS_IMAGE
+          run: auto-eslint --fix
+          gha: false
+          forgejo: false
+        gh-release:
+          run: gh release create "$TAG" --generate-notes
+          env: [GH_TOKEN]                # NAME only; the secret VALUE is in gha.credentials
+          forgejo: false                 # gha-native release leaf
+        build-binaries:
+          run: make build                # PRODUCES a per-cell artifact a downstream job consumes
+          artifact: dist                 # any tool whose needs reaches this downloads `dist` first
+        grype-image:
+          image: D9T_GO_TOOLS_IMAGE
+          run: auto-grype
+          reports: reports/grype-image.*  # EMITS a diagnostic; uploaded guarded if: always()
+          mounts:                        # NAME `from` => regenerable cache (scanner vuln DB)
+            - from: grype-db
+              to: /home/ubuntu/.cache/grype/db
+          m6e:
+            prefer-local: true          # m6e-only: prefer the host grype (first word of run) if installed
+
+      # workflow TRIGGERS now live on the GOAL nodes above (per-goal files) — see
+      # `midnight-audit` carrying its own `schedule:`/`dispatch:`.
+
+      # --- secret PROVISIONING manifest (OPTIONAL): the `secrets:` map ----------
+      # The dev/CI `.secrets/` tree a compose `secrets:` block mounts, materialised
+      # BEFORE dc-up-d by a secrets-provision step BOTH lowerings (m6e make + the
+      # cloud ci-resolver workflow) inject when this map is non-empty. ONE source
+      # of truth — empty/absent => no provisioning step (the no-op invariant holds).
+      # Two kinds: `value:` writes a literal verbatim; `docker:` runs
+      # `docker run <resolved-image> <run>` and captures stdout as the secret.
+      # NEVER real production secrets (spec §8): `value:` carries dev defaults or
+      # `value: CHANGEME` placeholders; `docker:` generates a fresh value each run.
+      # The recipe library (openssl, htpasswd, m6e-secret-*) lives in the misc-tools
+      # image, NOT in any resolver — a new secret kind is ONE image edit and no
+      # redeploy (add a `m6e-secret-foo` command, reference it as
+      # `docker: { run: m6e-secret-foo }`).
+      #   name dots = the ONLY path separator: `f5m.mastodon-puma.secret_key_base`
+      #   -> `.secrets/f5m/mastodon-puma/secret_key_base`; hyphens/underscores are
+      #   literal filename chars. Sibling derivation: a `docker:` recipe is given
+      #   its OWN directory so it can read `../password` (bcrypt) or `../username`
+      #   + `../password` (htpasswd). `image: self` runs the project's OWN built
+      #   image (the self-hosting keygen case).
+      #
+      # secrets:
+      #   gf.security.admin.password:         # bare-string shorthand ≡ {value: <str>}
+      #     docker: m6e-secret-random          # default misc-tools image (openssl rand -hex 32)
+      #   o9s.mariadb.user: mariadb            # bare-string shorthand ≡ {value: mariadb}
+      #   o9s.prometheus.password_hash:
+      #     docker: { run: m6e-secret-bcrypt }  # reads sibling .secrets/o9s/prometheus/password
+      #   f5m.tor.site-hs-key:
+      #     docker:
+      #       image: self                      # run the project's OWN built image (keygen)
+      #       run: generate-hs-key
+      #       env: [F5M_TOR_HS_VANITY_PREFIX]   # forward this runner env var into the recipe
+
+      # --- per-target DEPLOYMENT overlay (the quarantined where/how) ----------
+      # Keyed by target name; a generator ignores the key it does not own. The
+      # `gha:` here is the deployment overlay; the `gha: false` on a tool above is
+      # lowering MEMBERSHIP — same name, different nesting, different role.
+      gha:
+        runs-on: ubuntu-latest           # override the adapter default on every job
+        builder: buildx                  # container-build backend: buildx | buildah
+        permissions:
+          contents: write                # a release upload needs contents:write
+        credentials:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # binds gh-release's env name, scoped to that job
+        actions:                         # helper-action `uses:` ref overrides (additive; absent = default)
+          checkout: actions/checkout@v7
+          ci-actions: projectfile/ci-actions@v1
+      forgejo:
+        timeout-minutes: 30
+        concurrency:
+          group: ci-${{ github.ref }}    # cancel an in-flight run on the same ref
+          cancel-in-progress: true

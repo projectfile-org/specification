@@ -1,0 +1,23 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "cohabitation",
+    "title": "Cohabitation Demo"
+  },
+  "technologies": ["python", "my-internal-runtime"],
+  "vendor-policy": {
+    "rotate-secrets-every-days": 30,
+    "notes": "imagined future reserved field; current consumers ignore + preserve"
+  },
+  "com": {
+    "never-heard-of": {
+      "this": {
+        "whatever": "we want",
+        "deeply": {
+          "nested": [1, 2]
+        }
+      }
+    }
+  }
+}

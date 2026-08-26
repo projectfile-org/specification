@@ -1,0 +1,323 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Recommended vocabulary for the `technologies` reserved field.
+# See spec/v1.md Section 4.7 — this vocabulary is non-normative.
+#
+# Shape: <tag>:
+#          category: language | runtime | framework | data | platform | tooling
+#          synonyms: [ ... ]    # other names that SHOULD be normalized to this tag
+#          homepage: URL        # canonical / authoritative site for the technology
+#          description: short human-readable summary
+#          use-cases: [ ... ]   # OPTIONAL advisory tokens hinting what tooling can
+#                               # do with this tag, e.g. `gitignore`, `dockerignore`,
+#                               # `editorconfig`. Purely advisory; consumers MAY use
+#                               # them to offer generation features (see spec v1.md §4.7).
+#
+# Tags are human-friendly bare names (e.g. `python`, not `python.org`). The
+# homepage field captures the canonical URL for tooling that wants to render
+# a link or disambiguate forks/implementations without bloating the tag itself.
+#
+# Contributing: open a PR adding a tag with a one-line rationale in the commit
+# message. No gate-keeping. Synonyms are the mechanism for disambiguation —
+# prefer extending synonyms on an existing tag over creating a sibling.
+
+# ---- languages ----
+
+c:
+  category: language
+  synonyms: []
+  homepage: https://www.open-std.org/jtc1/sc22/wg14/
+  description: C programming language (ISO/IEC 9899).
+
+cpp:
+  category: language
+  synonyms: ["c++", cplusplus]
+  homepage: https://isocpp.org/
+  description: C++ programming language.
+
+crystal:
+  category: language
+  synonyms: []
+  homepage: https://crystal-lang.org/
+  description: Crystal programming language.
+
+elixir:
+  category: language
+  synonyms: []
+  homepage: https://elixir-lang.org/
+  description: Elixir programming language on the BEAM.
+
+erlang:
+  category: language
+  synonyms: []
+  homepage: https://www.erlang.org/
+  description: Erlang programming language on the BEAM.
+
+gleam:
+  category: language
+  synonyms: []
+  homepage: https://gleam.run/
+  description: Gleam programming language on the BEAM.
+
+go:
+  category: language
+  synonyms: [golang]
+  homepage: https://go.dev/
+  description: Go programming language.
+
+haskell:
+  category: language
+  synonyms: []
+  homepage: https://www.haskell.org/
+  description: Haskell programming language.
+
+java:
+  category: language
+  synonyms: []
+  homepage: https://dev.java/
+  description: Java programming language.
+
+javascript:
+  category: language
+  synonyms: [js, ecmascript]
+  homepage: https://tc39.es/
+  description: JavaScript / ECMAScript.
+
+kotlin:
+  category: language
+  synonyms: []
+  homepage: https://kotlinlang.org/
+  description: Kotlin programming language.
+
+php:
+  category: language
+  synonyms: []
+  homepage: https://www.php.net/
+  description: PHP programming language.
+
+python:
+  category: language
+  synonyms: [py, cpython]
+  homepage: https://www.python.org/
+  description: Python programming language (CPython reference implementation).
+  use-cases: [gitignore]
+
+ruby:
+  category: language
+  synonyms: [rb]
+  homepage: https://www.ruby-lang.org/
+  description: Ruby programming language.
+
+rust:
+  category: language
+  synonyms: [rs]
+  homepage: https://www.rust-lang.org/
+  description: Rust programming language.
+
+scala:
+  category: language
+  synonyms: []
+  homepage: https://www.scala-lang.org/
+  description: Scala programming language.
+
+typescript:
+  category: language
+  synonyms: [ts]
+  homepage: https://www.typescriptlang.org/
+  description: TypeScript programming language.
+
+zig:
+  category: language
+  synonyms: []
+  homepage: https://ziglang.org/
+  description: Zig programming language.
+
+# ---- runtimes / platforms ----
+
+bun:
+  category: runtime
+  synonyms: []
+  homepage: https://bun.sh/
+  description: Bun JavaScript runtime.
+
+deno:
+  category: runtime
+  synonyms: []
+  homepage: https://deno.com/
+  description: Deno JavaScript/TypeScript runtime.
+
+docker:
+  category: platform
+  synonyms: []
+  homepage: https://www.docker.com/
+  description: Docker container platform.
+  use-cases: [gitignore, dockerignore]
+
+dotnet:
+  category: runtime
+  synonyms: [".net", netcore]
+  homepage: https://dotnet.microsoft.com/
+  description: .NET runtime (CoreCLR).
+
+jvm:
+  category: runtime
+  synonyms: []
+  homepage: https://openjdk.org/
+  description: Java Virtual Machine (OpenJDK reference implementation).
+
+node:
+  category: runtime
+  synonyms: [nodejs]
+  homepage: https://nodejs.org/
+  description: Node.js JavaScript runtime.
+  use-cases: [gitignore]
+
+wasm:
+  category: platform
+  synonyms: [webassembly]
+  homepage: https://webassembly.org/
+  description: WebAssembly platform.
+
+# ---- web frameworks ----
+
+astro:
+  category: framework
+  synonyms: []
+  homepage: https://astro.build/
+  description: Astro web framework for content-driven sites.
+  use-cases: [gitignore]
+
+django:
+  category: framework
+  synonyms: []
+  homepage: https://www.djangoproject.com/
+  description: Django web framework for Python.
+
+express:
+  category: framework
+  synonyms: [expressjs]
+  homepage: https://expressjs.com/
+  description: Express web framework for Node.
+
+fastapi:
+  category: framework
+  synonyms: []
+  homepage: https://fastapi.tiangolo.com/
+  description: FastAPI web framework for Python.
+
+laravel:
+  category: framework
+  synonyms: []
+  homepage: https://laravel.com/
+  description: Laravel web framework for PHP.
+
+nextjs:
+  category: framework
+  synonyms: ["next.js"]
+  homepage: https://nextjs.org/
+  description: Next.js web framework for React.
+  use-cases: [gitignore]
+
+payload:
+  category: framework
+  synonyms: ["payload-cms", "payloadcms"]
+  homepage: https://payloadcms.com/
+  description: Payload CMS headless content platform.
+  use-cases: [gitignore]
+
+rails:
+  category: framework
+  synonyms: ["ruby-on-rails", ror]
+  homepage: https://rubyonrails.org/
+  description: Ruby on Rails web framework.
+
+react:
+  category: framework
+  synonyms: [reactjs]
+  homepage: https://react.dev/
+  description: React UI library.
+
+solid:
+  category: framework
+  synonyms: [solidjs]
+  homepage: https://www.solidjs.com/
+  description: SolidJS reactive UI library.
+
+svelte:
+  category: framework
+  synonyms: [sveltejs]
+  homepage: https://svelte.dev/
+  description: Svelte UI compiler.
+
+symfony:
+  category: framework
+  synonyms: []
+  homepage: https://symfony.com/
+  description: Symfony web framework for PHP.
+
+vue:
+  category: framework
+  synonyms: [vuejs]
+  homepage: https://vuejs.org/
+  description: Vue.js UI framework.
+
+# ---- data systems ----
+
+elasticsearch:
+  category: data
+  synonyms: [es]
+  homepage: https://www.elastic.co/elasticsearch
+  description: Elasticsearch search engine.
+
+kafka:
+  category: data
+  synonyms: []
+  homepage: https://kafka.apache.org/
+  description: Apache Kafka event streaming platform.
+
+mariadb:
+  category: data
+  synonyms: []
+  homepage: https://mariadb.org/
+  description: MariaDB relational database.
+
+mysql:
+  category: data
+  synonyms: []
+  homepage: https://www.mysql.com/
+  description: MySQL relational database.
+
+postgres:
+  category: data
+  synonyms: [postgresql, pg]
+  homepage: https://www.postgresql.org/
+  description: PostgreSQL relational database.
+
+rabbitmq:
+  category: data
+  synonyms: []
+  homepage: https://www.rabbitmq.com/
+  description: RabbitMQ message broker.
+
+redis:
+  category: data
+  synonyms: []
+  homepage: https://redis.io/
+  description: Redis in-memory data store.
+
+sqlite:
+  category: data
+  synonyms: []
+  homepage: https://www.sqlite.org/
+  description: SQLite embedded database.
+
+# ---- tooling ----
+
+docs:
+  category: tooling
+  synonyms: [prose, documentation]
+  description: Prose and documentation projects (lint/format/validate, no build artifact).

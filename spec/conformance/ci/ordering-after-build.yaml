@@ -1,0 +1,30 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A node-dep edge in the mapping form orders execution: a validator on a build
+  artifact runs strictly after the tool that produces the artifact.
+  Node deps are listed before tool deps in the mapping so Make's serial
+  left-to-right evaluation enforces the ordering across the node boundary.
+
+input:
+  nodes:
+    html-built:
+      needs:
+        astro-build: true
+    html-checked:
+      goal: true
+      needs:
+        html-built: true              # node dep — listed first to enforce ordering
+        html-validate:
+          args: "dist/"
+        linkinator: true
+
+expect:
+  runs: [astro-build, html-validate, linkinator]
+  before:
+    - [astro-build, html-validate]   # the build precedes each consumer of dist/
+    - [astro-build, linkinator]

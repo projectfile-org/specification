@@ -1,0 +1,21 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile platform-targeting fields
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status. See spec/v1.md §4.8a.
+
+org:
+  projectfile:
+    # Target operating systems. Recommended values follow the OCI image-spec
+    # platform vocabulary (linux, darwin, windows, freebsd, ...). Absent =>
+    # unconstrained; a container consumer assumes linux.
+    operating-system: [linux]
+    # Target CPU architectures. Recommended values follow the OCI image-spec
+    # architecture vocabulary (amd64, arm64, arm, 386, riscv64, ...). Absent =>
+    # unconstrained; a container consumer assumes the build host's arch.
+    # The cartesian product with operating-system is the supported platform set.
+    architecture: [amd64, arm64]

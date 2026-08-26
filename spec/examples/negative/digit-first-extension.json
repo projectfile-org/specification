@@ -1,0 +1,10 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "digit-first"
+  },
+  "1.2.3": {
+    "some": "value"
+  }
+}

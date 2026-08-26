@@ -1,0 +1,108 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+$schema: https://projectfile.org/schema/v1.json
+copyright:
+  year: 2026
+dev:
+  projectfile:
+    spec:
+      versions:
+        - document: spec/v1.md
+          id: v1
+          revision: "2026-05-09"
+          schema: spec/schema/v1.json
+          status: draft
+identity:
+  created: "2026-06-01"
+  name: specification
+  summary:
+    en: Stack- and vendor-agnostic software project specification file.
+    es: Archivo de especificación de proyectos de software agnóstico de pila y de proveedor.
+    uk: Файл специфікації програмного проєкту, незалежний від технологічного стека та постачальника.
+  title: The Projectfile Specification
+  description:
+    en: 'The normative specification of the projectfile: a single stack- and vendor-agnostic YAML file that describes a software project identity, build, CI and publishing. Holds the spec prose and v1 JSON Schema, dual-licensed MIT and CC-BY-4.0, rendered at projectfile.org and consumed by the pf-cli, pf-bridge and pf-ci tools.'
+    es: 'La especificación normativa del projectfile: un único archivo YAML agnóstico de pila y de proveedor que describe la identidad, compilación, CI y publicación de un proyecto de software. Contiene la prosa de la especificación y el esquema JSON v1, con doble licencia MIT y CC-BY-4.0, renderizada en projectfile.org y consumida por las herramientas pf-cli, pf-bridge y pf-ci.'
+    uk: 'Нормативна специфікація projectfile: єдиний YAML-файл, незалежний від технологічного стека та постачальника, що описує ідентичність, збирання, CI та публікацію програмного проєкту. Містить текст специфікації та JSON-схему v1 з подвійною ліцензією MIT і CC-BY-4.0, відображається на projectfile.org і використовується інструментами pf-cli, pf-bridge та pf-ci.'
+includes:
+  - .makefile/core/ci.yaml
+  - https://kiota.ch/damian-buho/metadata/raw/branch/main/include.yaml
+  - https://kiota.ch/projectfile/metadata/raw/branch/main/include.yaml
+keywords:
+  - specification
+  - projectfile
+  - metadata
+  - project-file
+  - yaml
+  - vendor-agnostic
+kind: SoftwareSourceCode
+license:
+  spdx: MIT OR CC-BY-4.0
+  covers: project
+links:
+  - label:
+      en: The Projectfile Specification on Codeberg
+      es: The Projectfile Specification en Codeberg
+      uk: The Projectfile Specification на Codeberg
+    tags:
+      - public
+      - badges
+      - badges-gitea
+    type: source-code
+    url: https://codeberg.org/projectfile/specification
+  - label:
+      en: The Projectfile Specification on GitHub
+      es: The Projectfile Specification en GitHub
+      uk: The Projectfile Specification на GitHub
+    tags:
+      - public
+      - badges
+      - badges-github
+    type: source-code
+    url: https://github.com/damian-buho/projectfile-specification
+  - label:
+      en: The Projectfile Specification on kiota.ch
+      es: The Projectfile Specification en kiota.ch
+      uk: The Projectfile Specification на kiota.ch
+    preferred: true
+    type: source-code
+    url: https://kiota.ch/projectfile/specification
+  - label:
+      en: Issues on Codeberg
+      es: Incidencias en Codeberg
+      uk: Issues на Codeberg
+    tags:
+      - support
+    type: bugs
+    url: https://codeberg.org/projectfile/specification/issues
+  - label:
+      en: Issues on GitHub
+      es: Incidencias en GitHub
+      uk: Issues на GitHub
+    tags:
+      - support
+    type: bugs
+    url: https://github.com/damian-buho/projectfile-specification/issues
+org:
+  projectfile:
+    ci:
+      nodes:
+        source-passes-lint:
+          needs:
+            shellcheck: false
+    status: maintained
+repositories:
+  - role: mirror
+    type: git
+    url: ssh://git@codeberg.org/projectfile/specification.git
+  - role: mirror
+    type: git
+    url: git@github.com:damian-buho/projectfile-specification.git
+  - role: origin
+    type: git
+    url: ssh://git@kiota.ch/projectfile/specification.git
+technologies:
+  - docs

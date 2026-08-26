@@ -1,0 +1,37 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A matrix fans a CELL node out across the cartesian product of its axes: the
+  cell's tools run once per cell, while a SOURCE tool upstream of the cell runs
+  once total. No JOIN here — the publish is itself per-cell (the cell node is the
+  goal/sink), so nothing fans back in.
+
+input:
+  matrix:
+    axes:
+      VERSION: ["1", "2", "3"]   # 3 cells (single axis)
+  nodes:
+    code-checked:                # SOURCE — upstream of the cell, runs once
+      needs:
+        lint: true
+    image-published:             # CELL — once per VERSION
+      goal: true
+      matrix: true
+      needs:
+        code-checked: true       # node dep — source before every cell
+        build: true
+        push: true
+
+expect:
+  runs: [lint, build, push]      # distinct set
+  counts:
+    lint: 1                      # SOURCE — once total
+    build: 3                     # CELL — once per cell (|VERSION| = 3)
+    push: 3
+  before:
+    - [lint, build]              # the source check precedes the cells
+    - [lint, push]

@@ -1,0 +1,15 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture — the bare VALUE of an org.projectfile.events subtree.
+# Validated against ../../schema/org.projectfile.events.v1.json (MUST pass).
+# Phase 1: the webhook sink pointed at a forge variable by an explicit runtime-
+# env binding ({ env: NAME }). An empty object ({}) also validates and opts the
+# project in with the default EVENTS_WEBHOOK_URL variable.
+
+webhook:
+  url:
+    env: EVENTS_WEBHOOK_URL

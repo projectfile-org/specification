@@ -1,0 +1,17 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — top-level key `Identity` is uppercase. Top-level keys MUST match
+# `^[a-z][a-z0-9-]*$` (Section 3.6).
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: uppercase-key
+
+Identity:
+  also: wrong

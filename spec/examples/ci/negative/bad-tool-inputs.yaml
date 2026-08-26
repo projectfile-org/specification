@@ -1,0 +1,20 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — the `inputs` CHANGE predicate given as a scalar
+# string instead of the required array of path globs. The manifest field is
+# typed `array` (items: path-glob strings), so a bare scalar MUST be rejected by
+# spec/schema/org.projectfile.ci.v1.json. This is the common authoring slip
+# `inputs: "**/*.sh"` where `inputs: ["**/*.sh"]` was meant.
+
+nodes:
+  code-is-valid:
+    needs:
+      shellcheck: true
+tools:
+  shellcheck:
+    image: D9T_MISC_TOOLS_IMAGE
+    inputs: "**/*.sh"   # <- must be an array of globs, not a scalar: rejected

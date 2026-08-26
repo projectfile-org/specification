@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/schema/org.projectfile.artifacts.v1.json",
+  "title": "org.projectfile.artifacts extension (v1)",
+  "description": "Standalone contract for the value at the org.projectfile.artifacts subtree — a map of NAMED artifacts a project PRODUCES: the container images it publishes, the packages it ships to a registry, the executables it installs, the services it exposes, the sites it deploys. One neutral home for the question \"what does this project give me\", answering both a CI tool that needs pointing at an output and a documentation generator that needs to say how to install and call it. Retires the stringly-typed space-separated `M6E_ARTIFACTS` list (which could not say WHICH artifact a given tool wanted) with named keys, so a binary analyzer (gsa) references one artifact and a site auditor (lighthouse) another. Each entry carries a `kind` plus the address fields that kind is addressed by. Referenced from a string anywhere in the document via the §3.8 interpolation sigil: by name for one artifact (`${org.projectfile.artifacts.<name>.path}`), or by the map selector for every artifact of a kind (`${org.projectfile.artifacts{kind=image}.ref}`), which fans a repeating output out to one entry per match.",
+
+  "type": "object",
+  "additionalProperties": { "$ref": "#/$defs/artifact" },
+  "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+
+  "$defs": {
+    "localizedString": {
+      "description": "BCP 47 language-tagged string map. As a shorthand, a bare string is permitted and treated as { und: <string> } (§7). Inlined rather than referenced across documents so this standalone schema validates with no network fetch, like every other per-namespace schema here — keep it in step with v1.json's own $defs.localizedString.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^([a-zA-Z]{2,3}|und)(-[a-zA-Z0-9]+)*$": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One thing the project ships. `kind` says what sort of thing it is; the address fields say where to find it. At least one address field (or `ports`) MUST be present — an artifact nothing can be pointed at is meaningless. Which field carries meaning follows from the kind, and the split is deliberate: a consumer pointed at the wrong field resolves nothing rather than a plausible-looking wrong value.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "What sort of thing this is. The vocabulary is OPEN — a consumer MUST NOT reject a document for an unknown kind — and it MUST NOT change how any lowering (a CI workflow, a build) is generated: for that purpose `kind` is advisory, exactly like a tool's `tags`. It IS load-bearing for documentation and for the `{kind=…}` selector, neither of which is a lowering. Registered kinds and the field each is addressed by: `image` → ref; `binary` → command, path; `package` → registry, name; `module` → module; `service` → ports; `website` → url; `archive` → path. Absent => the artifact is unclassified and no kind selector matches it."
+        },
+        "summary": {
+          "$ref": "#/$defs/localizedString",
+          "description": "One line describing this artifact, for a generator listing what the project provides. Localizable — the sentence is prose, unlike the addresses around it."
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path (relative to the project root) of an on-disk output — a built binary a scanner analyzes in place, a release archive. Referenced as `${org.projectfile.artifacts.<name>.path}`."
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A reachable address — what a page auditor (lighthouse / linkinator) fetches. Unlike a webhook secret (named by `${VAR}`), this is a public address committed in the document."
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A container-image pull reference, registry host included (`kiota.ch/b19/ubuntu/noble:latest`) — what `docker pull` and a Dockerfile `FROM` take. A project publishing one image per matrix cell writes ONE artifact whose ref resolves to several values (via a `{…}` matrix placeholder or a `[]` reference to the axis list), rather than one artifact per cell."
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The executable name this artifact installs as — what a user types. Frequently NOT the project's own name (a project named `bridge` may ship `pf-bridge`), which is why it cannot be inferred and MUST be declared for a generator to document how to invoke the thing."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The name this artifact is published under in its registry, which is not always the project's name — a scoped npm package (`@scope/thing`), a distribution renamed for PyPI. Distinct from the artifact's own map key, which is its identity WITHIN the document."
+        },
+        "registry": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Which package index `name` is published to: `npm`, `pypi`, `crates`, `maven`, `nuget`, `oci`, … Open vocabulary. It is what lets one selector distinguish two packages of the same kind — `{kind=package,registry=npm}` — so a project publishing to several indexes documents each install command separately."
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1,
+          "description": "An importable / installable module path, in whatever form the language's toolchain takes (`kiota.ch/projectfile/core/v2` for Go). Kept separate from `name` because a module path is a resolvable location while a package name is a registry lookup key."
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The version this artifact is published at, when the document pins one. Usually ABSENT: a released version belongs to the release, not to the source document, and a stale value here is worse than none."
+        },
+        "ports": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The ports a service artifact listens on once it is running. This is the answer to \"what do I connect to\", which no generic description of a service could supply.",
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535,
+                "description": "A bare port number — the whole declaration for a single-port service."
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["port"],
+                "description": "A named port, for a service exposing more than one.",
+                "properties": {
+                  "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "What this port is for (`api`, `metrics`), so a reader can tell several apart."
+                  },
+                  "protocol": {
+                    "type": "string",
+                    "enum": ["tcp", "udp", "sctp"],
+                    "description": "Transport protocol. Absent means unspecified rather than tcp — a consumer that needs a default picks its own."
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "anyOf": [
+        { "required": ["path"] },
+        { "required": ["url"] },
+        { "required": ["ref"] },
+        { "required": ["command"] },
+        { "required": ["name"] },
+        { "required": ["module"] },
+        { "required": ["ports"] }
+      ]
+    }
+  }
+}

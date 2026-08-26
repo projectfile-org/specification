@@ -1,0 +1,20 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.code-of-conduct extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Enforcement contacts go in the top-level people array using roles: [community].
+# Navigational URLs go in top-level links[]:
+#   - { type: enforcement,       url: "https://..." }
+#   - { type: conduct-full-text, url: "https://..." }
+
+org:
+  projectfile:
+    code-of-conduct:
+      covenant: contributor-covenant-2.1  # REQUIRED  contributor-covenant-2.1 | citizen-code-of-conduct | custom
+      scope: project-and-spaces  # OPTIONAL  project | project-and-spaces

@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Scalar `needs` shorthand: `needs: <target>` is exactly the one-entry sequence
+  `[<target>]`. A scalar that names a tool runs that tool; a scalar that names a
+  node is an ordering edge. Regression guard — both lowerings once silently
+  dropped the scalar form, severing its subtree from the goal closure.
+
+input:
+  nodes:
+    source-is-valid:
+      needs: shellcheck            # scalar -> tool leaf (the work that runs)
+    released:
+      goal: true
+      needs:
+        source-is-valid: true      # node edge — ordering
+        package: true              # tool gated behind source-is-valid
+
+expect:
+  runs: [shellcheck, package]
+  before:
+    - [shellcheck, package]        # package waits on the scalar-gated frontier

@@ -1,0 +1,62 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.ignores extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  projectfile:
+    ignores:
+      # NOTE: vulnerability IDs (CVE/GHSA) are NOT handled by this namespace.
+      # They are tool-agnostic and live in [org.projectfile.vulnerabilities],
+      # which fans the same list out to every scanner ignore file
+      # (.trivyignore, .grype.yaml, osv-scanner.toml). See
+      # shapes/org.projectfile.vulnerabilities.yaml.
+      #
+      # Ignore-file targets to generate. Values: git | docker | npm | claude |
+      # container | yamllint | textlint | fd. An absent list means every target
+      # generates; a present list is authoritative and only its entries do.
+      generate: [git, docker]
+      # Patterns appended verbatim to every generated ignore file. A target’s
+      # own `exclude` reaches these too, so one file can opt out of a pattern
+      # that belongs everywhere else.
+      extra: [".env", ".secrets/", "*.local"]
+
+      # Per-target overrides. One sub-table per generated ignore file; each
+      # accepts OPTIONAL include (patterns to emit) and exclude (patterns to
+      # drop). A bare list is shorthand for include-only — but do not mix the
+      # two forms across documents that merge, since deep-merge unions two
+      # lists and two mappings while a list meeting a mapping replaces it.
+      #
+      # `exclude` is the only way to LOSE a pattern: `includes` deep-merge
+      # unions lists (§4.9a), so a pattern an included fragment declared cannot
+      # otherwise be dropped downstream. It is not a re-include — a `!pattern`
+      # entry belongs in `include`, and consumers MUST emit such entries after
+      # the patterns they answer, since these formats resolve last-match-wins.
+      git:
+        include: ["dist/", "*.log"]  # OPTIONAL  patterns emitted into .gitignore
+        exclude: ["vendor/"]  # OPTIONAL  patterns to drop, however they arrived
+      docker:
+        include: [".git/", "*.md"]
+        exclude: []
+      npm:
+        include: ["*.tgz"]  # OPTIONAL  patterns emitted into .npmignore
+        exclude: []  # OPTIONAL  patterns to drop, however they arrived
+      # The prose pair. A textlint runner that discovers files with `fd` passes
+      # them on as explicit arguments, which .textlintignore does not filter —
+      # so .fdignore is the load-bearing half and the two should agree.
+      textlint:
+        include: ["LICENSES/"]
+      fd:
+        include: ["LICENSES/"]
+      # yamllint reads its excludes from this same sub-table but renders them
+      # as an `ignore:` block inside .yamllint (not a flat pattern file). The
+      # fleet rule block is mirrored from the d9t python-tools image default;
+      # yamllint's `extends:` REPLACES `ignore:`, so every pattern (including
+      # vendor/node_modules) must be re-emitted in the generated config.
+      yamllint:
+        include: [".forgejo/", ".github/"]  # OPTIONAL  paths excluded from yamllint

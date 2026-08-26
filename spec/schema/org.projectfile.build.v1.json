@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/schema/org.projectfile.build.v1.json",
+  "title": "org.projectfile.build extension (v1)",
+  "description": "Standalone contract for the value at the org.projectfile.build subtree of a projectfile document — the registry hosts and BUILD ARGUMENTS a project's container build depends on, declared ONCE and lowered to BOTH the local make plane (m6e) and a forge CI plane (the ci-resolver). It carries only what `docker build` consumes: registry-host building blocks (also used at `docker login`/push) and a FLAT map of build-args, where a `FROM` image ref is just one such arg with its registry + tag interpolated in place (`${B19_DOCKER_REGISTRY}/b19/ubuntu/${B19_UBUNTU_SERIES}:${M6E_BASE_IMAGE_DEFAULT_VERSION}`). Images a TOOL RUNS IN (e.g. the container `go vet` executes inside) are NOT a build concern — they live under `org.projectfile.ci.images`, referenced by `org.projectfile.ci.tools.<t>.image`. Every key is a VARIABLE NAME and every value is an expression over OTHER such variables (`${NAME}`); no key names a registry host, a forge, or a CI engine — a generator substitutes its own spelling (m6e `$(NAME)` + `export NAME ?= …`; GitHub/Forgejo `${{ vars.NAME }}`).",
+
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "registries": {
+      "type": "object",
+      "description": "Registry-host building blocks every image var composes against — a map of VAR NAME -> default value. The default SHOULD be a LOUD unresolvable sentinel (`registry.invalid`) so a misconfigured workspace fails VISIBLY rather than silently pulling a wrong image; the real value comes from the environment / forge `vars.<NAME>`, the single source of truth shared across planes. Each namespace declares its own (a b19 fragment declares B19_DOCKER_REGISTRY).",
+      "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+      "additionalProperties": { "type": "string" }
+    },
+    "args": {
+      "type": "object",
+      "description": "Build arguments delivered into the container build — a map of NAME -> a value rule. A bare scalar (string, number, or boolean) is shorthand for {default: value}, coerced to its literal string form so `B19_GCC_SERIES: 16` and `B19_GCC_SERIES: \"16\"` lower identically. The object form is needed only for `file:` (a build-time path read) or when the explicit `default:` key improves readability.",
+      "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/arg" }
+    },
+    "env": {
+      "type": "array",
+      "description": "Process environment variable NAMES forwarded into the build and the tool runs when set — names only, never values (no secrets). The build-time analogue of a tool manifest's `env:`; the canonical case is a private package proxy a module-resolving build step honours (GOPROXY). Lowered as a forward-if-set `--build-arg` (m6e) / step `env` (forge).",
+      "items": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+      "uniqueItems": true
+    },
+    "mounts": {
+      "type": "array",
+      "description": "Build-time bind/cache mounts the container build backend binds while building the image — a list of {from, to}. The same unified mount model a tool manifest's `mounts` uses, applied to the BUILD step: package-manager caches and regenerable volumes a buildah/buildx backend mounts into the build context (so a cache must NOT be baked into the immutable image, 12-factor). `to` is the absolute container mountpoint; `from` discriminates the lowering: a bare NAME (no `/`) is a regenerable managed volume (m6e binds $(XDG_CACHE_HOME)/<from>); a real PATH (~/…, ./…, /…) is a host bind bound verbatim (m6e-only — a forge build on an ephemeral runner has no such host path and ignores it). Absent => no build mounts (the common case).",
+      "items": { "$ref": "#/$defs/mount" }
+    }
+  },
+
+  "$defs": {
+    "arg": {
+      "description": "A build-argument value rule. Either a bare scalar (string, number, or boolean — shorthand for {default: value}, coerced to its literal string so an author need not quote `16`) or an object with exactly one of `default` or `file`. `default` is a literal scalar value always forwarded (coerced to its literal string form), or the empty string (NO default — forwarded only when the variable is set in the environment, so an undefined var never clobbers a working Dockerfile default with an empty string). `file` names a path whose CONTENT becomes the arg value at build time (a runtime read-step, for a per-cell digest pin); the path MAY embed `{<axis>}` matrix placeholders substituted per cell. A composition-only tag belongs in `versions`, not here — args are forwarded as build arguments, version vars are not.",
+      "oneOf": [
+        {
+          "type": ["string", "number", "boolean"],
+          "description": "Shorthand for {default: value}: a scalar coerced to its literal string form (a string verbatim; a number as written, so `16`→\"16\"; a boolean as \"true\"/\"false\"), or \"\" for forward-if-set."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "default": {
+              "type": ["string", "number", "boolean"],
+              "description": "Literal scalar value coerced to its literal string form (a string verbatim; a number as written; a boolean as \"true\"/\"false\"), or \"\" for forward-if-set."
+            },
+            "file": {
+              "type": "string",
+              "description": "Path whose content is the arg value at build time; MAY embed `{<axis>}` matrix placeholders."
+            }
+          },
+          "oneOf": [
+            { "required": ["default"] },
+            { "required": ["file"] }
+          ]
+        }
+      ]
+    },
+    "mount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to"],
+      "description": "One build-time mount: a source (`from`) bound at an absolute container mountpoint (`to`). The same {from, to} model a tool manifest's `mounts` entries use.",
+      "properties": {
+        "from": { "type": "string", "minLength": 1, "description": "The mount source: a bare NAME (a managed volume/cache, bound under $(XDG_CACHE_HOME) on m6e) or a real host PATH (~/…, ./…, /…; bound verbatim, m6e-only)." },
+        "to": { "type": "string", "pattern": "^/.*", "description": "The absolute CONTAINER mountpoint the source is bound at." }
+      }
+    }
+  }
+}

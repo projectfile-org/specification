@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.support extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Community support URLs (docs, forum, chat, bugs) live in top-level links[].
+# Navigational URLs go in top-level links[]:
+#   - { type: paid-support, url: "https://...", label: "Enterprise Support" }
+#   - { type: status-page,  url: "https://..." }
+
+org:
+  projectfile:
+    support:
+      response-time: best-effort  # OPTIONAL  best-effort | 24h | 48h | 72h | 1-week
+
+      # End-of-life dates per version series
+      eol:
+        - version: "4.x"  # REQUIRED  version label shown in SUPPORT.md
+          date: "2025-12-31"  # REQUIRED  ISO-8601 date
+        - version: "3.x"
+          date: "2024-06-30"

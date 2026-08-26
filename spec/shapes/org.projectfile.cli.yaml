@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.cli extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# This namespace carries the derive toggles the CLI uses to control its
+# inference passes. Derived-link attribution moved to the links themselves:
+# each link the CLI auto-populates carries derived: true directly on the
+# link entry rather than as a path list in this extension.
+#
+# Note: includes[] was moved to the root-level `includes` reserved field
+# (spec §4.10a) and is no longer carried in this namespace.
+
+org:
+  projectfile:
+    cli:
+
+      # Per-source toggles for the derivation layer. All default to true.
+      derive:
+        forges: true      # GitHub/GitLab/Codeberg/sourcehut → bugs URL
+        registries: true  # npmjs.com / pypi.org / packagist.org / crates.io → links[]

@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — `max-parallel` on a NON-matrix node. The cap throttles
+# a matrix product's cells, so it is meaningless on a node that never fans out
+# (no `matrix`, or `matrix: false`). The node's if/then conditional in spec/schema/
+# org.projectfile.ci.v1.json requires a cell form (`matrix: true` or `{axes: {...}}`)
+# whenever `max-parallel` is present, so this MUST fail — the mistake surfaces at
+# authoring against the exact node rather than as dead config the resolver drops.
+
+nodes:
+  published:
+    goal: true
+    max-parallel: 1     # <- no matrix on this node: rejected
+    needs:
+      publish: true

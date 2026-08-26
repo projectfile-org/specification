@@ -1,0 +1,24 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a matrix.exclude entry whose field value is a LIST.
+# An entry is a PARTIAL CELL, so each field binds ONE axis value (the cells
+# carrying it are dropped); dropping several values takes several entries. The
+# list spelling reads as "exclude these values", which no cell can match, so
+# spec/schema/org.projectfile.ci.v1.json MUST reject it.
+
+matrix:
+  axes:
+    GOOS: [linux, darwin]
+    GOARCH: [amd64, arm64, riscv64]
+  exclude:
+    - GOOS: darwin
+      GOARCH: [riscv64, arm64] # <- list: a field binds one value: rejected
+nodes:
+  binaries-built:
+    matrix: true
+    needs:
+      build-binaries: true

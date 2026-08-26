@@ -1,0 +1,173 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Completeness fixture — every reserved field populated (YAML).
+# Used as a regression guard when the schema or spec changes.
+
+$schema: https://projectfile.org/schema/v1.json
+kind: SoftwareApplication
+
+identity:
+  namespace: com.acme
+  name: snuggly-sunbeam
+  version: "1.4.0"
+  title:
+    en: "Snuggly Sunbeam"
+    es: "Rayo de Sol Acogedor"
+    uk: "Затишний Сонячний Промінь"
+  summary:
+    en: "A lightweight library for rendering warm greetings."
+    es: "Una librería ligera para renderizar saludos cálidos."
+  description:
+    en: |
+      Snuggly Sunbeam renders friendly, locale-aware greetings with zero runtime
+      dependencies. Suitable for chat bots, onboarding flows, and CLI tools.
+  created: "2026-04-22"
+  released: "2026-05-04"
+  modified: "2026-05-06"
+
+repositories:
+  - url: "git@github.com:acme/snuggly-sunbeam.git"
+    type: git
+    branch: main
+    issues: true
+    role: origin
+  - url: https://codeberg.org/acme/snuggly-sunbeam.git
+    type: git
+    role: mirror
+
+links:
+  - type: homepage
+    url: https://snuggly-sunbeam.dev
+  - type: source-code
+    url: https://github.com/acme/snuggly-sunbeam
+  - type: source-code
+    url: https://codeberg.org/acme/snuggly-sunbeam
+  - type: bugs
+    url: https://github.com/acme/snuggly-sunbeam/issues
+  - type: documentation
+    url: https://snuggly-sunbeam.dev/docs
+  - type: changelog
+    url: https://snuggly-sunbeam.dev/changelog
+  - type: chat
+    url: https://matrix.to/#/#snuggly-sunbeam:matrix.org
+  - type: forum
+    url: https://discuss.snuggly-sunbeam.dev
+  - type: donation
+    url: https://snuggly-sunbeam.dev/donate
+  - type: translate
+    url: https://hosted.weblate.org/projects/snuggly-sunbeam/
+  - type: contact
+    url: mailto:hello@projectfile.org
+  - type: security-policy
+    url: https://github.com/acme/snuggly-sunbeam/security/policy
+  - type: package-registry
+    url: https://www.npmjs.com/package/@acme/snuggly-sunbeam
+
+license:
+  spdx: "Apache-2.0 OR MIT"
+  file:
+    - LICENSES/Apache-2.0.txt
+    - LICENSES/MIT.txt
+
+copyright:
+  year: 2026
+
+people:
+  - family-names: Example
+    given-names: Alice
+    pronouns: she/her
+    email: alice@example.com
+    url: https://alice.example
+    roles: [founder, maintainer, copyright]
+    orcid: "0000-0002-1825-0097"
+    affiliation: "Projectfile Research Lab"
+    from: "2024-09-12"
+  - family-names: Beethoven
+    given-names: Ludwig
+    name-particle: van
+    email: ludwig@example.com
+    roles: [author]
+  - family-names: King
+    given-names: "Martin Luther"
+    name-suffix: "Jr."
+    email: mlk@example.com
+    roles: [contributor]
+    from: "2025-01-15"
+    to: "2025-06-30"
+  - family-names: Bartók
+    given-names: Béla
+    display-name: "Bartók Béla"
+    email: bela@example.hu
+    roles: [contributor]
+
+organizations:
+  - name: "Projectfile Research Lab"
+    email: lab@example.com
+    url: https://lab.example
+    roles: [funder]
+
+keywords:
+  - greetings
+  - i18n
+  - lightweight
+  - localization
+  - topic:internationalization
+  - audience:developer
+  - status:stable
+
+technologies:
+  - typescript
+  - node
+  - react
+  - postgres
+  - docker
+
+requirements:
+  browsers:
+    production: ["> 0.5%", "last 2 versions", "not dead"]
+    development: ["last 1 chrome version", "last 1 firefox version"]
+  runtime:
+    node: ">=24"
+    python: ">=3.12"
+
+org:
+  projectfile:
+    operating-system: [linux, darwin, windows]
+    architecture: [amd64, arm64]
+    funding:
+      github: ["acme"]
+      open-collective: snuggly-sunbeam
+    health:
+      endpoints:
+        - path: /health
+          port: 8080
+          protocol: http
+          kind: liveness
+        - path: /ready
+          port: 8080
+          protocol: http
+          kind: readiness
+
+com:
+  example:
+    build:
+      type: standard
+      image: "ubuntu:24.04"
+      stages:
+        - name: base
+          user: root
+        - name: user
+    ci:
+      runner: linux-amd64
+      cache: true
+      parallelism: 4
+
+io:
+  github:
+    alice:
+      notes:
+        todo: "port to deno"

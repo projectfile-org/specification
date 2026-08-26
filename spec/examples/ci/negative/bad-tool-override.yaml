@@ -1,0 +1,14 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a needs entry carrying an unknown key in its object
+# value. The needsEntry object branch is additionalProperties:false, so `level`
+# MUST be rejected by spec/schema/org.projectfile.ci.v1.json.
+
+nodes:
+  code-is-valid:
+    needs:
+      eslint: {level: 5}   # <- not `args`: rejected

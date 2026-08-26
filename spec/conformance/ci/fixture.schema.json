@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/conformance/ci/fixture.schema.json",
+  "title": "org.projectfile.ci conformance fixture (v1)",
+  "description": "Structure of one behavioural conformance vector for the org.projectfile.ci CI-DAG extension. A vector is an INPUT (a CI subtree, optionally composed from an ordered `includes` chain per spec §4.9a) plus the vendor-NEUTRAL behaviour every conforming consumer must produce when it resolves and runs the graph. This meta-schema validates the vector FILES; the `input` (and each `includes` entry) MUST additionally satisfy schema/org.projectfile.ci.v1.json. A consumer (m6e->make, t4n->Tekton, GitHub/Forgejo->workflow) PASSES a vector iff: in accept mode the set of tools it executes for the goals equals `runs`, every `before` ordering holds, every `args` mapping is delivered, and every `counts` multiplicity (the per-cell fan-out a `matrix` produces) matches; in reject mode it refuses to build the graph for the stated reason.",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["description", "input", "expect"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "One-line human statement of the behaviour this vector pins."
+    },
+    "includes": {
+      "type": "array",
+      "description": "OPTIONAL ordered include chain. Each entry is a CI subtree; they are deep-merged in order, then `input` is merged on top (base/local wins) per spec §4.9a. Inlined here so the suite is hermetic — no network, deterministic.",
+      "items": { "type": "object" }
+    },
+    "input": {
+      "type": "object",
+      "description": "The base document's org.projectfile.ci subtree (the value at org.projectfile.ci). MUST also validate against schema/org.projectfile.ci.v1.json — except that the semantic defect exercised in reject mode (a `needs` cycle) is STRUCTURALLY valid and therefore passes that schema; it is caught only by a resolver."
+    },
+    "expect": {
+      "type": "object",
+      "description": "The required outcome. Accept mode carries `runs` (and optionally `before`/`args`); reject mode carries `reject`. The two are mutually exclusive.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": ["runs"],
+          "properties": {
+            "runs": {
+              "type": "array",
+              "description": "EXACT set of tool names that execute for the resolved goals (closed world: any tool not listed MUST NOT run). Goals are the nodes flagged `goal: true`, or — when none is flagged — every graph sink. With a `matrix` this is the DISTINCT set; per-cell multiplicity is asserted by `counts`.",
+              "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$" },
+              "uniqueItems": true
+            },
+            "counts": {
+              "type": "object",
+              "description": "OPTIONAL per-tool execution multiplicity (default 1 each when omitted). A matrix CELL tool runs once per cell of the `matrix.axes` cartesian product MINUS every cell a `matrix.exclude` entry matches (count = surviving-product cardinality); a SOURCE tool runs once before the cells; a JOIN tool once after every cell. Lets a vector assert the fan-out/fan-in a matrix produces without naming individual cells.",
+              "propertyNames": { "pattern": "^[a-z0-9][a-z0-9.-]*$" },
+              "additionalProperties": { "type": "integer", "minimum": 0 }
+            },
+            "before": {
+              "type": "array",
+              "description": "Ordering constraints over executed tools: each [X, Y] means tool X completes strictly before tool Y starts. The observable guarantee; the lowering (make order-only prerequisite, Tekton runAfter, workflow needs) is the consumer's business.",
+              "items": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$" },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "args": {
+              "type": "object",
+              "description": "Required arg string delivered to a tool's invocation (the {args: \"…\"} override branch). A consumer's own CLI override may still win at runtime; this asserts the resolved default.",
+              "propertyNames": { "pattern": "^[a-z0-9][a-z0-9.-]*$" },
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["reject"],
+          "properties": {
+            "reject": {
+              "description": "The semantic defect a resolver MUST refuse (not catchable by JSON Schema). `cycle`: needs edges between nodes form a loop.",
+              "enum": ["cycle"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

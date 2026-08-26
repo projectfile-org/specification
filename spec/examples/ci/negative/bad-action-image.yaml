@@ -1,0 +1,20 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — an `action` manifest that also pins an `image`. An
+# action tool lowers to a per-target ci-actions ref (build-push-action, a buildah
+# Task, a make target), which supplies the container itself; pinning a fixed
+# `image` here is meaningless and contradictory, so the manifest's
+# `dependentSchemas.action` (`image: false`) MUST reject it.
+
+nodes:
+  image-is-built:
+    needs:
+      container-build: true
+tools:
+  container-build:
+    action: container-build
+    image: D9T_GO_TOOLS_IMAGE   # <- an action supplies its own builder: rejected

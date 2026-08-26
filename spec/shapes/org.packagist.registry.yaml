@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.packagist.registry extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  packagist:
+    registry:
+      minimum-stability: stable  # OPTIONAL  stable | RC | beta | alpha | dev
+      prefer-stable: true  # OPTIONAL  prefer stable over dev builds
+
+      repositories:
+        - type: composer  # REQUIRED  composer | vcs | path | artifact
+          url: "https://repo.example.com"  # REQUIRED for composer and vcs types
+          name: acme  # OPTIONAL  human label
+        - type: vcs
+          url: "git@github.com:org/private-lib.git"

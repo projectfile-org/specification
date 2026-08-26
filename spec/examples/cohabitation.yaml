@@ -1,0 +1,42 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture (YAML) — peaceful cohabitation (Section 3.7).
+#
+# This document contains:
+#   - an unknown reserved key (`vendor-policy:`) — a single-segment lowercase key
+#     not defined in this version of the spec
+#   - an unknown extension namespace (`com.never-heard-of.this` as nested map)
+#   - a technology tag outside the recommended vocabulary (`my-internal-runtime`)
+#   - a bare string for `identity.title` (shorthand for `{ und: "..." }`)
+#
+# All four MUST be accepted by a v1 validator; their values MUST be preserved
+# on round-trip. This is the contract that lets independently developed tools
+# share the same file.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: cohabitation
+  title: "Cohabitation Demo"
+
+technologies:
+  - python
+  - my-internal-runtime
+
+vendor-policy:
+  rotate-secrets-every-days: 30
+  notes: "imagined future reserved field; current consumers ignore + preserve"
+
+com:
+  never-heard-of:
+    this:
+      whatever: "we want"
+      deeply:
+        nested:
+          - 1
+          - 2

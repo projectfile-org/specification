@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci, validated directly
+# against spec/schema/org.projectfile.ci.v1.json. Demonstrates `matrix.exclude`:
+# cells SUBTRACTED from the axes product.
+#
+# The axes are a full grid, and a full grid of platforms is not buildable: the Go
+# toolchain has no `darwin/riscv64` and no `windows/riscv64` target, so 9 cells
+# describe 7 real binaries. `exclude` removes the two impossible corners, keeping
+# ONE node per artifact class — the alternative (a second node for the riscv64
+# build) is refused by the model, because a tool belongs to exactly one node.
+#
+# Each entry is a PARTIAL cell: every cell carrying all of its axis KEY=value
+# pairs is dropped. An entry keyed on a non-axis field, an entry matching no cell
+# (a typo'd value), or a set of entries emptying the product is invalid — the same
+# loud-failure rule `overrides` follows, for the same reason: silence here costs a
+# debug cycle before anyone suspects the matrix.
+#
+# The two cell nodes fan over the SAME product because the artifact hand-off is
+# keyed by the cell: `binaries-released` downloads what `binaries-built` uploaded,
+# so a release cell whose build twin is excluded would download an artifact nobody
+# produced. Exclusions are declared once, on the global matrix both nodes share.
+
+matrix:
+  axes:
+    GOOS: [linux, darwin, windows]
+    GOARCH: [amd64, arm64, riscv64]
+  exclude:
+    - GOOS: darwin
+      GOARCH: riscv64 # no darwin/riscv64 target in the Go toolchain
+    - GOOS: windows
+      GOARCH: riscv64 # nor windows/riscv64
+nodes:
+  source-is-valid: # SOURCE — once, before any cell
+    needs:
+      golangci-lint: true
+  binaries-built: # CELL — once per surviving cell (7, not 9)
+    matrix: true
+    needs:
+      source-is-valid: true
+      build-binaries: true
+  binaries-released: # CELL — the release twin, cell for cell
+    goal: true
+    matrix: true
+    when:
+      events: [tag]
+    needs:
+      binaries-built: true
+      forgejo-release: true

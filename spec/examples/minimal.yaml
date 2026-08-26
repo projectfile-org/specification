@@ -1,0 +1,18 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Minimal valid projectfile document (YAML).
+# $schema + identity.namespace + identity.name + license.spdx are the
+# smallest useful subset. license is technically OPTIONAL but recommended.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: minimal
+
+license:
+  spdx: MIT

@@ -1,0 +1,16 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture — MUST FAIL against ../../../schema/org.projectfile.artifacts.v1.json.
+# An artifact with a `kind` but NO address field at all is meaningless: nothing
+# can be pointed at it, and no generator can say where to get it. The schema's
+# anyOf over the address fields (path / url / ref / command / name / module /
+# ports) rejects it, so a typo'd or forgotten address fails loudly at authoring
+# time rather than surfacing later as an output silently dropped for carrying an
+# unresolved ${…}.
+
+orphan:
+  kind: binary

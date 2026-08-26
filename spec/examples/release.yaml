@@ -1,0 +1,45 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture (YAML) — a projectfile carrying release conventions
+# (org.projectfile.release): the tag format, changelog style, and the
+# branch-to-channel map. The namespace is engine-agnostic — semantic-release,
+# release-please, and similar automation each lower it their own way (e.g.
+# pf-cli derives a `.releaserc.yaml` from it). The subtree is opaque to v1.json
+# (§3.7), so this MUST validate against the main schema.
+#
+# org.projectfile.forge.kinds declares the forge running on a bare self-hosted
+# host (no `gitea.` / `forgejo.` prefix to guess from); a release lowering uses
+# it to pick the forge-specific plugin without hardcoding the host.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: widget
+
+license:
+  spdx: MIT
+
+technologies: [docker]
+
+repositories:
+  - url: https://forge.example.com/example/widget
+
+org:
+  projectfile:
+    forge:
+      kinds:
+        forge.example.com: forgejo
+    release:
+      tag-format: v${version}
+      changelog: keep-a-changelog
+      branches:
+        - pattern: main
+          channel: latest
+        - pattern: next
+          channel: next
+          prerelease: true

@@ -1,0 +1,38 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.fragments extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# pf-bridge-fragments assembles Markdown documents from docs/<name>.d/*.md
+# fragment directories with recursive parent inheritance. Resolution order:
+#
+#   1. Explicit override — org.projectfile.fragments.documents (below) is
+#      used VERBATIM when present. This is the escape hatch for non-default
+#      behaviour: a different document set, a per-document title, or disabling
+#      the conventions defaults. It does NOT merge into conventions defaults.
+#
+#   2. Conventions defaults — org.projectfile.conventions.fragments supplies
+#      the document shells (dir/out/title, normally via a shared include) plus
+#      a flat per-project parents list shared by every shell. This is the
+#      common case: most projects declare only conventions.fragments.parents.
+#
+# Parents are resolved relative to the consuming project's directory, and the
+# inheritance walk matches parents by dir (a child's docs/features.d inherits
+# the parent's docs/features.d fragments). Resolution is recursive and
+# cycle-safe; the parent is read WITH includes resolved so a conventions-driven
+# parent (no inline shells) still contributes its fragments.
+
+org:
+  projectfile:
+    fragments:
+      documents:  # override; when present, conventions defaults are ignored
+        - dir: docs/changelog.d  # REQUIRED  source fragment directory
+          out: CHANGELOG.md       # REQUIRED  assembled artefact path
+          title: Changelog        # REQUIRED  document H1; also the section heading base
+          parents:  # OPTIONAL  per-document inheritance (override path only)
+            - ../other

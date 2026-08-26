@@ -1,0 +1,31 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.release extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# commit-style lives in org.projectfile.conventions — read it from there.
+
+org:
+  projectfile:
+    release:
+      tag-format: "v${version}"  # OPTIONAL  tag name template
+      # The literal text a tag carries before the version — what a version tool
+      # (svu, cocogitto, git-cliff) needs on its own to both MATCH existing tags
+      # and NAME a new one. Default: none, i.e. bare `1.2.3`. Where both are
+      # given they MUST agree: tag-prefix is tag-format up to ${version}.
+      tag-prefix: "v"  # OPTIONAL  literal tag prefix (default: none)
+      changelog: keep-a-changelog  # OPTIONAL  keep-a-changelog | conventional-commits | none
+
+      # Branches that trigger a release and their distribution channel
+      branches:
+        - pattern: main  # REQUIRED  branch name or glob
+          channel: latest  # OPTIONAL  dist-tag / npm channel / GitHub release label
+          prerelease: false  # OPTIONAL  marks channel as a pre-release stream
+        - pattern: next
+          channel: next
+          prerelease: true

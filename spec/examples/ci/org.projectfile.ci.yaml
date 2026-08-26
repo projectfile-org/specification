@@ -1,0 +1,243 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci, validated directly
+# against spec/schema/org.projectfile.ci.v1.json (not v1.json, which treats the
+# subtree as opaque). Demonstrates the DAG model: free-named state nodes, a
+# build expressed as a plain tool, post-build validators ordered via a node-dep
+# entry in the mapping form, an {args} configure, a `false` drop, a mutating
+# node kept out of the goal set (left unflagged), and a pure-join terminal node
+# flagged `goal: true`. Each goal lowers to its OWN workflow file (`published.yml`,
+# `released.yml`, `audited.yml`); a goal's `when` TRIGGER predicate + its own
+# `schedule:`/`dispatch:` define that file's surface — `published` on a tag or the
+# manual button, `released` on a push to main, `audited` on the nightly timer —
+# showing the neutral primitive (the resolver knows only `tag`/`push:<branch>`/
+# `schedule`/`dispatch`) carrying CONSUMER policy; an un-gated node's tools still run
+# on every event the goal's file fires for.
+#
+# `tools:` adds the EXECUTION manifests: the image + entrypoint a generator needs
+# to materialise each leaf as a job. `run` defaults to the bare tool name; a
+# toolset's `auto-<name>` wrapper is stated explicitly (content, not a synthesised
+# prefix). `astro-build` is a host `make` target (no image); `eslint-fix` is
+# `m6e`-only via `gha: false` / `forgejo: false` (CI never commits a reformat —
+# membership is keyed by target name, not a 1:1 mirror).
+# `image` is a VAR NAME from `org.projectfile.ci.images` — an uppercase
+# identifier the generator resolves to a nested CI variable expression
+# (`${{ vars.<NAME> || vars.<PARENT> || '<default-path>' }}`), so the source
+# never embeds a registry host or a forge expression directly.
+
+# OPTIONAL built-image basename: a registry-relative path the generator composes as
+# `<registry>/<image>:<tag>` and stamps into the build artifact so consumers load a
+# TAGGED image. Absent => derived from identity (<last-label(namespace)>/<name>).
+# This whole precedence (explicit-here else identity-derived) has ONE home: the
+# derived read `pf-cli get image.basename`. Every lowering reads it, so a project's
+# cloud-built and m6e-built image refs are always identical.
+image: acme/site
+
+nodes:
+  code-is-valid:
+    description: Static analysis and linters all pass   # advisory note on what reaching this node means
+    needs:
+      shellcheck: true
+      eslint:
+        args: --max-warnings 0
+      stylelint: false
+      go-vet: true                     # compiler-image tool — needs GOPROXY passthrough
+  html-built:
+    needs:
+      astro-build: true
+  html-checked:
+    needs:
+      html-built: true               # node dep — order enforced
+      html-validate:
+        args: "dist/"
+      linkinator: true
+  formatted:
+    needs:
+      eslint-fix: true
+  image-built:                          # an `action` tool — build emits an OCI tar
+    needs:
+      container-build: true
+  image-scanned:                        # scan consumes the build's OCI tar (portable, daemonless)
+    needs:
+      image-built: true                # node dep — scan after the build artifact
+      grype-image: true
+      dockle-image: true               # daemon-using scanner — needs the docker socket
+  binaries-built:                       # plain-`run:` build producing an `artifact:` (not an action)
+    needs:
+      build-binaries: true             # uploads `dist` as a build artifact (see tools.build-binaries)
+  published:
+    goal: true                          # a default CI goal -> published.yml; `formatted` (unflagged) is never reached
+    when:
+      events: [tag, dispatch]           # consumer POLICY: publish on a tag OR the manual dispatch button
+    dispatch:                           # THIS goal's manual-run button (workflow_dispatch)
+      inputs:                           # parametrised build — surfaced as ${{ inputs.X }}
+        environment:
+          type: choice
+          options: [staging, prod]
+          default: staging
+          description: deployment target
+        verbose: {type: boolean, default: false}
+    needs:
+      code-is-valid: true
+      html-checked: true
+      image-scanned: true
+      binaries-built: true             # makes gh-release a CONSUMER of build-binaries' artifact
+      gh-release: true                  # the release leaf — needs GH_TOKEN (bound by gha.credentials)
+      oci-push: true                    # the image-publish leaf — reports what it published (tools.oci-push.emit)
+  released:                             # a second pipeline on a different trigger — same primitive
+    goal: true
+    when:
+      events: [push:main]               # consumer POLICY: cut a release on a push to main (it makes the tag)
+    needs:
+      code-is-valid: true               # an un-gated node's tools still run on every event
+      semantic-release: true
+  audited:                              # a SCHEDULED pipeline -> audited.yml — runs only on the cron timer
+    goal: true
+    when:
+      events: [schedule]                # gated to the timer this goal declares below
+    schedule:                           # THIS goal's cron timer (on: schedule)
+      - cron: "0 3 * * *"               # nightly at 03:00 UTC
+    needs:
+      npm-audit: true
+
+tools:
+  shellcheck:
+    image: D9T_MISC_TOOLS_IMAGE         # VAR NAME from org.projectfile.ci.images
+    inputs: ["**/*.sh", "**/*.bash"]    # CHANGE predicate: skip when no shell file changed since the last green run
+  eslint:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-eslint
+  stylelint:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-stylelint
+  html-validate:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-html-validate
+  linkinator:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-linkinator
+  astro-build:
+    run: make astro-build
+  eslint-fix:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-eslint --fix
+    gha: false
+    forgejo: false
+  container-build:
+    action: container-build
+    args:                                # build-arg NAME -> WHERE its value comes from
+      SOURCE_DOCKER_REGISTRY: {var: SOURCE_DOCKER_REGISTRY}  # runtime CI var (-> ${{ vars.NAME }})
+    mounts:                               # NAME `from` => build-context bind; CI satisfies it empty
+      - from: fetch
+        to: /fetch
+  oci-push:
+    action: oci-push                      # consumes the archive container-build produced, pushes it
+    emit: ci.image.published              # report WHAT shipped — image, tags, digest, cell — not just "the goal passed"
+  compose-up:
+    fuse: live                            # co-locate with container-test in one live-stack job
+    run: docker compose up --detach
+    set-env:                              # authored literal the compose file interpolates (no secrets)
+      COMPOSE_FILE: .compose/pipeline.yaml  # identity (project/container names) is resolver-derived, not authored
+  compose-down:
+    fuse: live                            # same live-stack job, ordered LAST by the graph
+    when: always                          # teardown runs even if the test failed (=> if: always())
+    run: docker compose down --volumes --remove-orphans
+  ssh-audit:
+    image: D9T_PYTHON_TOOLS_IMAGE
+    fuse: live                            # co-located INTO the live-stack job (needs the running stack)
+    network: live                         # + JOIN the stack's net => reach the sshd by service name
+    run: auto-ssh-audit ssh-server 22     # black-box audit of the running sshd (a service on the stack)
+  go-vet:
+    image: D9T_GO_TOOLS_IMAGE
+    run: auto-go-vet
+    env: [GOPROXY]                      # vendor-agnostic env passthrough (proxy in private envs)
+    tags: [lint]
+    # advisory note; surfaced by doc/help generators, ignored by lowering
+    description: Reports suspicious Go constructs
+  grype-image:
+    image: D9T_GO_TOOLS_IMAGE
+    run: auto-grype
+    # NAME `from` => regenerable cache: bound RO (self-hosted) or actions/cache (ephemeral)
+    mounts:
+      - from: grype-db
+        to: /home/ubuntu/.cache/grype/db
+    m6e:
+      prefer-local: true              # m6e-only: prefer the host grype (first word of run) if installed
+  dockle-image:
+    image: D9T_GO_TOOLS_IMAGE
+    run: auto-dockle
+    mounts:                            # real-path `from` => m6e binds the daemon socket; forges ignore it
+      - from: /var/run/docker.sock
+        to: /var/run/docker.sock
+  build-binaries:
+    run: make build-binaries           # cross-compiles into `dist/` on every event (a PR validates it)
+    artifact: dist                     # PRODUCER: `dist` is uploaded per cell; a consumer auto-downloads it
+  gh-release:
+    run: gh release create "$TAG" --generate-notes dist/*   # CONSUMES build-binaries' artifact (derived from needs)
+    env: [GH_TOKEN]                    # NAME only — the secret VALUE lives in gha.credentials
+    forgejo: false                     # gha-native; a Forgejo release uses its own leaf
+  semantic-release:
+    run: npx semantic-release          # the release tool is a b19/cli CHOICE, not a resolver concept
+    env: [GH_TOKEN]
+  npm-audit:
+    image: D9T_JS_TOOLS_IMAGE
+    run: npm audit --audit-level=high  # the nightly dependency scan (gated to `schedule`)
+
+# workflow TRIGGERS live on the GOAL nodes that own them (each goal -> its own file):
+# `published` carries the manual-dispatch button, `audited` carries the cron timer.
+# Neutral INTENT, so they sit in the core subtree, not an overlay. A goal's
+# schedule/dispatch is what adds the event to ITS file's `on:`; a node's
+# `when: {events: [dispatch|schedule]}` only narrows WHICH nodes run on it.
+
+# --- secret PROVISIONING manifest (OPTIONAL) -----------------------------------
+# The dev/CI `.secrets/` tree a compose `secrets:` block mounts, materialised
+# BEFORE dc-up-d by a secrets-provision step BOTH lowerings inject when this map
+# is non-empty. ONE source of truth read by m6e (make) AND the cloud ci-resolver
+# workflow. Two kinds: `value:` writes a literal verbatim; `docker:` runs
+# `docker run <image> <run>` and captures stdout. NEVER real prod secrets (§8):
+# `value:` carries dev defaults or `CHANGEME` placeholders, `docker:` generates a
+# fresh value each run. The recipe library (m6e-secret-*) lives in the misc-tools
+# image, NOT in any resolver — a new secret kind is one image edit, no redeploy.
+# Name dots are the ONLY path separator: `gf.security.admin.password` ->
+# `.secrets/gf/security/admin/password`. Sibling derivation: a `docker:` recipe is
+# given its OWN directory so it can read `../password` (bcrypt), `../username`+
+# `../password` (htpasswd). `image: self` runs the project's OWN built image.
+secrets:
+  gf.security.admin.password:        # bare-string shorthand ≡ {value: <str>}
+    docker: m6e-secret-random         # default misc-tools image; openssl rand -hex 32
+  o9s.mariadb.user: mariadb           # bare-string shorthand ≡ {value: mariadb}
+  o9s.mariadb.database: mariadb
+  o9s.prometheus.password_hash:
+    docker: {run: m6e-secret-bcrypt}   # reads sibling .secrets/o9s/prometheus/password
+  f5m.tor.site-hs-key:
+    docker:
+      image: self                     # run the project's OWN built image (keygen)
+      run: generate-hs-key
+      env: [F5M_TOR_HS_VANITY_PREFIX]  # forward this runner env var into the recipe
+
+# --- per-target DEPLOYMENT overlay --------------------------------------------
+# The runner / credentials / timeout / parallelism the litmus QUARANTINES out of
+# the neutral DAG above, keyed by target name so a different vendor's generator
+# ignores the key it does not own. The `gha:` here is the deployment overlay; the
+# `gha: false` inside a tool above is lowering MEMBERSHIP — same name, different
+# nesting, different role.
+gha:
+  runs-on: ubuntu-latest               # override the adapter default on every job
+  permissions:
+    contents: write                    # a release upload needs write to contents
+  credentials:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # binds gh-release's `env: [GH_TOKEN]`, scoped to that job
+forgejo:
+  timeout-minutes: 30                  # per-job timeout
+  concurrency:
+    group: ci-${{ github.ref }}        # cancel an in-flight run on the same ref
+    cancel-in-progress: true
+  actions:                             # override the helper-action refs (adapter defaults otherwise)
+    checkout: actions/checkout@v7
+    download-artifact: actions/download-artifact@v8   # stay major-paired with the composite's upload
+    upload-artifact: actions/upload-artifact@v7
+    ci-actions: projectfile/ci-actions@v1             # `repo@tag`; split into lib + tag at render

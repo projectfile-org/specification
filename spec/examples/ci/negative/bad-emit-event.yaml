@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a tool `emit` whose value is not a namespaced event name.
+# `emit` names the semantic event a tool reports once it has succeeded, and a consumer
+# ROUTES on that string, so an un-namespaced bare word (`published` here) would collide
+# with the next tool that thinks it owns the word. The pattern in
+# spec/schema/org.projectfile.ci.v1.json requires at least one dot
+# (`ci.image.published`), so this MUST be rejected.
+#
+# The other misuse — `emit` on a tool that publishes nothing — is a SEMANTIC constraint
+# a generator enforces (§3.7: prose constraints are the consuming tool's job), not a
+# structural one, so it has no fixture here.
+
+nodes:
+  published:
+    goal: true
+    needs:
+      oci-push: true
+tools:
+  oci-push:
+    action: oci-push
+    emit: published                        # <- needs a namespace (`ci.image.published`): rejected

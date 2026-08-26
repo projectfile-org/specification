@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a tool `when` (the STEP-ordering predicate) with a value
+# outside its closed enum. A tool's `when` accepts only `always` (run even after an
+# earlier step failed); anything else (`never` here) MUST be rejected by
+# spec/schema/org.projectfile.ci.v1.json. NOTE the distinct sibling negative
+# `bad-when-event.yaml`, which rejects a bad NODE event `when` — same word, a different
+# shape (object of events) on a node, not a scalar enum on a tool.
+
+nodes:
+  container-is-torn-down:
+    needs:
+      compose-down: true
+tools:
+  compose-down:
+    fuse: live
+    when: never                            # <- only `always` is legal here: rejected
+    run: docker compose down --volumes

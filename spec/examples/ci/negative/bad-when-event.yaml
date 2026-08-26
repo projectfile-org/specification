@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a `when.events` token outside the closed trigger
+# vocabulary. A trigger is `tag` or `push:<branch>` (when.events.items pattern);
+# `deploy` is neither, so spec/schema/org.projectfile.ci.v1.json MUST reject it.
+# A typo (or an invented event) must fail loudly, never silently widen or mute a
+# trigger.
+
+nodes:
+  published:
+    goal: true
+    when:
+      events: [deploy]     # <- not tag / push:<branch>: rejected
+    needs:
+      publish: true

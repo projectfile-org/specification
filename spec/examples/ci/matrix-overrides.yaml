@@ -1,0 +1,44 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci, validated directly
+# against spec/schema/org.projectfile.ci.v1.json. Demonstrates `matrix.overrides`:
+# per-cell variable DECORATIONS keyed by an axis-value match.
+#
+# Each Zig series needs a DIFFERENT LLVM series to build (0.16→21, 0.15→20), but
+# LLVM is not a fan-out dimension — it is DERIVED from the Zig series. `overrides`
+# binds the per-cell LLVM value onto each matching cell, so a Dockerfile build-arg
+# `B19_LLVM_SERIES`, an image `{placeholder}`, or a FROM ref embedding
+# `${B19_LLVM_SERIES}` resolves per cell — lowered to `${{ matrix.B19_LLVM_SERIES }}`
+# (GitHub/Forgejo) or a cell sub-make var (m6e), exactly as an axis is.
+#
+# An entry's axis-keyed fields (`B19_ZIG_SERIES`) are the MATCH; the rest
+# (`B19_LLVM_SERIES`) are the extra vars the matching cell gains. An entry matching
+# NO cell of the axes product is invalid (an override only decorates existing cells;
+# it never adds new ones), so a typo'd series fails loudly rather than silently
+# dropping its LLVM value. A PARTIAL override (a cell left undecorated) is legal too:
+# it falls back to the var's build-arg default, so only the exceptions need listing.
+
+image: b19/zig-{B19_ZIG_SERIES}
+
+matrix:
+  axes:
+    B19_ZIG_SERIES: ["0.16", "0.15"]
+  overrides:
+    - B19_ZIG_SERIES: "0.16"
+      B19_LLVM_SERIES: 21
+    - B19_ZIG_SERIES: "0.15"
+      B19_LLVM_SERIES: 20
+nodes:
+  image-built:                     # CELL — once per series, each with its LLVM
+    matrix: true
+    needs:
+      container-build: true
+  published:                       # JOIN — once, after every cell (fan-in)
+    goal: true
+    needs:
+      image-built: true
+      oci-push: true

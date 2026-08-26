@@ -1,0 +1,23 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a matrix.overrides entry whose field value is NOT a
+# scalar. An override field is a per-cell VARIABLE binding (a series, a version); it
+# must be a scalar (string/number/boolean), coerced to its literal string form
+# exactly as an axis value is. An array/object value has no string form, so
+# spec/schema/org.projectfile.ci.v1.json MUST reject it.
+
+matrix:
+  axes:
+    B19_ZIG_SERIES: ["0.16", "0.15"]
+  overrides:
+    - B19_ZIG_SERIES: "0.16"
+      B19_LLVM_SERIES: [21, 22]   # <- array: a field must be a scalar: rejected
+nodes:
+  image-built:
+    matrix: true
+    needs:
+      container-build: true

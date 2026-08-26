@@ -1,0 +1,25 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — `serialise` on a node declaring its OWN axes. The field
+# names a GLOBAL axis, and per-node axes are ISOLATED by construction (a node on its
+# own grid never sees the global one), so the two shapes cannot both be meant. The
+# node's if/then conditional in spec/schema/org.projectfile.ci.v1.json accepts only
+# `matrix: true` alongside `serialise`, so this MUST fail rather than render a node
+# that silently never chains.
+
+matrix:
+  axes:
+    B19_PHP_SERIES: ["8.3", "8.4"]
+nodes:
+  bins-built:
+    goal: true
+    matrix:
+      axes:
+        GOOS: [linux, darwin]
+    serialise: GOOS     # <- GOOS is this node's OWN axis, not a global one: rejected
+    needs:
+      build-binaries: true

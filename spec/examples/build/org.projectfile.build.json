@@ -1,0 +1,13 @@
+{
+  "registries": {
+    "B19_DOCKER_REGISTRY": "registry.invalid"
+  },
+  "args": {
+    "B19_VERBOSITY": "warn",
+    "B19_COLOR": "",
+    "B19_GO_VERSION": "@base",
+    "B19_GCC_SERIES": 16,
+    "B19_UBUNTU_HASH": { "file": ".container/foundation/deps/ubuntu/{B19_UBUNTU_SERIES}.sha256.deps" }
+  },
+  "env": ["GOPROXY"]
+}

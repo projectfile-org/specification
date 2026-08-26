@@ -1,0 +1,27 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.codeowners extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# `entries` is an ORDERED list because CODEOWNERS semantics are last-match-wins
+# per path: reordering the entries changes meaning, so order general rules
+# before specific ones. owners values are aliases from the top-level people
+# array, or "@org/team" strings for GitHub/GitLab teams.
+
+org:
+  projectfile:
+    codeowners:
+      entries:
+        - pattern: "*"  # REQUIRED  CODEOWNERS glob pattern
+          owners: [alice]  # REQUIRED  people aliases or "@org/team" strings
+        - pattern: "*.go"
+          owners: [alice, bob]
+        - pattern: "docs/"
+          owners: [carol]
+        - pattern: ".github/"
+          owners: [alice]

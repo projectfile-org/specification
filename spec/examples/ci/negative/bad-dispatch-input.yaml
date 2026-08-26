@@ -1,0 +1,21 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a goal's manual-dispatch input declares a `type` outside
+# the closed, vendor-NEUTRAL set (string|boolean|choice|number). `secret` is not a
+# portable input type (and would leak intent), so dispatchInput.type's enum in
+# spec/schema/org.projectfile.ci.v1.json MUST reject it. A typo must fail loudly,
+# never silently drop the parameter from the run form.
+
+nodes:
+  published:
+    goal: true
+    dispatch:                # the manual-run button lives on the goal that owns the file
+      inputs:
+        token:
+          type: secret       # <- not string/boolean/choice/number: rejected
+    needs:
+      publish: true

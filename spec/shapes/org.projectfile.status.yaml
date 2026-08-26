@@ -1,0 +1,18 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.status extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# A single advisory lifecycle scalar. `active` is assumed when absent.
+# Consumers MAY surface it in generated health/README files; an unknown value
+# is accepted and treated as opaque. Distinct from the `status:` keyword
+# namespace (a discovery tag) — this is one declared lifecycle state.
+
+org:
+  projectfile:
+    status: maintained   # active | maintained | deprecated | archived

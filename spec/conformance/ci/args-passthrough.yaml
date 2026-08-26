@@ -1,0 +1,25 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  The {args: "…"} override branch both ENABLES a tool and binds an arg string
+  that the consumer must deliver to the tool's invocation.
+
+input:
+  nodes:
+    code-is-valid:
+      goal: true
+      needs:
+        eslint:
+          args: --max-warnings 0
+        html-validate:
+          args: "dist/"
+
+expect:
+  runs: [eslint, html-validate]
+  args:
+    eslint: --max-warnings 0
+    html-validate: dist/

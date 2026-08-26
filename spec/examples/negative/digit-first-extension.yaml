@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — top-level key `1.2.3` has a digit-first first label, so it matches
+# neither the reserved-key pattern nor any extension-namespace pattern
+# (Section 3.6 / 7.1). Extension namespace segments at the top level MUST
+# start with a letter.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: digit-first
+
+"1.2.3":
+  some: value

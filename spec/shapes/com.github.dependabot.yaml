@@ -1,0 +1,24 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: com.github.dependabot extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Schedule, reviewers, labels, and ecosystem list come from
+# org.projectfile.dependency-updates. Only Dependabot-specific settings belong here.
+
+com:
+  github:
+    dependabot:
+      open-prs-limit: 5  # OPTIONAL  cap on simultaneously open PRs (Dependabot-specific)
+      target-branch: main  # OPTIONAL  branch to open PRs against
+
+      # Packages to ignore per ecosystem. Ecosystem names match dependency-updates vocabulary.
+      ignore:
+        - ecosystem: npm
+          packages: [lodash]  # OPTIONAL  ignore all updates for these packages
+          versions: [">=5.0.0"]  # OPTIONAL  ignore only these version ranges

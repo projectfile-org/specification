@@ -1,0 +1,30 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.python.pep621 extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# PEP 621 project-metadata passthrough. Core pyproject fields (name, version,
+# description, dependencies, runtime python requirement) map to reserved
+# projectfile fields; this namespace carries the Python-only remainder so a
+# project regenerated from projectfile alone still round-trips pyproject.toml.
+# Field names mirror PEP 621 / pyproject [project] table keys.
+
+org:
+  python:
+    pep621:
+      readme: "README.md"            # path or table {file, content-type, charset}
+      scripts: {mycli: "myapp.cli:main"}   # console_scripts (PEP 621 [project.scripts])
+      gui-scripts: {mygui: "myapp.gui:main"}  # gui_scripts (PEP 621 [project.gui-scripts])
+      entry-points:                  # PEP 621 [project.entry-points.<group>]
+        my.group: {myname: "myapp.x:Y"}
+      optional-dependencies:         # PEP 621 [project.optional-dependencies]
+        test: ["pytest>=8", "coverage"]
+      dynamic: ["version"]           # PEP 621 dynamic fields
+      classifiers:                   # PyPI trove classifiers
+        - "Programming Language :: Python :: 3"
+        - "License :: OSI Approved :: MIT License"

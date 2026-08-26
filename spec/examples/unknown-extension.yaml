@@ -1,0 +1,24 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture (YAML) — a consumer that has never heard of
+# `com.never-heard-of.this` MUST preserve this subtree on round-trip and
+# MUST NOT reject the document. (Section 3.7, Section 6.3.)
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: unknown-extension
+
+com:
+  never-heard-of:
+    this:
+      whatever: "we want"
+      deeply:
+        nested:
+          - 1
+          - 2

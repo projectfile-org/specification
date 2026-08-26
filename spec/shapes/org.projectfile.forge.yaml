@@ -1,0 +1,69 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.forge extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Portable, tool-agnostic forge-publishing metadata: any conforming tool MAY
+# read this namespace to decide which repositories get published, which fields,
+# and per-host overrides. It is not owned by any single tool — a tool such as
+# pf-cli (the projectfile CLI) is one possible consumer. All toggles default to true so an absent
+# extension behaves the same as one that enables everything.
+#
+#   1. push — global kill-switch. Setting false skips every forge in one shot;
+#      useful for projects whose forge web UI is the source of truth.
+#   2. fields.* — per-field toggles. Flip individual fields off if you want a
+#      tool to manage description but leave topics alone (or vice versa).
+#   3. hosts.* — per-host opt-out keyed on the literal hostname from
+#      repositories[].url. Flipping a host to false skips it without
+#      removing the URL from the projectfile.
+#   4. kinds.* — per-host forge-kind declaration. A consuming tool typically
+#      guesses the kind from the hostname (github.com → github, forgejo.* →
+#      forgejo, etc.); for a self-hosted instance on a bare hostname (e.g.
+#      code.example.com running Forgejo) the guess fails and this map is
+#      how you declare authoritative ground truth. Wins over the guess on
+#      conflict, so it doubles as a manual override for misclassified hosts.
+
+org:
+  projectfile:
+    forge:
+      # Global on/off. Defaults to true.
+      push: true
+
+      # Per-field toggles. All default to true.
+      fields:
+        description: true
+        homepage: true
+        topics: true
+
+      # Per-host overrides. Hostname is the lowercased URL host. Missing host =
+      # defaults apply (allow). Setting to false skips the host entirely.
+      hosts:
+        "gitlab.example.com": false
+
+      # Per-host forge-kind declarations. Required for self-hosted instances on
+      # bare hostnames (no "gitea." / "forgejo." prefix); a consuming tool would
+      # otherwise be unable to classify the host and skip the entry. Valid values today:
+      # "github", "gitlab", "forgejo" (which also covers Gitea).
+      kinds:
+        "code.example.com": forgejo
+        "git.acme.net": gitlab
+
+      # Derived, not authored. A consumer MAY compute one entry per
+      # links[type=source-code] mirror so that badge and API URLs can extract
+      # each coordinate BY KEY — neither templates nor the §3.8 address grammar
+      # can slice a URL into host/owner/repo. Slug = the first domain label,
+      # which needs no declaration. `kind` follows the same guess-then-`kinds`
+      # rule above. Being a pure function of `links`, this SHOULD NOT be written
+      # back to the document.
+      remotes:
+        codeberg:
+          host: codeberg.org
+          owner: acme
+          repo: widget
+          url: https://codeberg.org/acme/widget
+          kind: forgejo

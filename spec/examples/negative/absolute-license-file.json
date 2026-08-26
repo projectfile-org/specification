@@ -1,0 +1,11 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "abs-path"
+  },
+  "license": {
+    "spdx": "MIT",
+    "file": "/etc/passwd"
+  }
+}

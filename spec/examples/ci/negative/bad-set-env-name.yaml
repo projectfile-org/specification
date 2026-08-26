@@ -1,0 +1,21 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a `set-env` key that is not a legal environment
+# variable name. Assignment keys MUST match `^[A-Za-z_][A-Za-z0-9_]*$` (the same
+# shape a shell would accept); a hyphenated key (`compose-file`) cannot be a real
+# env var and MUST be rejected by spec/schema/org.projectfile.ci.v1.json.
+
+nodes:
+  container-is-ready:
+    needs:
+      compose-up: true
+tools:
+  compose-up:
+    fuse: live
+    run: docker compose up --detach
+    set-env:
+      compose-file: .compose/pipeline.yaml   # <- hyphen is not a valid env var name: rejected

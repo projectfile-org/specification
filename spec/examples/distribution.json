@@ -1,0 +1,50 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "kind": "SoftwareSourceCode",
+  "identity": {
+    "namespace": "org.example",
+    "name": "postgres-image",
+    "version": "16.2.0",
+    "title": { "en": "Example Postgres Image" },
+    "summary": { "en": "Container packaging of PostgreSQL with example.org's runtime conventions" },
+    "description": {
+      "en": "Two contributions in one repository:\n\n1. The example.org container runtime — entrypoint hooks, healthcheck\n   protocol, structured logs. Original work, authored here.\n\n2. Container packaging of upstream PostgreSQL, configured to follow\n   example.org conventions (multi-arch, locale build, secret layout).\n\nThe MIT license declared in this repository covers only the additions\nabove. Upstream PostgreSQL and every package installed into the image\nretain their own licenses; see LICENSES/ for the inventory.\n"
+    }
+  },
+  "repositories": [
+    {
+      "url": "https://example.org/git/postgres-image",
+      "type": "git"
+    }
+  ],
+  "license": {
+    "spdx": "MIT",
+    "covers": "additions",
+    "file": ["LICENSE", "LICENSES/PostgreSQL.txt", "LICENSES/MIT.txt"]
+  },
+  "copyright": {
+    "year": 2026
+  },
+  "organizations": [
+    {
+      "name": "Example Org",
+      "email": "hello@example.org",
+      "roles": ["author", "maintainer", "packager", "copyright"],
+      "from": "2026-01-01"
+    }
+  ],
+  "keywords": [
+    "postgres",
+    "container",
+    "role:packaging",
+    "role:distribution",
+    "upstream:postgresql"
+  ],
+  "technologies": ["postgres", "docker"],
+  "org": {
+    "projectfile": {
+      "operating-system": ["linux"],
+      "architecture": ["amd64", "arm64"]
+    }
+  }
+}

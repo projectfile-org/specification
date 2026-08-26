@@ -1,0 +1,38 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.citation extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Most citation metadata is derived from reserved projectfile fields:
+#   title       ← identity.title
+#   authors     ← people filtered by roles: [author]
+#   version     ← identity.version
+#   date        ← identity.released
+#   license     ← license.spdx
+#   repository  ← repositories[role=origin]
+#
+# Archive and journal URLs go in top-level links[]:
+#   - { type: zenodo-archive, url: "https://zenodo.org/record/..." }
+#   - { type: doi-landing,    url: "https://doi.org/..." }
+
+org:
+  projectfile:
+    citation:
+      doi: "10.5281/zenodo.1234567"  # OPTIONAL  archival DOI (Zenodo, Figshare, etc.)
+
+      # Preferred citation when the software was formally published.
+      # Omit entirely if no formal publication exists.
+      preferred:
+        type: article  # REQUIRED  article | conference-paper | book | report | thesis
+        title: "My Software: A Framework for Doing Things"  # OPTIONAL  overrides identity.title
+        journal: Journal of Open Source Software
+        volume: 5
+        issue: 52
+        pages: "2341"
+        year: 2020
+        doi: "10.21105/joss.02341"

@@ -1,0 +1,67 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.security extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Named team members and the team inbox go in the top-level people array
+# using roles: [security]. Navigational URLs go in top-level links[]:
+#   - { type: security-policy,          url: "https://..." }
+#   - { type: security-report,          url: "https://..." }   # platform submit page
+#   - { type: security-severity,        url: "https://..." }
+#   - { type: bug-bounty,               url: "https://..." }
+#   - { type: security-acknowledgments, url: "https://..." }
+#   - { type: pgp-key,                  url: "https://..." }
+#   - { type: openssf-best-practices,   url: "https://..." }
+
+org:
+  projectfile:
+    security:
+      disclosure-days: 90  # OPTIONAL  total window report→public (calendar days)
+      post-fix-embargo-days: 7  # OPTIONAL  delay after fix merged before announcement
+      distros-notify-days: 7  # OPTIONAL  advance notice to downstream packagers
+      embargo: true  # OPTIONAL  include embargo-policy section in generated file
+      severity-model: tiered  # OPTIONAL  cvss | tiered | none
+      cve: true  # OPTIONAL  true | false | "cna" (project is its own CNA)
+      cna: example  # OPTIONAL  CNA name, required when cve: cna
+      bug-bounty: true  # OPTIONAL  flag; bounty URL goes in links[] type: bug-bounty
+      acknowledgments: inline  # OPTIONAL  inline | url | none; URL in links[] type: security-acknowledgments
+
+      # Reporting channel — non-URL fields only; submit URL goes in links[] type: security-report
+      report:
+        platform: hackerone  # REQUIRED  github-advisories | hackerone | bugcrowd | email | url
+        email: "security@example.com"  # OPTIONAL  team inbox
+        email-subject-template: "Vulnerability: {package}: {summary}"  # OPTIONAL
+        pgp-fingerprint: "AAAA BBBB CCCC DDDD EEEE FFFF"  # OPTIONAL; key URL in links[] type: pgp-key
+        escalation-email: "security@lists.example.org"  # OPTIONAL
+
+      # Response SLAs
+      sla:
+        acknowledge-days: 7  # OPTIONAL
+        acknowledge-unit: calendar  # OPTIONAL  calendar | working
+        resolve-days: 90  # OPTIONAL
+        resolve-unit: calendar  # OPTIONAL  calendar | working
+
+      # Versions receiving security fixes
+      supported-versions:
+        - range: ">=5.0"  # REQUIRED  SemVer range
+          supported: true  # REQUIRED
+        - range: "<5.0"
+          supported: false
+
+      # Issue types explicitly outside the threat model
+      out-of-scope:
+        - description: Prototype pollution requiring attacker-controlled application input
+        - description: Issues requiring local system access
+
+      # Announcement channels (URL kept here because it accompanies structured fields)
+      announce:
+        - type: mailing-list  # REQUIRED  mailing-list | blog | github-releases | rss
+          url: "https://groups.google.com/g/example-announce"
+          tag: "[security]"  # OPTIONAL  prefix on security announcements
+        - type: blog
+          url: "https://example.com/blog"

@@ -1,0 +1,45 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.conventions extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Cross-cutting workflow conventions that multiple generators read from one place.
+# org.projectfile.release and org.projectfile.contributing both reference commit-style
+# here rather than carrying their own copies.
+# Per-language sub-keys match technology tags (see spec/technologies.yaml).
+
+org:
+  projectfile:
+    conventions:
+      commit-style: conventional  # OPTIONAL  conventional | gitmoji | free
+      workflow: github-flow  # OPTIONAL  github-flow | git-flow | gitlab-flow | trunk-based | centralized
+      versioning: semantic  # OPTIONAL  semantic | calver | rolling | none
+      style-guide-url: "https://example.com/style"  # OPTIONAL  project-wide default
+
+      # Per-language overrides — keys match technology tags
+      js:
+        style-guide-url: "https://example.com/js-style"
+      python:
+        style-guide-url: "https://example.com/python-style"
+
+      # Fragment-assembly defaults consumed by pf-bridge-fragments. The
+      # documents shells (dir/out/title) live in a shared conventions include
+      # so every consumer declares them once; parents is a flat per-project
+      # inheritance list shared by every shell. The include merger deep-merges
+      # this namespace, so documents (from the include) and parents (from the
+      # project) coexist — see org.projectfile.fragments for the override.
+      fragments:
+        documents:  # OPTIONAL  shared shells, normally supplied by a conventions include
+          - dir: docs/features.d  # REQUIRED  source fragment directory
+            out: FEATURES.md       # REQUIRED  assembled artefact path
+            title: Features        # REQUIRED  document H1; also the section heading base
+          - dir: docs/roadmap.d
+            out: ROADMAP.md
+            title: Roadmap
+        parents:  # OPTIONAL  flat per-project inheritance list, applied to every shell
+          - ../ubuntu

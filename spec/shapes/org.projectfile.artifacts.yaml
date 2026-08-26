@@ -1,0 +1,87 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.artifacts extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# A map of NAMED artifacts a project PRODUCES — the images it publishes, the
+# packages it ships, the executables it installs, the services it exposes. One
+# neutral home for "what does this project give me", read by a CI tool that needs
+# pointing at an output AND by a documentation generator that needs to say how to
+# install the thing and how to call it.
+#
+# Each entry declares a `kind` plus the address fields that kind is addressed by:
+#
+#   image    ref              a pull reference
+#   binary   command, path    the name a user types; the built file
+#   package  registry, name   which index, and the name published there
+#   module   module           an importable path
+#   service  ports            what it listens on
+#   website  url              a reachable address
+#   archive  path             a bundle on disk
+#
+# Referenced from any string via the §3.8 interpolation sigil, two ways:
+#
+#   By NAME — one artifact, when a tool wants a specific output:
+#     run: gsa ${org.projectfile.artifacts.cli.path}
+#
+#   By KIND — every artifact of a kind, using the MAP selector (curly braces,
+#   because artifacts is a mapping of named keys, not a list):
+#     commands: ["docker pull ${org.projectfile.artifacts{kind=image}.ref}"]
+#
+# The map selector yields EVERY match, not the first, because a mapping has no
+# order in which "first" would mean anything (§3.8). A consumer whose output
+# repeats — one line of a code block — emits one copy per value. That is what
+# lets a project publishing one image per matrix cell be documented completely by
+# a fragment that names no cell.
+#
+# The kind selector is ALSO what makes a shared fragment self-guarding: a recipe
+# addressing an artifact the consuming project does not declare resolves to
+# nothing, and a consumer that must not publish a half-substituted string drops
+# that output instead. One fragment can therefore carry an install command for
+# every ecosystem in a fleet, and each project renders only its own.
+
+org:
+  projectfile:
+    artifacts:
+      # what a user types, and what a size analyzer measures in place
+      cli:
+        # kind is an OPEN vocabulary: a consumer MUST NOT reject an unknown kind,
+        # and MUST NOT change any lowering (a workflow, a build) based on it — for
+        # that purpose it is advisory, like a tool's `tags`. It IS load-bearing
+        # for documentation and for the `{kind=…}` selector, neither of which is
+        # a lowering.
+        kind: binary
+        command: pf-cli
+        path: dist/pf-cli
+
+      # the published image; `${image.basename}` is the derived namespace/name
+      # path every lowering of this fleet already agrees on
+      image:
+        kind: image
+        ref: kiota.ch/${image.basename}:latest
+
+      # a package, distinguished from a sibling package by its registry
+      npm-package:
+        kind: package
+        registry: npm
+        name: "@projectfile/reader"
+
+      # a service is addressed by what it LISTENS on — the one thing no generic
+      # description of a service could supply
+      database:
+        kind: service
+        summary: MySQL-compatible database
+        ports:
+          - 3306
+          - port: 9104
+            name: metrics
+
+      # what lighthouse / linkinator audit
+      frontpage:
+        kind: website
+        url: https://projectfile.org

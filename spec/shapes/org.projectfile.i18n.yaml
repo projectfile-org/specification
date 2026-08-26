@@ -1,0 +1,113 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.i18n extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Declares the languages a project publishes its generated documents in. One
+# document-level list rather than one per namespace: a project that speaks
+# Spanish speaks it in every community health file, so adding a locale is a
+# one-line edit.
+#
+# default-language names the project's PRIMARY language — the one the canonical
+# (root-level) files are written in. It defaults to "en". Setting it to, say,
+# "es" does two things:
+#
+#   1. The root README/CONTRIBUTING/… resolve localized strings and Localized-
+#      String fields in Spanish, and their prose comes from the Spanish
+#      templates, so a Spanish-first project shows Spanish at its root.
+#   2. English (every language that is NOT the default) is emitted under
+#      docs/<lang>/ rather than at the root — see the layout below.
+#
+# ---------------------------------------------------------------------------
+# What consumers do with it
+# ---------------------------------------------------------------------------
+#
+# For each localizable artefact, a consumer renders the canonical file (in the
+# default language) at the repo root, plus one variant per OTHER declared
+# language under docs/<lang>/. The variant keeps the canonical basename — the
+# locale lives in the directory, not the filename:
+#
+#   README.md              CONTRIBUTING.md              SECURITY.md
+#   docs/es/README.md      docs/es/CONTRIBUTING.md      docs/es/SECURITY.md
+#   docs/uk/README.md      docs/uk/CONTRIBUTING.md      docs/uk/SECURITY.md
+#
+# (Above: default-language is "en". The English copies are the root files.)
+#
+#   README.md              CONTRIBUTING.md              SECURITY.md        ← Spanish
+#   docs/en/README.md      docs/en/CONTRIBUTING.md      docs/en/SECURITY.md
+#   docs/uk/README.md      docs/uk/CONTRIBUTING.md      docs/uk/SECURITY.md
+#
+# (Above: default-language is "es". The root files are Spanish; English moves
+# under docs/en/.)
+#
+# The canonical file is NOT named in `languages`; it always renders and is the
+# file forges link to by default. Localizable artefacts are the community
+# health documents (README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT).
+# LICENSE is deliberately NOT localizable: a licence's legal force lives in its
+# canonical text.
+#
+# ---------------------------------------------------------------------------
+# Where the translated content comes from
+# ---------------------------------------------------------------------------
+#
+# Reserved localized-string fields (identity.title, identity.summary,
+# links[].label — see Section 7) resolve in the variant's language. The
+# surrounding prose is not derivable, so it comes from a per-language template
+# resolved in the same two tiers as the canonical one. Template names still
+# carry the BCP 47 infix before the extension — the directory layout only
+# affects OUTPUT, not template lookup:
+#
+#   1. .projectfile/templates/CONTRIBUTING.es.md.tmpl   (project-local)
+#   2. the consumer's embedded CONTRIBUTING.es.md.tmpl
+#
+# A language with no template for a given file SHOULD be skipped for that
+# file, with a diagnostic naming the template to add. Consumers MUST NOT
+# emit the default-language body under a localized filename: a document that
+# announces itself as one language and reads as another misinforms.
+#
+# Every rendered variant SHOULD carry a cross-language link bar listing the
+# other variants that were actually rendered, pointing at their docs/<lang>/
+# (or root, for the default) locations.
+#
+# ---------------------------------------------------------------------------
+# Fragment-assembled documents
+# ---------------------------------------------------------------------------
+#
+# Documents a consumer assembles from fragment directories (FEATURES.md from
+# docs/features.d/, ROADMAP.md from docs/roadmap.d/, …) are localizable the
+# same way, with one extra hop because their source is a DIRECTORY, not a
+# template: each declared language reads its translations from the locale
+# directory docs/<lang>/<name>.d/, and the assembled variant renders under
+# docs/<lang>/ keeping the canonical basename.
+#
+#   docs/features.d/*.md        → FEATURES.md            (default language)
+#   docs/es/features.d/*.md     → docs/es/FEATURES.md
+#   docs/uk/features.d/*.md     → docs/uk/FEATURES.md
+#
+# The skip rule carries over: a language whose fragment directory holds no
+# fragments renders nothing under a localized name, with a diagnostic naming
+# the directory to create. Inherited sections (fragments vendored from an
+# upstream parent) appear verbatim in every variant — they quote upstream,
+# which publishes one language. A consumer that surfaces such a document in
+# another document (a README features block) SHOULD prefer the same-language
+# variant and fall back to the canonical one with a visible note that the
+# translation does not exist yet.
+
+org:
+  projectfile:
+    i18n:
+      # OPTIONAL  BCP 47 tag [RFC 5646]. The project's primary language — the
+      # language the canonical root-level files are written in. Defaults to
+      # "en" when absent. Setting it re-routes every OTHER declared language
+      # to docs/<lang>/ and resolves root-file strings in the declared language.
+      default-language: en
+
+      # OPTIONAL  BCP 47 tags [RFC 5646]. The OTHER languages the project
+      # publishes (not including default-language). Absent or empty means the
+      # project is single-language: only the canonical files are produced.
+      languages: [es, uk]

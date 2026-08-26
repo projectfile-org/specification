@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a matrix axis with an EMPTY value list. An axis must
+# range over at least one value (matrix.axes.<key> is minItems:1); an empty list
+# would yield zero cells for that axis and collapse the whole product to nothing,
+# so spec/schema/org.projectfile.ci.v1.json MUST reject it.
+
+matrix:
+  axes:
+    B19_PHP_SERIES: []     # <- empty: an axis must have >= 1 value: rejected
+nodes:
+  image-built:
+    matrix: true
+    needs:
+      container-build: true

@@ -1,0 +1,23 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Composition + override: an included preset enables two tools; the base
+  document drops one with `false`. The local `false` wins over the included
+  `true` (base wins over includes, spec §4.9a), so only the survivor runs.
+
+includes:
+  - nodes:
+      code-is-valid:
+        needs: {yamllint: true, shellcheck: true}   # the shared preset
+
+input:
+  nodes:
+    code-is-valid:
+      needs: {yamllint: false}                       # local drop wins
+
+expect:
+  runs: [shellcheck]                                 # yamllint dropped

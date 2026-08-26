@@ -1,0 +1,18 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A `needs` entry that names a target not declared as a node is treated as a
+  Make tool target — the reader does not distinguish nodes from tools; Make
+  resolves the target at build time. No rejection occurs at read time.
+
+input:
+  nodes:
+    published:
+      needs: [image-scanned, publish]    # neither is a declared node → both are tools
+
+expect:
+  runs: [image-scanned, publish]

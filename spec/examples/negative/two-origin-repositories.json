@@ -1,0 +1,19 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "two-origin"
+  },
+  "repositories": [
+    {
+      "url": "https://github.com/example/two-origin",
+      "type": "git",
+      "role": "origin"
+    },
+    {
+      "url": "https://codeberg.org/example/two-origin",
+      "type": "git",
+      "role": "origin"
+    }
+  ]
+}

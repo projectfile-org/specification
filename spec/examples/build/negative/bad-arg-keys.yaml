@@ -1,0 +1,15 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture — an args entry carrying BOTH `default` and `file`. The two
+# value rules are mutually exclusive ($defs.arg oneOf), so the build schema MUST
+# reject this. Validated against ../../../schema/org.projectfile.build.v1.json
+# (MUST fail).
+
+args:
+  B19_UBUNTU_HASH:
+    default: warn
+    file: .container/foundation/deps/ubuntu/{B19_UBUNTU_SERIES}.sha256.deps

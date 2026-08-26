@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: com.npmjs.registry extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+com:
+  npmjs:
+    registry:
+      registry: "https://registry.npmjs.org"  # OPTIONAL  primary registry URL
+      scope: "@myorg"  # OPTIONAL  package scope
+      access: public  # OPTIONAL  public | restricted
+      tag: latest  # OPTIONAL  dist-tag on publish
+      provenance: true  # OPTIONAL  npm provenance attestation
+
+      # Per-scope registry routing. Key is the scope name without the leading "@".
+      scopes:
+        myorg: "https://npm.pkg.github.com"  # @myorg → this registry

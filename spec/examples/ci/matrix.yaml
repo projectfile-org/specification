@@ -1,0 +1,55 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci, validated directly
+# against spec/schema/org.projectfile.ci.v1.json. Demonstrates the build MATRIX:
+# a cartesian product of axes (PHP SAPI × series) realised per CELL, with the
+# three timing classes the model defines —
+#   SOURCE  (source-is-valid) : not in any cell's closure   -> runs once, before
+#   CELL    (image-built,                                       once per product
+#            image-tested)    : flagged `matrix: true`          cell (SAPI×series)
+#   JOIN    (published)       : downstream of a cell, NOT     -> runs once, after
+#                               flagged (the multiarch fan-in)   every cell
+# The axis KEY is the literal build variable injected into the cell (no alias);
+# `container-build` reads B19_PHP_SERIES / PHP_SAPI from its environment unchanged.
+#
+# `image` carries {AXIS} placeholders so each cell publishes to its OWN ref
+# (b19/php-cli-8.5, b19/php-fpm-8.3, ...) instead of every cell colliding on one
+# name — REQUIRED once a matrix build is consumed by a registry push. The
+# placeholder→value spelling (hyphen suffix here) is the consumer's choice; each
+# lowering interpolates per cell (${{ matrix.<axis> }} on a forge, the cell
+# sub-make var on m6e).
+image: b19/php-{PHP_SAPI}-{B19_PHP_SERIES}
+
+matrix:
+  axes:
+    B19_PHP_SERIES: ["8.3", "8.4", "8.5"]
+    PHP_SAPI: [cli, fpm]
+nodes:
+  source-is-valid:                    # SOURCE — once, before any cell
+    needs:
+      shellcheck: true
+      php-cs-fixer:
+        args: --dry-run
+  image-built:                        # CELL — once per SAPI×series cell
+    matrix: true
+    # serialise THIS node's cells — a container build is resource-hungry, so two
+    # at once starve the runner; sibling matrices (image-tested) stay fully parallel
+    max-parallel: 1
+    needs:
+      container-build: true
+  image-tested:                       # CELL — once per cell, after its build
+    matrix: true
+    needs:
+      image-built: true               # node dep — ordered after the cell's build
+      test.d: true
+      grype-scan-image: true
+  published:                          # JOIN — once, after every cell (fan-in)
+    goal: true                        # the default CI goal — its closure is the whole matrix
+    needs:
+      source-is-valid: true
+      image-tested: true
+      manifest-create: true

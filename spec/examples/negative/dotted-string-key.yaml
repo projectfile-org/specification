@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — single-string dotted key form. v1 requires nested mappings
+# for extension namespaces (Section 3.6). The literal key `dev.acme.tool`
+# matches neither patternProperties shape and is rejected by
+# additionalProperties:false.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: dotted-string-key
+
+"dev.acme.tool":
+  status: example

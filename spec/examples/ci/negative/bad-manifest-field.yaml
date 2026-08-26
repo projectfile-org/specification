@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a tool manifest carrying an unknown field. The
+# manifest object is additionalProperties:false, so `runner` (a vendor/deployment
+# concern that belongs in org.{vendor}.ci, never in the neutral manifest) MUST be
+# rejected by spec/schema/org.projectfile.ci.v1.json.
+
+nodes:
+  code-is-valid:
+    needs:
+      shellcheck: true
+tools:
+  shellcheck:
+    image: D9T_MISC_TOOLS_IMAGE
+    runner: ubuntu-latest   # <- deployment mechanism, not a manifest field: rejected

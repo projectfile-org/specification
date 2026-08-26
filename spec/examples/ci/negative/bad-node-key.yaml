@@ -1,0 +1,17 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a node carrying an unknown key. A node permits only
+# `needs`, `goal`, `matrix`, and `description`; the node object is
+# additionalProperties:false, so `category` (a vestige of the retired
+# lint/format/analyze model, now removed spec-wide) MUST be rejected by
+# spec/schema/org.projectfile.ci.v1.json.
+
+nodes:
+  code-is-valid:
+    category: lint        # <- `category` is not a node key: rejected
+    needs:
+      shellcheck: true

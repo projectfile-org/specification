@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.python.index extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  python:
+    index:
+      index-url: "https://pypi.org/simple/"  # OPTIONAL  primary install index
+      publish-url: "https://upload.pypi.org/legacy/"  # OPTIONAL  twine / uv upload endpoint
+      trusted-hosts: [pypi.org, files.pythonhosted.org]  # OPTIONAL  skip TLS verify for these hosts
+      skip-existing: false  # OPTIONAL  skip upload if version already exists
+
+      extra-indexes:
+        - url: "https://private.example.com/simple/"  # REQUIRED
+          name: internal  # OPTIONAL  human label
+          trusted: false  # OPTIONAL  skip TLS verify for this host

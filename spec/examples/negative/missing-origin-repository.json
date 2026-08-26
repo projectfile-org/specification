@@ -1,0 +1,19 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "no-origin"
+  },
+  "repositories": [
+    {
+      "url": "https://github.com/example/no-origin",
+      "type": "git",
+      "role": "mirror"
+    },
+    {
+      "url": "https://codeberg.org/example/no-origin",
+      "type": "git",
+      "role": "archive"
+    }
+  ]
+}

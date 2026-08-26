@@ -1,0 +1,24 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a node `max-parallel` of 0. The cap is the number of
+# matrix cells allowed to run at once, so it MUST be a positive integer (schema
+# `minimum: 1`); 0 would forbid every cell from running. spec/schema/
+# org.projectfile.ci.v1.json MUST reject it — a nonsensical throttle fails loudly
+# rather than emitting a strategy block that deadlocks the matrix.
+# (The complementary misuse — max-parallel on a NON-matrix node — is caught by the
+#  node's if/then conditional; see bad-max-parallel-non-matrix.yaml.)
+
+matrix:
+  axes:
+    B19_UBUNTU_SERIES: [resolute, noble]
+nodes:
+  image-built:
+    goal: true
+    matrix: true
+    max-parallel: 0     # <- must be >= 1: rejected
+    needs:
+      container-build: true

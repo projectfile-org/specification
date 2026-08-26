@@ -1,0 +1,49 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci, validated directly
+# against spec/schema/org.projectfile.ci.v1.json. Demonstrates `serialise`: the
+# portable way to say “never run two of THESE cells at once”.
+#
+# `max-parallel` says the same thing, but it is only as portable as the engine, and
+# one major engine does not implement it — Forgejo/Gitea expand a matrix STATICALLY
+# into independent job rows and dispatch each to any runner with a free slot, so no
+# scheduler stage exists for a cap to act in and the cap is ignored. `serialise`
+# lowers to `needs`, which every engine honours, and is therefore the spelling to
+# reach for when the constraint is a real resource limit rather than a preference.
+#
+# `image-built` below lowers to THREE jobs plus a join:
+#   image-built-8-3                                  (B19_PHP_SERIES pinned to 8.3)
+#   image-built-8-4  needs: [image-built-8-3]
+#   image-built-8-5  needs: [image-built-8-4]
+#   image-built      needs: [every link above]       the JOIN, authored name kept
+# so `image-tested` still says `needs: {image-built: true}` and neither knows nor
+# cares that the node was split.
+#
+# PHP_SAPI is NOT serialised: each link still builds cli and fpm together. Only the
+# named axis is walked, which is the point — a memory-bound build wants one SERIES
+# at a time, not one job at a time.
+image: b19/php-{PHP_SAPI}-{B19_PHP_SERIES}
+
+matrix:
+  axes:
+    B19_PHP_SERIES: ["8.3", "8.4", "8.5"]
+    PHP_SAPI: [cli, fpm]
+nodes:
+  image-built:                        # CELL — chained over the series axis
+    matrix: true
+    serialise: B19_PHP_SERIES
+    needs:
+      container-build: true
+  image-tested:                       # CELL — the consumer edge is untouched
+    matrix: true
+    needs:
+      image-built: true
+      test.d: true
+  published:                          # JOIN — once, after every cell
+    goal: true
+    needs:
+      image-tested: true

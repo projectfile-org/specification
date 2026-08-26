@@ -1,0 +1,78 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.funding extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Unified funding configuration shared by all funding-related bridges:
+#   - FUNDING.yml (GitHub) — uses provider fields only
+#   - funding.json (fundingjson.org) — uses channels, plans, history
+#   - package.json / composer.json funding — uses provider fields only
+#
+# Entity info is auto-resolved from [[people]] / [[organizations]] with
+# maintainer/owner roles and email. Override with entity-type / entity-role
+# when the auto-detected values don't match.
+
+org:
+  projectfile:
+    funding:
+      # --- GitHub FUNDING.yml provider fields ---
+      github: ["octocat"]           # OPTIONAL  list of GitHub Sponsors handles
+      patreon: username             # OPTIONAL
+      ko-fi: username               # OPTIONAL
+      liberapay: username           # OPTIONAL
+      tidelift: npm-package         # OPTIONAL
+      community-bridge: project     # OPTIONAL
+      issuehunt: username           # OPTIONAL
+      open-collective: slug         # OPTIONAL
+      lfx-crowdfunding: slug        # OPTIONAL
+      polar: username               # OPTIONAL
+      buy-me-a-coffee: username     # OPTIONAL
+      thanks-dev: username          # OPTIONAL
+      custom: ["https://..."]       # OPTIONAL  list of URLs
+      path: ".github/FUNDING.yml"   # OPTIONAL  on-disk override for FUNDING.yml
+
+      # --- Entity overrides (fundingjson bridge) ---
+      entity-type: organisation     # OPTIONAL  individual|group|organisation|other
+      entity-role: owner            # OPTIONAL  owner|steward|maintainer|contributor|other
+
+      # --- Payment channels (fundingjson bridge) ---
+      channels:
+        - guid: stripe                # REQUIRED  unique ID, lowercase-alphanumeric-dashes
+          type: payment-provider      # REQUIRED  bank|payment-provider|cheque|cash|other
+          address: "https://buy.stripe.com/..."  # OPTIONAL  payment address or URL
+          description: "Stripe checkout"          # OPTIONAL
+        - guid: github-sponsors
+          type: payment-provider
+          address: "https://github.com/sponsors/example"
+
+      # --- Funding plans (fundingjson bridge) ---
+      plans:
+        - guid: monthly-sponsor       # REQUIRED  unique ID
+          status: active              # REQUIRED  active|inactive
+          name: "Monthly Sponsorship"  # REQUIRED
+          description: "Support ongoing development"  # OPTIONAL
+          amount: 10.0                # REQUIRED  0 = any amount
+          currency: USD               # REQUIRED  ISO 4217
+          frequency: monthly          # REQUIRED  one-time|weekly|fortnightly|monthly|yearly|other
+          channels: [stripe, github-sponsors]  # REQUIRED  channel GUIDs
+        - guid: one-time
+          status: active
+          name: "One-time Donation"
+          amount: 0
+          currency: USD
+          frequency: one-time
+          channels: [stripe]
+
+      # --- Funding history (fundingjson bridge, optional) ---
+      history:
+        - year: 2025                  # REQUIRED
+          income: 1200.0              # OPTIONAL
+          expenses: 800.0             # OPTIONAL
+          taxes: 200.0                # OPTIONAL
+          currency: USD               # REQUIRED
+          description: "First year"   # OPTIONAL

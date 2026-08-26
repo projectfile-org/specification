@@ -1,0 +1,18 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — license.file is an absolute path. Section 8 forbids paths outside
+# the project directory; schema rejects absolute paths and `..` segments.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: abs-path
+
+license:
+  spdx: MIT
+  file: /etc/passwd

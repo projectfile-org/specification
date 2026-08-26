@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.packagist.composer extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Composer project-metadata passthrough. Core composer fields (name, description,
+# dependencies, php/ext/lib platform requirements) map to reserved projectfile
+# fields; this namespace carries the composer-only remainder so a project
+# regenerated from projectfile alone still round-trips composer.json.
+
+org:
+  packagist:
+    composer:
+      type: library                  # package type: library | project | metapackage | composer-plugin
+      minimum-stability: stable      # dev | alpha | beta | rc | stable
+      prefer-stable: true            # prefer stable over unstable when both satisfy a constraint
+      abandoned: false               # false, or the replacement package name if superseded

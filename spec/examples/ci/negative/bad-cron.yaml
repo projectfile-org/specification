@@ -1,0 +1,21 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a goal's `schedule` cron with the wrong field count.
+# GitHub/Forgejo take the POSIX 5-field form (minute hour day-of-month month
+# day-of-week); this entry has only four fields, so the schedule.cron pattern in
+# spec/schema/org.projectfile.ci.v1.json MUST reject it rather than emit an
+# `on: schedule` the forge would silently ignore.
+
+nodes:
+  audited:
+    goal: true
+    when:
+      events: [schedule]
+    schedule:               # the cron timer lives on the goal that owns the file
+      - cron: "0 3 * *"     # <- only 4 fields: rejected
+    needs:
+      npm-audit: true

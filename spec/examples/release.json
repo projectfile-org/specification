@@ -1,0 +1,40 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "widget"
+  },
+  "license": {
+    "spdx": "MIT"
+  },
+  "technologies": ["docker"],
+  "repositories": [
+    {
+      "url": "https://forge.example.com/example/widget"
+    }
+  ],
+  "org": {
+    "projectfile": {
+      "forge": {
+        "kinds": {
+          "forge.example.com": "forgejo"
+        }
+      },
+      "release": {
+        "tag-format": "v${version}",
+        "changelog": "keep-a-changelog",
+        "branches": [
+          {
+            "pattern": "main",
+            "channel": "latest"
+          },
+          {
+            "pattern": "next",
+            "channel": "next",
+            "prerelease": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A non-flagged node downstream of a CELL is a JOIN (fan-in, e.g. a multiarch
+  manifest): its tool runs exactly once, AFTER every cell — not once per cell.
+  This is the bug Model 1 fixes: the join must NOT inherit the cell's fan-out.
+
+input:
+  matrix:
+    axes:
+      ARCH: [amd64, arm64]       # 2 cells
+  nodes:
+    image-built:                 # CELL — once per ARCH
+      matrix: true
+      needs:
+        build: true
+    released:                    # JOIN — needs the cell, NOT a matrix cell
+      goal: true
+      needs:
+        image-built: true        # node dep — every cell before the fan-in
+        manifest: true
+
+expect:
+  runs: [build, manifest]
+  counts:
+    build: 2                     # CELL — once per cell (|ARCH| = 2)
+    manifest: 1                  # JOIN — once, after both cells
+  before:
+    - [build, manifest]          # the manifest fan-in runs after the cells

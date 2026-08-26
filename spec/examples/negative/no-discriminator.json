@@ -1,0 +1,9 @@
+{
+  "identity": {
+    "namespace": "org.example",
+    "name": "no-discriminator"
+  },
+  "license": {
+    "spdx": "MIT"
+  }
+}

@@ -1,0 +1,21 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — person.from is "2025/09/12" (slash-separated), not the required
+# ISO-8601 YYYY-MM-DD form. Enforced by the schema's isoDate pattern.
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: bad-date
+
+people:
+  - family-names: Example
+    given-names: Alice
+    email: alice@example.org
+    roles: [maintainer, copyright]
+    from: "2025/09/12"

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "dotted-string-key"
+  },
+  "dev.acme.tool": {
+    "status": "example"
+  }
+}

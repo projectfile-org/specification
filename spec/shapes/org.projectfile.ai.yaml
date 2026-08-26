@@ -1,0 +1,362 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.ai extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+#
+# Declares a project’s stance on AI and LLM use. Bridges consume it to render
+# the policy file (AI_POLICY.md by default) and to cross-reference that file
+# from README and CONTRIBUTING.
+#
+# ---------------------------------------------------------------------------
+# Absence is not permission
+# ---------------------------------------------------------------------------
+#
+# A document with no org.projectfile.ai namespace has NO DECLARED POLICY.
+# Consumers MUST NOT read that as a permissive default and MUST NOT render a
+# stance the project never took. Presence of the namespace IS the opt-in —
+# there is no `enabled` gate, because a policy namespace with no policy in it
+# has no other meaning.
+#
+# ---------------------------------------------------------------------------
+# Three directions
+# ---------------------------------------------------------------------------
+#
+# The namespace answers three independent questions. Consumers MUST NOT derive
+# any one of them from another:
+#
+#   INBOUND   what may come INTO the project — `attitude`, `autonomy`,
+#             `applies-to`, `activities`, `obligations`, the disclosure keys,
+#             the contribution gates, `enforcement`. Governs contributors.
+#   INTERNAL  how the project itself uses AI — `project-use`. Governs
+#             maintainers.
+#   OUTBOUND  how the project’s own content may be consumed BY AI systems —
+#             `content-signals`. Governs crawlers and trainers.
+#
+# A project may welcome LLM-assisted patches, refuse to be training data, and
+# hand-run every release. No answer constrains the others.
+#
+# ---------------------------------------------------------------------------
+# Document name
+# ---------------------------------------------------------------------------
+#
+#   filename  OPTIONAL (default: AI_POLICY.md) — the basename a renderer
+#             writes. No standard exists: AI_POLICY.md, AI-POLICY.md, AI.md
+#             and LLM.md are all in the wild, so the project names its own
+#             file and every consumer finds it at one declared place.
+#
+#             MUST be a basename. A value carrying a path separator, a `..`
+#             segment or an absolute path MUST be rejected, never sanitized —
+#             this field names a file a tool writes.
+#
+# ---------------------------------------------------------------------------
+# Permission vocabulary
+# ---------------------------------------------------------------------------
+#
+# ONE closed enum serves `attitude` and every activity:
+#
+#   encouraged | allowed | neutral | discouraged | prohibited
+#
+# `attitude` is REQUIRED and sets the project default. An activity overrides
+# it for that activity alone; an absent activity means "same as attitude". The
+# derivation is therefore the identity function — no attitude is ever
+# strengthened or weakened on its way to an activity.
+#
+# `neutral` means no stated position: ask first. It is NOT a synonym for
+# `allowed`, and `discouraged` is NOT a synonym for `prohibited`; consumers
+# MUST NOT render either pair as equivalent.
+#
+# ---------------------------------------------------------------------------
+# Autonomy
+# ---------------------------------------------------------------------------
+#
+#   autonomy  OPTIONAL (default: any) — WHAT KIND of use is permitted, which
+#             is a separate question from how much:
+#
+#               any       autonomous agents may act on their own
+#               assisted  a human drives, reviews and submits
+#               none      no LLM anywhere in the loop
+#
+#             Orthogonal to the permission vocabulary, and it applies to every
+#             activity rather than to pull requests alone: `bug-reports:
+#             allowed` with `autonomy: assisted` accepts a human-filed report
+#             written with an LLM and refuses one filed by a bot.
+#
+# ---------------------------------------------------------------------------
+# Who the policy binds
+# ---------------------------------------------------------------------------
+#
+#   applies-to  OPTIONAL (default: everyone) — everyone | contributors.
+#
+#               `contributors` binds outside contributions only and exempts
+#               the maintainers, who answer for their own practice under
+#               `project-use`. Projects take this shape when the rules exist
+#               to protect reviewer time rather than to state a position on
+#               the tools; consumers MUST render the exemption, because an
+#               unstated one reads as hypocrisy the first time a reader finds
+#               an AI-assisted maintainer commit.
+#
+# ---------------------------------------------------------------------------
+# Disclosure
+# ---------------------------------------------------------------------------
+#
+#   disclose-required  OPTIONAL (default: false) — whether contributors must
+#                      disclose LLM assistance.
+#
+#   disclose-trailer   OPTIONAL — the trailer key contributors write, e.g.
+#                      `Assisted-by`. With it a consumer renders the exact
+#                      line to paste into a commit message; without it the
+#                      rendered prose stays generic.
+#
+#   disclose-details   OPTIONAL — sequence saying WHAT the disclosure must
+#                      carry. Open vocabulary, declared order preserved.
+#                      Known values:
+#
+#                        tool    name the tool (Claude Code, Cursor, Amp …)
+#                        extent  how much of the work it did
+#                        prompt  include the prompt that produced the change
+#
+#   All three are ignored when disclose-required is false.
+#
+# ---------------------------------------------------------------------------
+# Obligations
+# ---------------------------------------------------------------------------
+#
+#   obligations  OPTIONAL — sequence of duties a contributor takes on when AI
+#                was involved. Open vocabulary; declared order preserved.
+#                Known values:
+#
+#                  understand       able to explain the change, and how it
+#                                   meets the rest of the system, without the
+#                                   tool
+#                  review           self-review before asking anyone else to
+#                                   read it
+#                  test             exercised on a platform the submitter can
+#                                   actually run, never “hypothetically
+#                                   correct”
+#                  edit             generated text is trimmed by a human — no
+#                                   verbatim dumps, no comments describing
+#                                   what the model did
+#                  human-reply      a human answers human feedback; replies to
+#                                   maintainers are never automated
+#                  license-cleared  no third-party code unless its licence
+#                                   permits the use and its terms are met
+#                  attest-original  the submitter states the work is their own
+#
+#                This is where the quality bar lives. `attitude` says whether
+#                the tool may be used; obligations say what the human still
+#                owes, which is the half most policies are actually about.
+#
+# ---------------------------------------------------------------------------
+# Contribution gates
+# ---------------------------------------------------------------------------
+#
+#   issue-required   OPTIONAL (default: false) — an AI-assisted contribution
+#                    MUST reference an issue the project has already accepted.
+#                    Drive-by patches against no agreed problem are closed:
+#                    the cost of a generated patch is paid by the reviewer,
+#                    and this is the field that moves the decision earlier.
+#
+#   excluded-labels  OPTIONAL — sequence of issue labels off-limits to AI
+#                    whatever `attitude` says, e.g. “good first issue”: an
+#                    issue that exists to teach a newcomer is spent, not
+#                    solved, when a model closes it.
+#
+# ---------------------------------------------------------------------------
+# Enforcement
+# ---------------------------------------------------------------------------
+#
+#   enforcement  OPTIONAL — sequence of consequences for violating this
+#                policy, in escalation order. Open vocabulary; declared order
+#                preserved and rendered as the ladder it is. Known values:
+#
+#                  warn     a first violation gets a warning
+#                  close    the contribution is closed unreviewed
+#                  revoke   commit or review privileges are withdrawn
+#                  ban      the account is barred from future contributions
+#                  publish  the violator is named on a public list; the list
+#                           URL goes in links[type=ai-blocklist]
+#
+#                A policy that states rules and no consequence is a request.
+#                Absence means the project has declared none — consumers MUST
+#                NOT invent one.
+#
+# ---------------------------------------------------------------------------
+# Statement
+# ---------------------------------------------------------------------------
+#
+#   statement  OPTIONAL localized-string (§7) — free prose, rendered verbatim
+#              above the derived sections. Carries the one thing the enums
+#              cannot: WHY. A policy that states rules and no reason reads as
+#              bureaucracy, and readers discount it accordingly.
+#
+# ---------------------------------------------------------------------------
+# Content signals
+# ---------------------------------------------------------------------------
+#
+#   content-signals  OPTIONAL — sequence of consent signal values from
+#                    contentsignals.org (IETF aipref). Open vocabulary;
+#                    consumers MUST accept unknown values and MUST preserve
+#                    declared order. Known values:
+#
+#                      ai-train  content may be used for AI/ML training
+#                      search    content may appear in search results
+#                      ai-input  content may be used as AI inference input
+#
+#                    Absence means "no consent signals declared" — neither a
+#                    prohibition nor a permission. The licence governs reuse
+#                    independently, and most licences say nothing about
+#                    training, which is the gap these signals address.
+#
+# ---------------------------------------------------------------------------
+# Activities
+# ---------------------------------------------------------------------------
+#
+# `activities` is a MAP from activity key to a token of the permission enum.
+# It is a map, and not a set of keys spread over the namespace, so that the
+# namespace’s own key space stays closed: a policy key added in a later
+# revision can never be mistaken for an activity a project declared.
+#
+# Open at the KEY level, closed at the VALUE level: consumers MUST accept an
+# unknown activity key, MUST preserve it on round-trip, and SHOULD render it
+# under its own name. Known keys fall in three families a project mixes
+# freely:
+#
+#   channel  pull-requests, commit-messages, bug-reports, discussions,
+#            code-review, security-reports
+#   content  code, code-comments, documentation, translations, prose,
+#            images, audio, video
+#   task     refactoring, bug-fixing, tests, grammar-tools
+#
+# The content family is what lets a project split the media question that no
+# single "no AI-generated media" flag can answer: `images: prohibited` beside
+# `audio: allowed` is one project’s real position, not an edge case.
+#
+# Navigational URLs go in top-level links[]:
+#   - { type: ai-policy,    url: "https://..." }   # authoritative policy page
+#   - { type: ai-blocklist, url: "https://..." }   # public list, `publish`
+#
+# A project whose authoritative policy is an external governance page declares
+# it there. The fields here stay the machine-readable form of that same
+# stance, so a consumer never has to fetch a page to answer a question.
+#
+# ---------------------------------------------------------------------------
+# Project use (INTERNAL)
+# ---------------------------------------------------------------------------
+#
+#   project-use  OPTIONAL — map from an activity key (same vocabulary as
+#                `activities`) to an AUTONOMY token — any | assisted | none —
+#                declaring how the project itself uses AI. No new vocabulary:
+#                the axis is the one `autonomy` already applies to
+#                contributors, pointed the other way.
+#
+#                  merges: none              no model approves or merges
+#                  releases: none            a human tags, builds, publishes
+#                  pull-requests: assisted   maintainers draft with a tool
+#
+#                Absence means the project has not said. A project that
+#                demands disclosure from contributors and says nothing about
+#                its own bench has answered half the question, and it is the
+#                half a reader trusts least.
+#
+# ---------------------------------------------------------------------------
+# Skills (sub-namespace: org.projectfile.ai.skills)
+# ---------------------------------------------------------------------------
+#
+# Describes agent-runnable skills and commands tied to the project.
+# Shape not yet specified — a future revision will define the manifest
+# schema (skill name, description, trigger, tooling, constraints).
+# Consumers MUST preserve this subtree on round-trip.
+
+org:
+  projectfile:
+    ai:
+
+      # --- Rendering ---
+
+      filename: AI_POLICY.md
+      # OPTIONAL  basename only                    (default: AI_POLICY.md)
+
+      # --- Top-level policy (INBOUND) ---
+
+      attitude: allowed
+      # REQUIRED  encouraged | allowed | neutral | discouraged | prohibited
+
+      autonomy: assisted
+      # OPTIONAL  any | assisted | none                        (default: any)
+
+      applies-to: contributors
+      # OPTIONAL  everyone | contributors                 (default: everyone)
+
+      # OPTIONAL  localized-string (§7); rendered verbatim, never summarized
+      statement:
+        en: >-
+          We accept LLM-assisted contributions because reviewing a patch is
+          our job either way. What we will not accept is a patch the
+          submitter cannot explain.
+        es: >-
+          Aceptamos contribuciones asistidas por LLM porque revisar un parche
+          es nuestro trabajo de todos modos. Lo que no aceptaremos es un
+          parche que quien lo envía no sepa explicar.
+
+      disclose-required: true
+      # OPTIONAL  (default: false)
+
+      disclose-trailer: Assisted-by
+      # OPTIONAL  trailer key; ignored when disclose-required is false
+
+      disclose-details: [tool, extent]
+      # OPTIONAL  tool | extent | prompt; open vocabulary, order preserved
+
+      obligations: [understand, review, test, edit, human-reply]
+      # OPTIONAL  open vocabulary, order preserved
+
+      issue-required: true
+      # OPTIONAL  (default: false)  AI work needs an already-accepted issue
+
+      excluded-labels: ["good first issue"]
+      # OPTIONAL  labels off-limits to AI whatever attitude says
+
+      enforcement: [warn, close, ban]
+      # OPTIONAL  escalation order; list URL in links[type=ai-blocklist]
+
+      content-signals: [search, ai-input]
+      # OPTIONAL  open vocabulary from contentsignals.org; order preserved
+
+      # --- Activity overrides (INBOUND) ---
+      # OPTIONAL map; an absent activity means "same as attitude".
+      # Same enum as attitude; unknown KEYS are accepted and preserved.
+
+      activities:
+        translations: encouraged
+        # a small project ships more locales this way than it ever would by hand
+
+        grammar-tools: encouraged
+
+        security-reports: prohibited
+        # an unverified LLM-written report costs a maintainer more than it saves
+
+        prose: discouraged
+        images: prohibited
+        video: prohibited
+        audio: allowed
+        # the media split one flag could not express: generated cover art is
+        # not the same decision as a generated test tone
+
+      # --- Project’s own use (INTERNAL) ---
+      # OPTIONAL map; activity key → autonomy token (any | assisted | none).
+
+      project-use:
+        pull-requests: assisted
+        code-review: assisted
+        merges: none
+        releases: none
+
+      # --- Skills sub-namespace ---
+      # Shape TBD — consumers preserve on round-trip.
+
+      skills: {}
