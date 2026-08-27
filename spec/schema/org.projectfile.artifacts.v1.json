@@ -32,7 +32,7 @@
         "kind": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$",
-          "description": "What sort of thing this is. The vocabulary is OPEN — a consumer MUST NOT reject a document for an unknown kind — and it MUST NOT change how any lowering (a CI workflow, a build) is generated: for that purpose `kind` is advisory, exactly like a tool's `tags`. It IS load-bearing for documentation and for the `{kind=…}` selector, neither of which is a lowering. Registered kinds and the field each is addressed by: `image` → ref; `binary` → command, path; `package` → registry, name; `module` → module; `service` → ports; `website` → url; `archive` → path. Absent => the artifact is unclassified and no kind selector matches it."
+          "description": "What sort of thing this is. The vocabulary is OPEN — a consumer MUST NOT reject a document for an unknown kind — and it MUST NOT change how any lowering (a CI workflow, a build) is generated: for that purpose `kind` is advisory, exactly like a tool's `tags`. It IS load-bearing for documentation and for the `{kind=…}` selector, neither of which is a lowering. Registered kinds and the field each is addressed by: `image` → ref; `binary` → command, path; `package` → registry, name; `module` → module; `service` → ports; `website` → url; `ssh` → url; `archive` → path. `website` and `ssh` are both PROTOCOL kinds — one address field, one scheme, one live auditor selecting on `{kind=…}` — and the pair is the template every further protocol kind follows (`mysql` addressed by `mysql://host:3306`, and so on) rather than a shape anyone has to invent again. Absent => the artifact is unclassified and no kind selector matches it."
         },
         "summary": {
           "$ref": "#/$defs/localizedString",
@@ -46,7 +46,7 @@
         "url": {
           "type": "string",
           "minLength": 1,
-          "description": "A reachable address — what a page auditor (lighthouse / linkinator) fetches. Unlike a webhook secret (named by `${VAR}`), this is a public address committed in the document."
+          "description": "A reachable address, SCHEME INCLUDED — what a live auditor connects to: `https://…` for a page auditor (lighthouse / linkinator), `ssh://host:port` for a protocol auditor (ssh-audit). The `kind` is what says which auditor the entry belongs to; the scheme is what makes the address readable on its own and carries the port, which is why a protocol kind needs no second field. Unlike a webhook secret (named by `${VAR}`), this is a public address committed in the document."
         },
         "ref": {
           "type": "string",

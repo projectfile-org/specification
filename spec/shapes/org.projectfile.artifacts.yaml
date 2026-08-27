@@ -22,7 +22,12 @@
 #   module   module           an importable path
 #   service  ports            what it listens on
 #   website  url              a reachable address
+#   ssh      url              a reachable address, ssh:// scheme
 #   archive  path             a bundle on disk
+#
+# `website` and `ssh` are the same PROTOCOL shape — one address, one scheme, one
+# live auditor selecting on `{kind=…}` — and every further protocol kind follows
+# it (`mysql` addressed by `mysql://host:3306`) instead of inventing a new one.
 #
 # Referenced from any string via the §3.8 interpolation sigil, two ways:
 #
@@ -85,3 +90,9 @@ org:
       frontpage:
         kind: website
         url: https://projectfile.org
+
+      # what ssh-audit audits — the scheme carries the port, so one field is the
+      # whole address; in CI the host is the compose SERVICE name the tool joins
+      sshd:
+        kind: ssh
+        url: ssh://projectfile-sshd:22

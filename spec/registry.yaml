@@ -425,7 +425,8 @@ namespaces:
       thing and how to call it. Each entry carries a `kind` plus the address fields
       that kind is addressed by (`ref` for an image, `command`/`path` for a binary,
       `registry`/`name` for a package, `module` for a library, `ports` for a
-      service, `url` for a site). `kind` is an open vocabulary and stays ADVISORY
+      service, `url` for a site and for a protocol endpoint such as `ssh`, whose
+      scheme carries the port). `kind` is an open vocabulary and stays ADVISORY
       for lowering — a resolver MUST NOT branch on it — while being load-bearing
       for documentation and for the kind selector. Named keys let each consumer
       reference its OWN artifact independently, retiring the stringly-typed

@@ -74,6 +74,14 @@ frontpage:
   kind: website
   url: https://projectfile.org
 
+# A protocol endpoint — same one-address shape as a website, a different scheme
+# and a different live auditor. `{kind=ssh}` is what ssh-audit selects on, and the
+# scheme carries the port, so no second field is needed.
+sshd:
+  kind: ssh
+  summary: SSH server
+  url: ssh://ssh.projectfile.org:22
+
 # A release bundle on disk.
 sbom:
   kind: archive
