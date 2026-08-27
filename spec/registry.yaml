@@ -518,8 +518,12 @@ namespaces:
     summary: >-
       Cross-cutting workflow conventions read by multiple generators:
       commit-style, workflow model, style-guide-url (top-level or
-      per-technology-tag), and the fragment-assembly defaults (documents
-      shells + flat parents list) consumed by pf-bridge-fragments.
+      per-technology-tag), the tool-agnostic code-style block (line-length),
+      and the fragment-assembly defaults (documents shells + flat parents
+      list) consumed by pf-bridge-fragments. code-style holds only what more
+      than one generator can honour, so one declaration reaches yamllint’s
+      line-length, markdownlint’s MD013 and .editorconfig’s max_line_length
+      without any of them carrying its own number.
       org.projectfile.release and org.projectfile.contributing read from
       here — neither duplicates these fields.
     status: proposed

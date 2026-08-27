@@ -21,6 +21,12 @@ org:
       versioning: semantic  # OPTIONAL  semantic | calver | rolling | none
       style-guide-url: "https://example.com/style"  # OPTIONAL  project-wide default
 
+      # Tool-agnostic source formatting. One declaration feeds every generator
+      # that has a notion of line width — yamllint’s line-length, markdownlint’s
+      # MD013, .editorconfig’s max_line_length — so they can never disagree.
+      code-style:
+        line-length: 120  # OPTIONAL  maximum source line width, in columns
+
       # Per-language overrides — keys match technology tags
       js:
         style-guide-url: "https://example.com/js-style"
