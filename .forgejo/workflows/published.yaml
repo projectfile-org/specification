@@ -116,19 +116,25 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: true
-      - name: cffr-validate
+      - name: auto-cffr-validate
         uses: projectfile/ci-actions/run-tool@v1
         with:
           image: ${{ vars.D9T_R_TOOLS_IMAGE || format('{0}/d9t/r-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-cffr-validate
-      - name: jsonlint
+      - name: auto-jsonlint
         uses: projectfile/ci-actions/run-tool@v1
         with:
           image: ${{ vars.D9T_JS_TOOLS_IMAGE || format('{0}/d9t/js-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-jsonlint
-      - name: yamllint
+      - name: auto-shellcheck
+        uses: projectfile/ci-actions/run-tool@v1
+        with:
+          image: ${{ vars.D9T_MISC_TOOLS_IMAGE || format('{0}/d9t/misc-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
+          version: ${{ env.M6E_TAG }}
+          run: auto-shellcheck
+      - name: auto-yamllint
         uses: projectfile/ci-actions/run-tool@v1
         with:
           image: ${{ vars.D9T_PYTHON_TOOLS_IMAGE || format('{0}/d9t/python-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
