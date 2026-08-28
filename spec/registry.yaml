@@ -428,7 +428,12 @@ namespaces:
       service, `url` for a site and for a protocol endpoint such as `ssh`, whose
       scheme carries the port). `kind` is an open vocabulary and stays ADVISORY
       for lowering — a resolver MUST NOT branch on it — while being load-bearing
-      for documentation and for the kind selector. Named keys let each consumer
+      for documentation and for the kind selector. An address reachable at more
+      than one deployment also carries an `environment` (`dev`, `ci`,
+      `production`, …), the second selector dimension that lets a live auditor
+      dial the address belonging to the run it is part of; an entry declaring no
+      `environment` matches no environment selector, so the fall-through to a
+      production address cannot happen by omission. Named keys let each consumer
       reference its OWN artifact independently, retiring the stringly-typed
       space-separated `M6E_ARTIFACTS` list that could not say WHICH artifact a tool
       wanted. Referenced from any string via the §3.8 sigil: by name

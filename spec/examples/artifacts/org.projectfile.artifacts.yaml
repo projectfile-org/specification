@@ -69,16 +69,33 @@ database:
       name: metrics
       protocol: tcp
 
-# A deployed site — what a page auditor (lighthouse / linkinator) fetches.
+# A deployed site — what a page auditor (lighthouse / linkinator) fetches. One
+# site, three addresses, because where the auditor runs decides which one it can
+# reach: `{kind=website,environment=ci}` picks exactly the middle entry. Two
+# predicates, and an entry must match both — the same mechanism `registry` uses
+# to tell the two packages above apart.
 frontpage:
   kind: website
+  environment: production
   url: https://projectfile.org
+
+frontpage-ci:
+  kind: website
+  environment: ci
+  url: https://pf-nginx.ci.localhost
+
+frontpage-dev:
+  kind: website
+  environment: dev
+  url: https://pf-nginx.docker.localhost
 
 # A protocol endpoint — same one-address shape as a website, a different scheme
 # and a different live auditor. `{kind=ssh}` is what ssh-audit selects on, and the
-# scheme carries the port, so no second field is needed.
+# scheme carries the port, so no second field is needed. `environment` applies to
+# every protocol kind, not just websites.
 sshd:
   kind: ssh
+  environment: production
   summary: SSH server
   url: ssh://ssh.projectfile.org:22
 

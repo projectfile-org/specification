@@ -13,10 +13,11 @@ as opaque per §3.7). Each file is the bare *value* of the
 `org.projectfile.artifacts` extension subtree, validated against that subtree’s
 dedicated standalone schema:
 
-| Fixture                          | Schema                                           | Expectation |
-| -------------------------------- | ------------------------------------------------ | ----------- |
-| `org.projectfile.artifacts.yaml` | `../../schema/org.projectfile.artifacts.v1.json` | MUST pass   |
-| `negative/bad-no-target.yaml`    | `../../schema/org.projectfile.artifacts.v1.json` | MUST fail   |
+| Fixture                              | Schema                                           | Expectation |
+| ------------------------------------ | ------------------------------------------------ | ----------- |
+| `org.projectfile.artifacts.yaml`     | `../../schema/org.projectfile.artifacts.v1.json` | MUST pass   |
+| `negative/bad-no-target.yaml`        | `../../schema/org.projectfile.artifacts.v1.json` | MUST fail   |
+| `negative/bad-environment-case.yaml` | `../../schema/org.projectfile.artifacts.v1.json` | MUST fail   |
 
 ## Why a separate harness
 

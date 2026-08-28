@@ -29,6 +29,14 @@
 # live auditor selecting on `{kind=…}` — and every further protocol kind follows
 # it (`mysql` addressed by `mysql://host:3306`) instead of inventing a new one.
 #
+# A protocol artifact is usually reachable at SEVERAL addresses at once — a
+# developer's local vhost, an ephemeral CI stack, the public origin — so it also
+# carries an `environment` naming which deployment its `url` is true in. That is
+# a second selector dimension, not a second kind: `{kind=website,environment=ci}`
+# picks the CI address and nothing else. An artifact with no `environment` is
+# environment-neutral and matches no environment selector at all, so an auditor
+# built for an ephemeral stack can never silently fall through to production.
+#
 # Referenced from any string via the §3.8 interpolation sigil, two ways:
 #
 #   By NAME — one artifact, when a tool wants a specific output:
@@ -37,6 +45,11 @@
 #   By KIND — every artifact of a kind, using the MAP selector (curly braces,
 #   because artifacts is a mapping of named keys, not a list):
 #     commands: ["docker pull ${org.projectfile.artifacts{kind=image}.ref}"]
+#
+#   By SEVERAL fields — the selector takes a comma-separated predicate list and
+#   an entry must match every one, which is how two artifacts of the same kind
+#   are told apart (`registry` for packages, `environment` for addresses):
+#     ${org.projectfile.artifacts{kind=website,environment=ci}.url}
 #
 # The map selector yields EVERY match, not the first, because a mapping has no
 # order in which "first" would mean anything (§3.8). A consumer whose output
@@ -86,13 +99,21 @@ org:
           - port: 9104
             name: metrics
 
-      # what lighthouse / linkinator audit
+      # what lighthouse / linkinator audit — one entry per deployment, because
+      # the address a page auditor dials depends on where the run is happening
       frontpage:
         kind: website
+        environment: production
         url: https://projectfile.org
+
+      frontpage-ci:
+        kind: website
+        environment: ci
+        url: https://pf-nginx.ci.localhost
 
       # what ssh-audit audits — the scheme carries the port, so one field is the
       # whole address; in CI the host is the compose SERVICE name the tool joins
-      sshd:
+      sshd-ci:
         kind: ssh
+        environment: ci
         url: ssh://projectfile-sshd:22

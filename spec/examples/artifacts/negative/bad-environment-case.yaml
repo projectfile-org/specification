@@ -1,0 +1,20 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture — MUST FAIL against ../../../schema/org.projectfile.artifacts.v1.json.
+# `environment` carries the same lowercase-token pattern as `kind` because the map
+# selector compares predicate values as literal case-sensitive strings. An entry
+# written `Production` therefore matches no `{environment=production}` selector,
+# and the miss is SILENT in the worst possible way: a live auditor selecting on an
+# environment it cannot find has zero targets, and zero targets is a warn-and-pass
+# (an auditing project with nothing to audit must not fail). So the run goes green
+# having audited nothing at all. Refusing the value at authoring time is the only
+# place that failure is visible.
+
+frontpage:
+  kind: website
+  environment: Production
+  url: https://projectfile.org
