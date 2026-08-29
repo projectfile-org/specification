@@ -82,7 +82,7 @@ frontpage:
 frontpage-ci:
   kind: website
   environment: ci
-  url: https://pf-nginx.ci.localhost
+  url: https://projectfile.test:8443
 
 frontpage-dev:
   kind: website

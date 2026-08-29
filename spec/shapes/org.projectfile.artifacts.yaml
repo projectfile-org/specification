@@ -109,7 +109,7 @@ org:
       frontpage-ci:
         kind: website
         environment: ci
-        url: https://pf-nginx.ci.localhost
+        url: https://projectfile.test:8443
 
       # what ssh-audit audits — the scheme carries the port, so one field is the
       # whole address; in CI the host is the compose SERVICE name the tool joins
