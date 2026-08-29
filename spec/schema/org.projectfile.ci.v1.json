@@ -378,6 +378,10 @@
           "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true
         },
+        "advisory": {
+          "type": "boolean",
+          "description": "NON-BLOCKING verdict: the tool RUNS, its output and its `reports:` are kept, and its FAILURE is reported in the same place a pass would be — but nothing downstream is skipped or failed because of it. It is neither a retry nor a skip nor a way to hide a finding: an advisory failure is still printed, and the `reports:` upload is already `always()`-guarded, so the diagnostic survives exactly when it is most wanted. Absent => BLOCKING (fail-closed, so no existing document changes meaning); only an explicit `true` makes a tool advisory. Intended for a linter younger than the fleet's patience with it — a rule set still churning, whose findings are worth reading before they are worth a red build. It MUST NOT be set on a scanner, a publish or a test: those are what a gate is FOR, and an advisory one is a gate that has stopped gating. Reference lowerings: m6e turns the non-zero rc into 0 after an advisory verdict line naming the log; a forge lowers it to the step-level non-blocking predicate it spells natively (`continue-on-error` on a host step, an action input on a containerised one). The complement of `guard`/`inputs`, which decide WHETHER the tool runs; `advisory` decides what its EXIT STATUS means."
+        },
         "env": {
           "type": "array",
           "description": "Vendor-AGNOSTIC environment variable PASSTHROUGH: NAMES of runner env vars to forward into the tool's execution context (container or host). Names only, never values — no secrets in the manifest. Absent/empty => no passthrough (the common case; auto-* tools need none). Used by compiler-image tools that honour a proxy in a private-proxy environment (e.g. `GOPROXY` for `go mod tidy`/`go vet`). Every lowering supports it natively: m6e adds `--env <NAME>` to the container run (or relies on the inherited host env), GitHub/Forgejo/Tekton set step `env`.",

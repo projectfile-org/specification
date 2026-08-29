@@ -43,6 +43,7 @@ validated against that subtree’s dedicated standalone schema:
 | `negative/bad-mount-path.yaml`               | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-set-env-name.yaml`             | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-when-step.yaml`                | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
+| `negative/bad-advisory.yaml`                 | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 
 ## Why a separate harness
 

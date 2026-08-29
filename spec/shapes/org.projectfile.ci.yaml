@@ -161,6 +161,14 @@
 #              image digest + config; a forge: on.push.paths / paths-filter). A skip
 #              replays only a prior SUCCESS, never a failure. (Change: HAS-IT-CHANGED —
 #              the complement of guard.)
+#     advisory: NON-BLOCKING verdict — the tool RUNS and its failure is REPORTED, but
+#              nothing downstream is skipped or failed by it (the `reports:` upload is
+#              already always()-guarded, so the diagnostic survives). Absent => BLOCKING
+#              (fail-closed); only an explicit `true` opts in. For a linter younger than
+#              our patience with it, NEVER for a scanner, a publish or a test. m6e turns
+#              the rc into 0 after an advisory verdict line; a forge lowers it to the
+#              step-level non-blocking predicate it spells natively. Where guard/inputs
+#              decide WHETHER a tool runs, advisory decides what its EXIT STATUS means.
 #     tags:    ADVISORY open-vocabulary labels (e.g. lint, test, fast) — for
 #              documentation/filtering only; no lowering semantics
 #     description: ADVISORY free-prose note on what the tool does (the manifest
@@ -348,6 +356,10 @@ org:
         eslint:
           image: D9T_JS_TOOLS_IMAGE
           run: auto-eslint
+        linkinator:
+          image: D9T_JS_TOOLS_IMAGE
+          run: auto-linkinator
+          advisory: true               # RUNS and REPORTS, never blocks (fail-closed when absent)
         astro-build:
           run: make astro-build
         eslint-fix:

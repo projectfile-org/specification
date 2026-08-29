@@ -120,6 +120,7 @@ tools:
   linkinator:
     image: D9T_JS_TOOLS_IMAGE
     run: auto-linkinator
+    advisory: true                      # REPORTS but never blocks: a dead third-party link is not this commit's fault
   astro-build:
     run: make astro-build
   eslint-fix:

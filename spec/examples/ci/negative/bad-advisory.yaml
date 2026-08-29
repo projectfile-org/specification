@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — the `advisory` non-blocking verdict given as a STRING
+# instead of the required boolean. The field is typed `boolean` in
+# spec/schema/org.projectfile.ci.v1.json, so a truthy-looking scalar MUST be
+# rejected: a lowering that accepted `"yes"` would have to guess, and a guess that
+# lands on "blocking" turns a linter red while a guess that lands on "advisory"
+# silently disarms a gate. Fail-closed means the SHAPE fails loud instead.
+
+nodes:
+  source-passes-lint:
+    needs:
+      link-validate: true
+tools:
+  link-validate:
+    image: D9T_JS_TOOLS_IMAGE
+    run: auto-linkinator
+    advisory: "yes"   # <- must be a boolean, not a string: rejected
