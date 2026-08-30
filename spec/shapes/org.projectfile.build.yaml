@@ -10,7 +10,7 @@
 #
 # This namespace carries the BUILD-ARGUMENT surface a project's container build
 # consumes — declared ONCE here, lowered to BOTH the local make plane (m6e, as
-# `export VAR ?= …` + `--build-arg`) and a forge CI plane (the ci-resolver, as
+# `export VAR ?= …` + `--build-arg`) and a forge CI plane (the pf-ci, as
 # `${{ vars.VAR || '…' }}`). It carries only what `docker build` consumes:
 # registry-host building blocks and a FLAT map of build-args, where a `FROM`
 # image ref is just one such arg with its registry + tag interpolated in place.

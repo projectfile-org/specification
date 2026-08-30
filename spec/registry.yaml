@@ -193,7 +193,7 @@ namespaces:
     summary: >-
       The BUILD-ARGUMENT surface a project's container build depends on, declared
       ONCE and lowered to BOTH the local make plane (m6e) and a forge CI plane
-      (the ci-resolver). Carries only what `docker build` consumes: registry-host
+      (the pf-ci). Carries only what `docker build` consumes: registry-host
       building blocks and a FLAT map of build-args, where a `FROM` image ref is
       just one such arg with its registry + tag interpolated in place. `registries`
       are the registry-host building blocks (loud `*.invalid` sentinel default,
@@ -450,8 +450,8 @@ namespaces:
     status: proposed
     shape: shapes/org.projectfile.artifacts.yaml
     links:
-      - url: "https://codeberg.org/projectfile/ci-resolver"
-        title: "ci-resolver (pf-ci)"
+      - url: "https://codeberg.org/projectfile/ci"
+        title: "pf-ci (pf-ci)"
         role: consumer
       - url: "https://codeberg.org/projectfile/bridge"
         title: "bridge (pf-bridge)"
@@ -511,8 +511,8 @@ namespaces:
     status: proposed
     shape: shapes/org.projectfile.events.yaml
     links:
-      - url: "https://codeberg.org/projectfile/ci-resolver"
-        title: "ci-resolver (pf-ci)"
+      - url: "https://codeberg.org/projectfile/ci"
+        title: "pf-ci (pf-ci)"
         role: producer
 
   # --- workflow conventions ---

@@ -197,7 +197,7 @@ tools:
 # --- secret PROVISIONING manifest (OPTIONAL) -----------------------------------
 # The dev/CI `.secrets/` tree a compose `secrets:` block mounts, materialised
 # BEFORE dc-up-d by a secrets-provision step BOTH lowerings inject when this map
-# is non-empty. ONE source of truth read by m6e (make) AND the cloud ci-resolver
+# is non-empty. ONE source of truth read by m6e (make) AND the cloud pf-ci
 # workflow. Two kinds: `value:` writes a literal verbatim; `docker:` runs
 # `docker run <image> <run>` and captures stdout. NEVER real prod secrets (§8):
 # `value:` carries dev defaults or `CHANGEME` placeholders, `docker:` generates a

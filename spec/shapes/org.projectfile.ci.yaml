@@ -390,7 +390,7 @@ org:
       # --- secret PROVISIONING manifest (OPTIONAL): the `secrets:` map ----------
       # The dev/CI `.secrets/` tree a compose `secrets:` block mounts, materialised
       # BEFORE dc-up-d by a secrets-provision step BOTH lowerings (m6e make + the
-      # cloud ci-resolver workflow) inject when this map is non-empty. ONE source
+      # cloud pf-ci workflow) inject when this map is non-empty. ONE source
       # of truth — empty/absent => no provisioning step (the no-op invariant holds).
       # Two kinds: `value:` writes a literal verbatim; `docker:` runs
       # `docker run <resolved-image> <run>` and captures stdout as the secret.
