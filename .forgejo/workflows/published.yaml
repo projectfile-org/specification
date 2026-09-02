@@ -34,7 +34,7 @@ jobs:
         with:
           submodules: true
       - name: pf-bridge-check
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.PF_BRIDGE_IMAGE || format('{0}/projectfile/bridge', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
@@ -46,7 +46,7 @@ jobs:
         with:
           submodules: true
       - name: pf-validate
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.PF_CLI_IMAGE || format('{0}/projectfile/cli', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
@@ -68,7 +68,7 @@ jobs:
         with:
           submodules: true
       - name: reuse-lint
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_PYTHON_TOOLS_IMAGE || format('{0}/d9t/python-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
@@ -85,14 +85,14 @@ jobs:
         with:
           submodules: true
       - name: grype-scan-source
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_GO_TOOLS_IMAGE || format('{0}/d9t/go-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-grype
           mounts: /app/data/ci-cache/grype-db:/app/.cache/grype:ro
       - name: trivy-scan-source
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_GO_TOOLS_IMAGE || format('{0}/d9t/go-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
@@ -117,25 +117,25 @@ jobs:
         with:
           submodules: true
       - name: auto-cffr-validate
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_R_TOOLS_IMAGE || format('{0}/d9t/r-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-cffr-validate
       - name: auto-jsonlint
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_JS_TOOLS_IMAGE || format('{0}/d9t/js-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-jsonlint
       - name: auto-shellcheck
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_MISC_TOOLS_IMAGE || format('{0}/d9t/misc-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
           run: auto-shellcheck
       - name: auto-yamllint
-        uses: projectfile/ci-actions/run-tool@v1
+        uses: projectfile/actions/run-tool@v1
         with:
           image: ${{ vars.D9T_PYTHON_TOOLS_IMAGE || format('{0}/d9t/python-tools', vars.SOURCE_DOCKER_REGISTRY || 'kiota.ch') }}
           version: ${{ env.M6E_TAG }}
