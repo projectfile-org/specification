@@ -6,7 +6,7 @@
 
 # INVALID deployment-overlay fixture — the `actions` ref-override map declares a
 # slot the lowering does not own. Only checkout / download-artifact / upload-artifact
-# / ci-actions are overridable refs; anything else (here `setup-node`) is not a slot
+# are overridable refs; anything else (here `setup-node`) is not a slot
 # the renderer maps, so the deployment `actions` object's `additionalProperties:false`
 # MUST reject it (mirroring the resolver's runtime unknown-slot fail-fast).
 

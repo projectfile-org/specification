@@ -237,8 +237,8 @@ forgejo:
   concurrency:
     group: ci-${{ github.ref }}        # cancel an in-flight run on the same ref
     cancel-in-progress: true
+  library: projectfile-org/actions@v1    # `repo@tag`; split into repo + tag at render
   actions:                             # override the helper-action refs (adapter defaults otherwise)
     checkout: actions/checkout@v7
     download-artifact: actions/download-artifact@v8   # stay major-paired with the composite's upload
     upload-artifact: actions/upload-artifact@v7
-    ci-actions: projectfile/ci-actions@v1             # `repo@tag`; split into lib + tag at render

@@ -185,7 +185,7 @@
 #              member's `run` as an ordered step (a compose stack cannot span jobs
 #              on an ephemeral runner). m6e keeps them separate recipes. No `image`
 #              forbidden — a fused member may still ship a container.
-#     action:  ci-actions library entry this tool lowers to on a forge
+#     action:  action-library entry this tool lowers to on a forge
 #              (`container-build` today; checkout/publish later) — the pragmatic
 #              remainder of a not-yet-a-plain-image tool, NOT a capability. No `image`.
 #     emit:    the semantic EVENT this tool reports once it has succeeded
@@ -246,7 +246,7 @@
 #   * `fuse: <group>` CO-LOCATES connected same-group tools into one forge job of
 #     ordered run-steps (a compose stack cannot span jobs on an ephemeral runner);
 #     m6e keeps them as separate recipes (its daemon persists between them).
-#   * `action: <lib>` lowers the tool to a pinned ci-actions ref on a forge — the
+#   * `action: <lib>` lowers the tool to a pinned action-library ref on a forge — the
 #     pragmatic remainder of a tool not yet a plain image (`container-build` now;
 #     checkout/publish later), reducible to an ordinary tool once its image exists.
 # The image hand-off is an OCI archive tar: `container-build` emits `image-<cell>.tar`
@@ -430,9 +430,9 @@ org:
           contents: write                # a release upload needs contents:write
         credentials:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # binds gh-release's env name, scoped to that job
+        library: projectfile-org/actions@v1  # action-library `repo@tag`; owner differs per forge
         actions:                         # helper-action `uses:` ref overrides (additive; absent = default)
           checkout: actions/checkout@v7
-          ci-actions: projectfile/ci-actions@v1
       forgejo:
         timeout-minutes: 30
         concurrency:

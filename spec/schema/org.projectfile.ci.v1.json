@@ -168,7 +168,7 @@
         "builder": {
           "type": "string",
           "enum": ["buildx", "buildah"],
-          "description": "Container-build BACKEND override for an `action: container-build` tool on this target — selects the `container-build/<builder>` ci-actions variant. Absent => the target adapter default (buildx). A deployment knob, NOT a DAG field: the build's MEANING is identical, only the local build mechanism differs."
+          "description": "Container-build BACKEND override for an `action: container-build` tool on this target — selects the `container-build/<builder>` action-library variant. Absent => the target adapter default (buildx). A deployment knob, NOT a DAG field: the build's MEANING is identical, only the local build mechanism differs."
         },
         "credentials": {
           "type": "object",
@@ -176,15 +176,18 @@
           "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
           "additionalProperties": { "type": "string" }
         },
+        "library": {
+          "type": "string",
+          "description": "Action-library coordinate as `repo@tag` (adapter default `projectfile/actions@v1`); the lowering splits at the final `@` and recomposes `<repo>/<provider>@<tag>` per action path. A PREFIX, not a pinned `uses:` ref — hence a sibling of `actions`, not a slot inside it. Per-target because a mirror of the library rarely lands under the same OWNER on every forge (a self-hosted forge owner is free; a github.com org name may already be taken), so a bare path that resolves on one forge 404s on the other."
+        },
         "actions": {
           "type": "object",
           "additionalProperties": false,
           "description": "Overrides the helper-action `uses:` refs the lowering otherwise takes from its per-target adapter defaults. A `{slot: name@ref}` map: each value is a fully-pinned action reference exactly as hand-written in `uses:`. An absent slot keeps the adapter default, so no overlay renders byte-identical to before (purely additive). Deployment, NOT DAG: a `uses:` token is GHA/Forgejo VOCABULARY, never abstract graph meaning — quarantined here for the same reason as `runs-on`/`builder`. Author it ONCE in a shared include so a fleet stays single-source instead of drifting per projectfile.",
           "properties": {
             "checkout": { "type": "string", "description": "Source-checkout action ref (adapter default `actions/checkout@v7`)." },
-            "download-artifact": { "type": "string", "description": "Artifact-download action ref, the build->scan/publish tar consumer (adapter default `actions/download-artifact@v8`). MUST stay major-compatible with the producer `upload-artifact` ref the ci-actions container-build composite uses." },
-            "upload-artifact": { "type": "string", "description": "Artifact-upload action ref, the build-artifact-edge producer (adapter default `actions/upload-artifact@v7`)." },
-            "ci-actions": { "type": "string", "description": "External ci-actions library ref as `repo@tag` (adapter default `projectfile/ci-actions@v1`); the lowering splits at the final `@` into repo + tag and recomposes `<repo>/<provider>@<tag>` per action path." }
+            "download-artifact": { "type": "string", "description": "Artifact-download action ref, the build->scan/publish tar consumer (adapter default `actions/download-artifact@v8`). MUST stay major-compatible with the producer `upload-artifact` ref the action library’s container-build composite uses." },
+            "upload-artifact": { "type": "string", "description": "Artifact-upload action ref, the build-artifact-edge producer (adapter default `actions/upload-artifact@v7`)." }
           }
         }
       }
@@ -317,10 +320,10 @@
     "manifest": {
       "type": "object",
       "additionalProperties": false,
-      "description": "A tool EXECUTION manifest: the HOW behind a leaf the DAG only names. Every field is OPTIONAL — an empty manifest means `run: auto-<name>` on the host runner with no container. Carries no graph semantics; the lowering ignores it and a generator joins it in only at render time. Every leaf is a TOOL — there is no privileged build/live/checkout capability class. A tool ships a container (`image`+`run`) or runs on the host; `fuse` CO-LOCATES connected tools into one job (a stateful runtime — a compose stack — cannot span jobs on an ephemeral runner); `action` is the pragmatic remainder of a tool not yet a plain container image (`container-build` today; checkout/publish later — each reducible to a tool when its image lands), lowering to a pinned ci-actions ref. NOTE: image-scan is an ordinary tool (`image`+`run`, e.g. auto-grype/auto-trivy/auto-dockle) fed the `container-build` OCI tar daemonlessly; the build→scan hand-off is derived from its `needs` edge to the build, not a field.",
+      "description": "A tool EXECUTION manifest: the HOW behind a leaf the DAG only names. Every field is OPTIONAL — an empty manifest means `run: auto-<name>` on the host runner with no container. Carries no graph semantics; the lowering ignores it and a generator joins it in only at render time. Every leaf is a TOOL — there is no privileged build/live/checkout capability class. A tool ships a container (`image`+`run`) or runs on the host; `fuse` CO-LOCATES connected tools into one job (a stateful runtime — a compose stack — cannot span jobs on an ephemeral runner); `action` is the pragmatic remainder of a tool not yet a plain container image (`container-build` today; checkout/publish later — each reducible to a tool when its image lands), lowering to a pinned action-library ref. NOTE: image-scan is an ordinary tool (`image`+`run`, e.g. auto-grype/auto-trivy/auto-dockle) fed the `container-build` OCI tar daemonlessly; the build→scan hand-off is derived from its `needs` edge to the build, not a field.",
       "dependentSchemas": {
         "action": {
-          "description": "An `action` tool lowers to a per-target ci-actions ref, NOT a fixed container the manifest pins — so `image` is meaningless here and forbidden. The make lowering keeps the tool's own native recipe (the executor never lowers an action); a forge lowering dispatches to the library entry that supplies the real steps (build to an OCI archive, …). `artifact` and `reports` are likewise forbidden: an action handles its OWN artifact hand-off (the `container-build` OCI tar uploads itself), so the generic plain-`run:` producer/report signals do not apply.",
+          "description": "An `action` tool lowers to a per-target action-library ref, NOT a fixed container the manifest pins — so `image` is meaningless here and forbidden. The make lowering keeps the tool's own native recipe (the executor never lowers an action); a forge lowering dispatches to the library entry that supplies the real steps (build to an OCI archive, …). `artifact` and `reports` are likewise forbidden: an action handles its OWN artifact hand-off (the `container-build` OCI tar uploads itself), so the generic plain-`run:` producer/report signals do not apply.",
           "properties": { "image": false, "artifact": false, "reports": false }
         }
       },
@@ -347,7 +350,7 @@
         },
         "action": {
           "type": "string",
-          "description": "Names a ci-actions LIBRARY entry this tool lowers to on a forge (`container-build` today; checkout/publish later) — the PRAGMATIC remainder of a tool not yet expressible as a plain container image, NOT a capability class. It is reducible to an ordinary tool once its image exists; equality is the goal. The realisation lives in that target's ci-actions library, NOT inline in any resolver. The shared image hand-off is an OCI archive tar (`container-build` emits `image-<cell>.tar`); an ordinary image-scan tool consumes it DAEMONLESSLY (the build→scan wiring is derived from the scanner's `needs` edge to `container-build`, not a field), carried per-target by that target's artifact mechanism. An `action` tool carries no `image` (the action supplies it); on m6e it keeps its own native recipe."
+          "description": "Names an ACTION-LIBRARY entry this tool lowers to on a forge (`container-build` today; checkout/publish later) — the PRAGMATIC remainder of a tool not yet expressible as a plain container image, NOT a capability class. It is reducible to an ordinary tool once its image exists; equality is the goal. The realisation lives in that target's action library, NOT inline in any resolver. The shared image hand-off is an OCI archive tar (`container-build` emits `image-<cell>.tar`); an ordinary image-scan tool consumes it DAEMONLESSLY (the build→scan wiring is derived from the scanner's `needs` edge to `container-build`, not a field), carried per-target by that target's artifact mechanism. An `action` tool carries no `image` (the action supplies it); on m6e it keeps its own native recipe."
         },
         "emit": {
           "type": "string",
