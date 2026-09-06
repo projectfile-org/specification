@@ -31,6 +31,7 @@ validated against that subtree’s dedicated standalone schema:
 | `negative/bad-secret-in-env.yaml`            | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-secret-unknown-image-ref.yaml` | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-tool-inputs.yaml`              | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
+| `negative/bad-tool-permission.yaml`          | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-when-event.yaml`               | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-dispatch-input.yaml`           | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-cron.yaml`                     | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |

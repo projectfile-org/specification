@@ -138,6 +138,7 @@ tools:
   oci-push:
     action: oci-push                      # consumes the archive container-build produced, pushes it
     emit: ci.image.published              # report WHAT shipped — image, tags, digest, cell — not just "the goal passed"
+    permissions: {packages: write}        # registry write, scoped to the publish job (never the lint one beside it)
   compose-up:
     fuse: live                            # co-locate with container-test in one live-stack job
     run: docker compose up --detach
@@ -180,6 +181,7 @@ tools:
   gh-release:
     run: gh release create "$TAG" --generate-notes dist/*   # CONSUMES build-binaries' artifact (derived from needs)
     env: [GH_TOKEN]                    # NAME only — the secret VALUE lives in gha.credentials
+    permissions: {contents: write}     # the CAPABILITY that token needs — unioned onto this leaf's job only
     forgejo: false                     # gha-native; a Forgejo release uses its own leaf
   semantic-release:
     run: npx semantic-release          # the release tool is a b19/cli CHOICE, not a resolver concept
@@ -229,7 +231,7 @@ secrets:
 gha:
   runs-on: ubuntu-latest               # override the adapter default on every job
   permissions:
-    contents: write                    # a release upload needs write to contents
+    contents: read                     # the document-wide FLOOR; write lives on the leaves that earn it
   credentials:
     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # binds gh-release's `env: [GH_TOKEN]`, scoped to that job
 forgejo:

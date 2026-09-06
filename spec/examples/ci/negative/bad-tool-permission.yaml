@@ -1,0 +1,16 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — a tool permission carrying a level outside the closed
+# read/write/none set. `admin` is a plausible-looking scope level that no forge
+# grants, so spec/schema/org.projectfile.ci.v1.json MUST reject it rather than
+# lower it into a grant nobody can audit.
+
+tools:
+  gh-release:
+    run: gh release create
+    permissions:
+      contents: admin   # <- not read/write/none: rejected
