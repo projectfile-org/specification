@@ -25,6 +25,7 @@ identity:
     en: 'The normative specification of the projectfile: a single stack- and vendor-agnostic YAML file that describes a software project identity, build, CI and publishing. Holds the spec prose and v1 JSON Schema, dual-licensed MIT and CC-BY-4.0, rendered at projectfile.org and consumed by the pf-cli, pf-bridge and pf-ci tools.'
     es: 'La especificación normativa del projectfile: un único archivo YAML agnóstico de pila y de proveedor que describe la identidad, compilación, CI y publicación de un proyecto de software. Contiene la prosa de la especificación y el esquema JSON v1, con doble licencia MIT y CC-BY-4.0, renderizada en projectfile.org y consumida por las herramientas pf-cli, pf-bridge y pf-ci.'
     uk: 'Нормативна специфікація projectfile: єдиний YAML-файл, незалежний від технологічного стека та постачальника, що описує ідентичність, збирання, CI та публікацію програмного проєкту. Містить текст специфікації та JSON-схему v1 з подвійною ліцензією MIT і CC-BY-4.0, відображається на projectfile.org і використовується інструментами pf-cli, pf-bridge та pf-ci.'
+  version: 1.5.0
 includes:
   - .makefile/core/ci.yaml
   - https://kiota.ch/damian-buho/metadata/raw/branch/main/include.yaml
@@ -99,7 +100,8 @@ repositories:
   - role: mirror
     type: git
     url: git@github.com:damian-buho/projectfile-specification.git
-  - role: origin
+  - branch: main
+    role: origin
     type: git
     url: ssh://git@kiota.ch/projectfile/specification.git
 technologies:
