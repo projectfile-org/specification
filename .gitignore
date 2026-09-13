@@ -7,13 +7,10 @@
 # customise — direct edits here are overwritten on the next generation.
 # pf-cli-managed: yes
 
-# >>> user-include
-.makefile/bootstrap
-reports/
-# <<< user-include
-
-# >>> user-extra
+# >>> user-patterns
 .env
+.makefile/bootstrap
 .secrets/
-# <<< user-extra
+reports/
+# <<< user-patterns
 
