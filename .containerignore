@@ -7,8 +7,9 @@
 # customise — direct edits here are overwritten on the next generation.
 # pf-cli-managed: yes
 
-# >>> user-include
+# >>> user-patterns
 *.md
+.env
 .forgejo
 .git
 .github
@@ -22,10 +23,5 @@ LICENSES
 Makefile
 docs
 reports
-# <<< user-include
-
-# >>> user-extra
-.env
-.secrets/
-# <<< user-extra
+# <<< user-patterns
 
