@@ -18,26 +18,6 @@ Archivo de especificación de proyectos de software agnóstico de pila y de prov
 
 [![Publish pipeline on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/published.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Vulnerability audit on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/audited.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Dependency freshness on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/check-outdated.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Analysis sweep on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/analyze.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions)
 
-## Why this exists
-
-I hate multitude of files in the roots of my projects, so I decided to add another one to rule them
-all.
-
-## What it does
-
-Projectfile specification describes "projectfile", simple hierarchical file "about project". Can be
-YAML, TOML or JSON. There is a CLI tool that hides formats from you, reads and writes keys and
-supports includes, interpolation and other interesting stuff.
-
-## Good fit
-
-+ You want to have a single source of truth for your tooling
-+ You like the idea of deterministic generation of 10+ various things from one thing
-+ You have fleet of projects with complex stacks
-+ You have more than one developer workflow
-+ You use CI/CD
-+ You have OCD
-
 ## Compilación
 
 Ejecuta `make` sin argumentos para el destino predeterminado; ejecuta `make help` para listar todos los destinos.
@@ -48,10 +28,6 @@ Puntos de entrada de la canalización:
 - `make audited` — Re-scan the pinned dependencies and published artifacts for new vulnerabilities
 - `make check-outdated` — Report every pinned dependency that lags upstream
 - `make ready-to-publish` — Run the pseudo-CI pipeline locally — build, test and scan, without publishing
-
-## What’s next
-
-- bullying people to force them to abandon separate config files for their developement tools
 
 ## Políticas
 

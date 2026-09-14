@@ -16,8 +16,8 @@ pf-cli-managed: yes
 
 Перегляньте це спершу — можливо, відповідь уже є:
 
-- [Issues на Codeberg](https://codeberg.org/projectfile/specification/issues)
-- [Issues на GitHub](https://github.com/damian-buho/projectfile-specification/issues)
+- [Задачі на Codeberg](https://codeberg.org/projectfile/specification/issues)
+- [Задачі на GitHub](https://github.com/damian-buho/projectfile-specification/issues)
 
 ## Куди звертатися
 
