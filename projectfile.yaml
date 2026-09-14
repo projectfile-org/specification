@@ -41,27 +41,6 @@ kind: SoftwareSourceCode
 license:
   spdx: MIT OR CC-BY-4.0
   covers: project
-org:
-  projectfile:
-    ci:
-      nodes:
-        source-passes-lint:
-          needs:
-            shellcheck: false
-    status: maintained
-technologies:
-  - docs
-repositories:
-  - role: mirror
-    type: git
-    url: ssh://git@codeberg.org/projectfile/specification.git
-  - role: mirror
-    type: git
-    url: git@github.com:damian-buho/projectfile-specification.git
-  - branch: main
-    role: origin
-    type: git
-    url: ssh://git@kiota.ch/projectfile/specification.git
 links:
   - label:
       en: The Projectfile Specification on Codeberg
@@ -106,3 +85,24 @@ links:
     preferred: true
     type: source-code
     url: https://kiota.ch/projectfile/specification
+org:
+  projectfile:
+    ci:
+      nodes:
+        source-passes-lint:
+          needs:
+            shellcheck: false
+    status: maintained
+repositories:
+  - role: mirror
+    type: git
+    url: ssh://git@codeberg.org/projectfile/specification.git
+  - role: mirror
+    type: git
+    url: git@github.com:damian-buho/projectfile-specification.git
+  - branch: main
+    role: origin
+    type: git
+    url: ssh://git@kiota.ch/projectfile/specification.git
+technologies:
+  - docs
