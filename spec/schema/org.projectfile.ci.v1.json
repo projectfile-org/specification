@@ -57,6 +57,12 @@
       "additionalProperties": { "type": "string", "minLength": 1 },
       "examples": [{ "m6e": "final", "gha": "distilled", "forgejo": "distilled" }]
     },
+    "mount-cache": {
+      "type": "boolean",
+      "default": true,
+      "description": "OPTIONAL switch for persisting a container build’s BuildKit cache mounts (`RUN --mount=type=cache`: apt lists, source downloads, compiler and package caches) across runs on an EPHEMERAL runner. A persistent builder keeps those mounts between runs by itself; an ephemeral one discards them with the job, so every run compiles from nothing. `true` (the default when absent) tells a generator whose target runs on ephemeral runners to restore the cell’s mounts before its container build and save them after, keyed per matrix cell with a per-image fallback, one entry per cell; the mount set is read from the Dockerfile at build time, never declared here. `false` renders no such step. A target whose runners persist the builder ignores the field.",
+      "examples": [false]
+    },
     "tools": {
       "type": "object",
       "description": "OPTIONAL map of tool name -> EXECUTION manifest. The DAG carries WHICH tools run and in WHAT order; a manifest carries HOW one runs — the container `image` and `run` entrypoint a generator needs to materialise a job, the metadata the graph lowering itself deliberately ignores. A tool named in some node's `needs` with no manifest here falls back to its conventional `auto-<name>` wrapper on the host runner. A manifest's `image:` names a var declared in the sibling `images` map. Manifests are RECOMMENDED to ship from the d9t `*-tools` image that satisfies them (the def travels with the image), merged in via the document's root `includes:`; the spec defines only the shape. The key is the tool's Make-target name as it appears in `needs`.",
