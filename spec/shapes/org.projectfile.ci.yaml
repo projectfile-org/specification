@@ -180,6 +180,10 @@
 #              Avoids a 1:1 vendor mirror: a doc *-fix is m6e-only (CI never
 #              commits a reformat), npm trusted publishing is gha-only, a `fetch`
 #              cache warm-up is pointless on an ephemeral cloud runner.
+#     arch-axis: the matrix AXIS whose value this tool EXECUTES (`TARGET_ARCH` for a
+#              native binary build). Its cells take the forge's per-arch runner like a
+#              container build and pull the image at the cell's platform; an arch with
+#              no native runner runs emulated on the default. Absent => arch-blind.
 #     fuse:    CO-LOCATION group name (e.g. `live`). Tools sharing a group AND
 #              connected by `needs` collapse into ONE forge job running each
 #              member's `run` as an ordered step (a compose stack cannot span jobs

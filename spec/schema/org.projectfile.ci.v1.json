@@ -338,6 +338,11 @@
           "pattern": "^[a-z][a-z0-9-]*$",
           "description": "CO-LOCATION group name (e.g. `live`). Tools sharing a fuse group AND connected by `needs` collapse into ONE forge job that runs each member's `run` as an ordered step — because a stateful runtime (a compose `up` → `test` stack) cannot span jobs on an ephemeral runner where each job is a fresh machine. Pure co-location: no dispatch, no capability, no leaf-name special-casing — a generator reads only the group value and the needs-edges. On a daemon-native target (m6e) fused members stay separate recipes (the local daemon persists between them). A singleton group is a no-op."
         },
+        "arch-axis": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "description": "The matrix AXIS whose value this tool EXECUTES — a native compile whose output arch is the machine's, not a flag (`TARGET_ARCH` for a Crystal or Rust binary build). A lowering treats such a tool like a container build: its cells go to the forge's native runner for that arch where one is declared (`<target>.runs-on.<arch>`), and the tool image is pulled at the cell's platform, so an arch with no native runner falls back to emulation on the default runner rather than silently producing the host arch under a foreign name. Absent => the tool is arch-blind (a scanner, a cross-compiler, a linter) and its cells keep the default runner whatever axes they fan over. Only meaningful WITH `image` and on a node that fans over the named axis; naming an axis the node does not carry binds nothing."
+        },
         "network": {
           "type": "string",
           "enum": ["live"],
