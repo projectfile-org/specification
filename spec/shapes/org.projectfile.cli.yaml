@@ -22,5 +22,4 @@ org:
 
       # Per-source toggles for the derivation layer. All default to true.
       derive:
-        forges: true      # GitHub/GitLab/Codeberg/sourcehut → bugs URL
-        registries: true  # npmjs.com / pypi.org / packagist.org / crates.io → links[]
+        forges: true # GitHub/GitLab/Codeberg/sourcehut → bugs URL
