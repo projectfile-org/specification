@@ -69,7 +69,7 @@ links:
       - badges
       - badges-github
     type: source-code
-    url: https://github.com/damian-buho/projectfile-specification
+    url: https://github.com/projectfile-org/specification
   - label:
       en: Issues on GitHub
       es: Incidencias en GitHub
@@ -77,7 +77,7 @@ links:
     tags:
       - support
     type: bugs
-    url: https://github.com/damian-buho/projectfile-specification/issues
+    url: https://github.com/projectfile-org/specification/issues
   - label:
       en: The Projectfile Specification on kiota.ch
       es: The Projectfile Specification en kiota.ch
@@ -99,7 +99,7 @@ repositories:
     url: ssh://git@codeberg.org/projectfile/specification.git
   - role: mirror
     type: git
-    url: git@github.com:damian-buho/projectfile-specification.git
+    url: git@github.com:projectfile-org/specification.git
   - branch: main
     role: origin
     type: git
