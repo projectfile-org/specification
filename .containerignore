@@ -12,8 +12,6 @@
 .env
 .forgejo
 .git
-.github
-.gitlab
 .makefile
 .secrets
 CITATION.cff
