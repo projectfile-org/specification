@@ -666,3 +666,19 @@ namespaces:
       and Inherited sections, carrying an SPDX header from the projectfile.
     status: proposed
     shape: shapes/org.projectfile.fragments.yaml
+
+  # --- Tool configuration ---
+
+  "org.spiderlint":
+    owner: "Damián Búho"
+    docs: "https://kiota.ch/damian-buho/spiderlint"
+    summary: >-
+      Settings for spiderlint, a site-wide linter for SEO tags, security
+      headers, TLS and links: shared crawl and rule settings, plus one entry
+      per site under sites, each audited in its own store.
+    status: draft
+    shape: shapes/org.spiderlint.yaml
+    links:
+      - url: "https://kiota.ch/damian-buho/spiderlint"
+        title: "spiderlint"
+        role: consumer

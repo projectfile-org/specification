@@ -1,0 +1,55 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.spiderlint extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  spiderlint:
+    targets: ["https://example.com/"]  # OPTIONAL  seed URLs; forbidden beside sites
+    canonical-origin: "https://example.com"  # OPTIONAL  origin a staging twin’s pages are built for
+    resolver: system  # OPTIONAL  or a comma list of address[:port]
+    rules: [recommended]  # OPTIONAL  replaces every group’s rules
+    fetch: auto  # OPTIONAL  auto | http | browser | adaptive
+    browser: chromium  # OPTIONAL  chromium | firefox | webkit
+    scope: origin  # OPTIONAL  origin | host | domain
+    max-pages: 0  # OPTIONAL  0 = no limit
+    max-depth: 0  # OPTIONAL  0 = no limit
+    max-body-size: 10000000  # OPTIONAL  bytes
+    keepalive: true  # OPTIONAL
+    include: []  # OPTIONAL  crawl matching URLs only
+    exclude: []  # OPTIONAL  skip matching URLs
+    resources: {fetch: true, max-per-page: 200}  # OPTIONAL
+    robots: true  # OPTIONAL
+    sitemap: true  # OPTIONAL
+    fold: {threshold: 0.8, min: 3}  # OPTIONAL  or false
+    cache:
+      pages: {ttl: 0}  # OPTIONAL  per bucket: pages probes resources robots sitemaps origins dns
+    fail-on: error  # OPTIONAL  error | warning | info | never
+    format: human  # OPTIONAL  human | json | sarif
+    plugins: []  # OPTIONAL  module names; nothing is auto-loaded
+    disabled-rules: []  # OPTIONAL  rule IDs
+    override: {error: [], warning: [], info: []}  # OPTIONAL  severity per rule ID
+    groups:
+      posts:
+        match: ["/posts/**"]  # REQUIRED  globs or re: regexes; first match wins
+        rules: [seo]  # OPTIONAL
+        fetch: browser  # OPTIONAL
+        sample: 3  # OPTIONAL  or all
+    rulesets:
+      house:
+        description: House rules  # OPTIONAL
+        extends: ["spiderlint:seo"]  # OPTIONAL
+        when: {}  # OPTIONAL  fact path to constant or JSON Schema
+        rules:
+          html/title-length: {expect: {maxLength: 70}}  # severity, or fact + expect, or unique
+    sites:
+      production:  # OPTIONAL  any key above except sites; replaces the shared one
+        targets: ["https://example.com/"]
+      preview:
+        targets: ["https://preview.example.com/"]
+        fetch: browser
