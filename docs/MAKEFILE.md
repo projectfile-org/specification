@@ -541,13 +541,21 @@ Format YAML files with yamlfmt
 
 ## Maintenance
 
-### `clean`
-
-Tear down the compose stack of every matrix variant and purge the skip cache
-
-### `clean-ci-skip-cache`
+### `ci-cache-wipe`
 
 Purge this project’s m6e-run skip cache so every tool runs again
+
+### `clean`
+
+Safe cleanup — stop every matrix variant’s stack; caches, reports, volumes and secrets stay
+
+### `reports-wipe`
+
+Delete every report under the reports directory
+
+### `wipe`
+
+Wipe — clean plus every destructive teardown the bolt-ons declare, reports last
 
 ## Meta
 
@@ -1067,7 +1075,7 @@ Report every pinned dependency that lags upstream
 
 > Goal — lowered to its own CI workflow.
 
-### `db-update`
+### `databases-updated`
 
 Refresh the shared grype, trivy, osv and clamav databases
 
