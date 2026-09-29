@@ -47,6 +47,9 @@ org:
           - dir: docs/roadmap.d
             out: ROADMAP.md
             title: Roadmap
+          - dir: docs/configuration.d
+            out: CONFIGURATION.md
+            title: Configuration
           - dir: docs/usage.d
             out: USAGE.md
             title: Usage
