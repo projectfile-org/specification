@@ -150,6 +150,7 @@ org:
       # ALTERNATIVES rather than steps: `npm install foo` and `docker pull foo`
       # inside one fenced block invites a reader to run both. Shape of one group:
       #   name      OPTIONAL identity for override (see below); never displayed
+      #   title     OPTIONAL localized-string heading of its own (installation, usage)
       #   prefix    OPTIONAL localized-string prose before the code block
       #   commands  list of command lines, rendered as one fenced block
       #   postfix   OPTIONAL localized-string prose after the code block
