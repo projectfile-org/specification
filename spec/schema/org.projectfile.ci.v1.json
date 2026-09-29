@@ -84,6 +84,20 @@
   },
 
   "$defs": {
+    "localizedString": {
+      "description": "BCP 47 language-tagged string map. As a shorthand, a bare string is permitted and treated as { und: <string> } (§7). Inlined rather than referenced across documents so this standalone schema validates with no network fetch, like every other per-namespace schema here — keep it in step with v1.json's own $defs.localizedString.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^([a-zA-Z]{2,3}|und)(-[a-zA-Z0-9]+)*$": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "secrets": {
       "type": "object",
       "description": "Map of SECRET NAME -> declaration. The NAME is a dotted path whose dots are the ONLY directory separator (`f5m.mastodon-puma.secret_key_base` -> `.secrets/f5m/mastodon-puma/secret_key_base`); hyphens and underscores are LITERAL filename chars (matches the m6e `${1//.//}` path rule, which converts dots to slashes and leaves every other char untouched). Each value is a `secret` (value-literal or docker-generated); the subtree as a whole is the dev/CI provisioning manifest that BOTH lowerings read to populate the `.secrets/` tree a compose `secrets:` block mounts. NOT a place for real production secrets (§8): use `value: CHANGEME` placeholders or `docker:` generators, overlay real values via `<target>.credentials`.",
@@ -265,8 +279,8 @@
           "description": "OPTIONAL name of a GLOBAL matrix axis whose values THIS node walks one at a time. Only valid on a cell node declaring `matrix: true` (this schema rejects it otherwise via the node's conditional). It exists because `max-parallel` is only as portable as the engine, and one major engine does not implement it: Forgejo/Gitea expand a matrix STATICALLY into independent job rows and then dispatch each to any runner with a free slot, leaving no scheduler stage between expansion and dispatch for a cap to act in — so the cap renders and is ignored. `serialise` lowers instead to the one ordering primitive every engine honours: one job per value of the named axis, each waiting on the previous via `needs`, plus a JOIN carrying the authored node name so no downstream edge has to know the node was split. ONLY the named axis is walked — every other axis keeps its full fan-out inside each link, which is what a memory-bound build wants (one series at a time, that series' architectures still building together). Naming an axis the project does not declare is a NO-OP (as with `matrix.without` and `matrix.pin`), so one shared declaration stays byte-identical across projects that never had the axis. Absent => the node fans normally."
         },
         "description": {
-          "type": "string",
-          "description": "Optional human note on what reaching this node means."
+          "$ref": "#/$defs/localizedString",
+          "description": "Optional human note on what reaching this node means. Localizable — a README renders it as prose."
         }
       },
       "allOf": [
