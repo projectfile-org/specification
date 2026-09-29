@@ -37,6 +37,7 @@
     "repositories": { "$ref": "#/$defs/repositories" },
     "license":      { "$ref": "#/$defs/license" },
     "copyright":    { "$ref": "#/$defs/copyright" },
+    "upstream":     { "$ref": "#/$defs/upstream" },
     "people":       { "type": "array", "items": { "$ref": "#/$defs/person" } },
     "organizations": { "type": "array", "items": { "$ref": "#/$defs/organization" } },
     "keywords":     { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/keyword" } },
@@ -216,6 +217,21 @@
       "additionalProperties": true
     },
 
+    "upstream": {
+      "type": "array",
+      "description": "Third-party software the project packages or forks. See spec §4.4b.",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name":     { "$ref": "#/$defs/localizedString" },
+          "url":      { "type": "string", "format": "uri" },
+          "version":  { "type": "string" },
+          "license":  { "type": "string", "description": "SPDX license expression of the upstream." },
+          "relation": { "type": "string", "description": "Open vocabulary: packages (default), fork." }
+        }
+      }
+    },
     "copyright": {
       "type": "object",
       "description": "Top-level copyright block. Holder identities live under `people` with the `copyright` role; per-person `from` / `to` supply the per-holder date range. See spec §4.4a.",
