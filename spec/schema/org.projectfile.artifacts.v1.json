@@ -111,6 +111,11 @@
                     "type": "string",
                     "enum": ["tcp", "udp", "sctp"],
                     "description": "Transport protocol. Absent means unspecified rather than tcp — a consumer that needs a default picks its own."
+                  },
+                  "path": {
+                    "type": "string",
+                    "pattern": "^/",
+                    "description": "HTTP path a reader probes this port at (`/metrics`, `/healthz`). Absent means the port speaks no HTTP a reader can try."
                   }
                 }
               }

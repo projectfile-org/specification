@@ -20,7 +20,7 @@
 #   binary   command, path    the name a user types; the built file
 #   package  registry, name   which index, and the name published there
 #   module   module           an importable path
-#   service  ports            what it listens on
+#   service  ports            what it listens on (each port: name, protocol, path)
 #   website  url              a reachable address
 #   ssh      url              a reachable address, ssh:// scheme
 #   archive  path             a bundle on disk
@@ -98,6 +98,8 @@ org:
           - 3306
           - port: 9104
             name: metrics
+            # an HTTP port names the path a reader probes it at
+            path: /metrics
 
       # what lighthouse / linkinator audit — one entry per deployment, because
       # the address a page auditor dials depends on where the run is happening
