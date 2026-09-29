@@ -77,6 +77,8 @@ org:
         kind: binary
         command: pf-cli
         path: dist/pf-cli
+        # OPTIONAL  arguments whose `<command> <args> --help` is captured into docs/usage.d; "" is top-level
+        help: ["", get, "cache purge"]
 
       # the published image; `${image.basename}` is the derived namespace/name
       # path every lowering of this fleet already agrees on

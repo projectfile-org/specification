@@ -47,5 +47,9 @@ org:
           - dir: docs/roadmap.d
             out: ROADMAP.md
             title: Roadmap
+          - dir: docs/usage.d
+            out: USAGE.md
+            title: Usage
+            inherit: false         # OPTIONAL  true by default; false keeps the parents list off this shell
         parents:  # OPTIONAL  flat per-project inheritance list, applied to every shell
           - ../ubuntu
