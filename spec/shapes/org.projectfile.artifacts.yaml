@@ -24,6 +24,7 @@
 #   website  url              a reachable address
 #   ssh      url              a reachable address, ssh:// scheme
 #   archive  path             a bundle on disk
+#   action   ref, path        a workflow step pin; its action.yaml
 #
 # `website` and `ssh` are the same PROTOCOL shape — one address, one scheme, one
 # live auditor selecting on `{kind=…}` — and every further protocol kind follows
