@@ -183,6 +183,7 @@ org:
       registry: kiota.ch           # OPTIONAL — interpolation variable, not a
       tag: latest                  # parsed field: referenced by the artifact
                                    # declarations that build a pull reference
+      default-platforms: [linux/amd64]  # OPTIONAL — shown for an image declaring no platform
       installation:
         - name: image
           prefix: "Pull the published image from the registry:"
