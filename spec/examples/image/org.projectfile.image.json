@@ -1,0 +1,38 @@
+{
+  "org": "b19",
+  "name": "php",
+  "series": "{B19_PHP_SERIES}",
+  "sapi": "{B19_PHP_SAPI}",
+  "path": "${org}/${name}",
+  "flatpath": "${org}-${name}",
+  "tag": "latest",
+  "heads": {
+    "release": [
+      "${version}",
+      "${major}.${minor}",
+      "${major}",
+      "latest"
+    ],
+    "prerelease": [
+      "${version}"
+    ],
+    "trunk": [
+      "edge"
+    ],
+    "branch": [
+      "latest-${branch}"
+    ]
+  },
+  "variant": {
+    "parts": [
+      "series",
+      "sapi"
+    ],
+    "join": "-",
+    "aliases": "defaults",
+    "tag": "${head}-${variant}",
+    "bare": [
+      "latest"
+    ]
+  }
+}

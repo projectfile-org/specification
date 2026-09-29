@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/schema/org.projectfile.image.v1.json",
+  "title": "org.projectfile.image extension (v1)",
+  "description": "Standalone contract for the value at the org.projectfile.image subtree: the image a project publishes, declared as PARTS and TEMPLATES. Every name the image carries — its repository path, the tags each build publishes, and how a build variant enters a tag — is a template the document declares; the specification fixes no naming convention. The mechanism is defined in conformance/image/README.md.",
+
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Owning namespace, a part templates compose from."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repository name, a part templates compose from."
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Template of the nested repository path, over the parts (`${org}/${name}`, `${org}/${name}/${series}`)."
+    },
+    "flatpath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Template of the one-segment repository path for a registry that allows no nesting."
+    },
+    "tag": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Load tag of a local, unpublished build."
+    },
+    "heads": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The tags each kind of build publishes, as templates over the build facts `${version}`, `${major}`, `${minor}`, `${patch}` and `${branch}`. A kind left undeclared publishes what the publisher defaults to.",
+      "properties": {
+        "release": { "$ref": "#/$defs/templates", "description": "A tag whose version is `MAJOR.MINOR.PATCH`." },
+        "prerelease": { "$ref": "#/$defs/templates", "description": "Any other tag." },
+        "trunk": { "$ref": "#/$defs/templates", "description": "A push to a primary branch." },
+        "branch": { "$ref": "#/$defs/templates", "description": "A push to any other branch." }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parts", "tag"],
+      "description": "How a build variant enters the tag. Absent: every cell publishes the heads unchanged.",
+      "properties": {
+        "parts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Ordered names of the parts that form the variant; each part is a template over matrix axes (`series: \"{B19_PHP_SERIES}\"`).",
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
+        },
+        "join": {
+          "type": "string",
+          "description": "Separator between part values. Absent: the empty string."
+        },
+        "aliases": {
+          "enum": ["none", "defaults"],
+          "description": "`defaults` also publishes every combination with default-valued parts dropped. Absent: `none`."
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Template of a tag over `${head}` and `${variant}`."
+        },
+        "bare": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "Heads whose tag is the variant alone. Absent: none.",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "additionalProperties": {
+    "type": "string",
+    "description": "A free PART a template composes from (`series`, `sapi`); a new part is a new key."
+  },
+
+  "$defs": {
+    "templates": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

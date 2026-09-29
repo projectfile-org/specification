@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A branch build expands its own head templates, the branch name sanitised; a
+  head outside `variant.bare` is suffixed even when it starts with `latest`.
+
+input:
+  image:
+    series: "{B19_UBUNTU_SERIES}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [series], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {B19_UBUNTU_SERIES: resolute}}
+  ci: {matrix: {axes: {B19_UBUNTU_SERIES: [resolute, noble]}}}
+publish: {branch: feature/x, trunk: false}
+
+expect:
+  cells:
+    - cell: {series: resolute}
+      tags: [latest-feature-x-resolute, latest-feature-x]
+    - cell: {series: noble}
+      tags: [latest-feature-x-noble]

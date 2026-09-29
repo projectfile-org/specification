@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A non-numeric default aliases like any other value, and an axis no part names
+  (the architecture) splits no cell: both arches publish one tag set.
+
+input:
+  image:
+    libc: "{B19_RUST_LIBC}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [libc], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {B19_RUST_LIBC: gnu}}
+  ci: {matrix: {axes: {B19_RUST_LIBC: [gnu, musl], M6E_ARCH: [amd64, arm64]}}}
+publish: {version: 0.4.0}
+
+expect:
+  cells:
+    - cell: {libc: gnu}
+      tags: [0.4.0-gnu, 0.4-gnu, 0-gnu, gnu, 0.4.0, "0.4", "0", latest]
+    - cell: {libc: musl}
+      tags: [0.4.0-musl, 0.4-musl, 0-musl, musl]

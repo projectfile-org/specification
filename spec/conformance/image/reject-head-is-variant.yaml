@@ -1,0 +1,25 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A head `8.5` spelled like the `8.5` series would move with the next release
+  while the series tag must not; the publisher refuses.
+
+input:
+  image:
+    series: "{B19_PHP_SERIES}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [series], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {B19_PHP_SERIES: "8.5"}}
+  ci: {matrix: {axes: {B19_PHP_SERIES: ["8.4", "8.5"]}}}
+publish: {version: 8.5.0}
+
+expect:
+  reject: head-is-variant

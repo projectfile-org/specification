@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/conformance/image/fixture.schema.json",
+  "title": "org.projectfile.image tag-naming conformance fixture (v1)",
+  "description": "One behavioural vector of the tag-naming mechanism in conformance/image/README.md: the subtrees it reads, the build facts, and either the exact tag set of every cell or the reason a publisher must refuse.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "description",
+    "input",
+    "publish",
+    "expect"
+  ],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "One-line human statement of the behaviour this vector pins."
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The org.projectfile subtrees the grammar reads; `image` MUST also validate against schema/org.projectfile.image.v1.json.",
+      "properties": {
+        "image": {
+          "type": "object"
+        },
+        "build": {
+          "type": "object"
+        },
+        "ci": {
+          "type": "object"
+        }
+      }
+    },
+    "publish": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The build facts: a `version` for a tag build, or a `branch` with `trunk` telling whether it is a primary branch.",
+      "oneOf": [
+        {
+          "required": [
+            "version"
+          ]
+        },
+        {
+          "required": [
+            "branch",
+            "trunk"
+          ]
+        }
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trunk": {
+          "type": "boolean"
+        }
+      }
+    },
+    "expect": {
+      "type": "object",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": [
+            "cells"
+          ],
+          "properties": {
+            "cells": {
+              "type": "array",
+              "description": "EVERY cell the matrix yields, each with its EXACT tag set.",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "cell",
+                  "tags"
+                ],
+                "properties": {
+                  "cell": {
+                    "type": "object",
+                    "description": "Variant part NAME -> value; empty for a project with no variant.",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/tag"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": [
+            "reject"
+          ],
+          "properties": {
+            "reject": {
+              "enum": [
+                "cell-collision",
+                "head-is-variant"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "tag": {
+      "type": "string",
+      "description": "An OCI tag.",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

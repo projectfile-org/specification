@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.projectfile.image — illustrative fragment, every value a sample; see conformance/image/README.md
+
+org:
+  projectfile:
+    image:
+      org: b19                                   # a part
+      name: ${identity.name}                     # a part
+      series: "{B19_PHP_SERIES}"                 # a part over a matrix axis
+      sapi: "{B19_PHP_SAPI}"                     # a part over a matrix axis
+      path: ${org}/${name}                       # nested repository path template
+      flatpath: ${org}-${name}                   # one-segment repository path template
+      tag: latest                                # load tag of a local build
+      heads:
+        release: ["${version}", "${major}.${minor}", "${major}", latest]
+        prerelease: ["${version}"]
+        trunk: [edge]
+        branch: ["latest-${branch}"]
+      variant:
+        parts: [series, sapi]                    # ordered parts forming the variant
+        join: "-"                                # separator between part values
+        aliases: defaults                        # also publish tags with default-valued parts dropped
+        tag: ${head}-${variant}                  # tag template over a head and a variant
+        bare: [latest]                           # heads whose tag is the variant alone

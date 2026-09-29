@@ -1,0 +1,12 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture: `variant` is a map of naming rules, never a scalar; MUST fail
+
+org: b19
+name: php
+path: ${org}/${name}
+variant: B19_PHP_SERIES

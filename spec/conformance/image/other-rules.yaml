@@ -1,0 +1,27 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  The same mechanism under other rules: variant first, a `.` separator, no
+  aliases and no bare heads.
+
+input:
+  image:
+    series: "{B19_PHP_SERIES}"
+    sapi: "{B19_PHP_SAPI}"
+    heads:
+      release: ["${version}", stable]
+    variant: {parts: [sapi, series], join: ".", tag: "${variant}_${head}"}
+  build: {args: {B19_PHP_SERIES: "8.5", B19_PHP_SAPI: cli}}
+  ci: {matrix: {axes: {B19_PHP_SERIES: ["8.5"], B19_PHP_SAPI: [cli, fpm]}}}
+publish: {version: 0.3.0}
+
+expect:
+  cells:
+    - cell: {sapi: cli, series: "8.5"}
+      tags: [cli.8.5_0.3.0, cli.8.5_stable]
+    - cell: {sapi: fpm, series: "8.5"}
+      tags: [fpm.8.5_0.3.0, fpm.8.5_stable]

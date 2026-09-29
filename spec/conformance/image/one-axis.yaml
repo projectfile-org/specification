@@ -1,0 +1,29 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  One part: aliases give the default series the bare heads; a non-default
+  series publishes suffixed tags and its bare name only.
+
+input:
+  image:
+    series: "{B19_UBUNTU_SERIES}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [series], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {B19_UBUNTU_SERIES: resolute}}
+  ci: {matrix: {axes: {B19_UBUNTU_SERIES: [resolute, noble]}}}
+publish: {version: 0.20.0}
+
+expect:
+  cells:
+    - cell: {series: resolute}
+      tags: [0.20.0-resolute, 0.20-resolute, 0-resolute, resolute, 0.20.0, "0.20", "0", latest]
+    - cell: {series: noble}
+      tags: [0.20.0-noble, 0.20-noble, 0-noble, noble]

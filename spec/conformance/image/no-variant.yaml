@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A project with no `variant` publishes exactly its heads, one tag set across
+  every architecture.
+
+input:
+  image:
+    org: r8e
+    name: http-cache
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+  ci: {matrix: {axes: {M6E_ARCH: [amd64, arm64]}}}
+publish: {version: 0.8.1}
+
+expect:
+  cells:
+    - cell: {}
+      tags: [0.8.1, "0.8", "0", latest]

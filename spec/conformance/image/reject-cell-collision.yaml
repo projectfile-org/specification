@@ -1,0 +1,26 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Two parts sharing a value: dropping `first` from (8, 9) and `second` from
+  (9, 10) both derive `9`, so the publisher refuses.
+
+input:
+  image:
+    first: "{FIRST}"
+    second: "{SECOND}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [first, second], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {FIRST: "8", SECOND: "10"}}
+  ci: {matrix: {axes: {FIRST: ["8", "9"], SECOND: ["9", "10"]}}}
+publish: {version: 0.1.0}
+
+expect:
+  reject: cell-collision

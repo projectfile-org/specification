@@ -1,0 +1,39 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Two parts joined in declared order; every combination of default values is
+  dropped, so only the all-default cell owns the bare heads.
+
+input:
+  image:
+    series: "{B19_PHP_SERIES}"
+    sapi: "{B19_PHP_SAPI}"
+    heads:
+      release: ["${version}", "${major}.${minor}", "${major}", latest]
+      prerelease: ["${version}"]
+      trunk: [edge]
+      branch: ["latest-${branch}"]
+    variant: {parts: [series, sapi], join: "-", aliases: defaults, tag: "${head}-${variant}", bare: [latest]}
+  build: {args: {B19_PHP_SERIES: "8.5", B19_PHP_SAPI: cli}}
+  ci: {matrix: {axes: {B19_PHP_SERIES: ["8.4", "8.5"], B19_PHP_SAPI: [cli, fpm]}}}
+publish: {version: 0.3.0}
+
+expect:
+  cells:
+    - cell: {series: "8.5", sapi: cli}
+      tags: [0.3.0-8.5-cli, 0.3-8.5-cli, 0-8.5-cli, 8.5-cli,
+             0.3.0-8.5, 0.3-8.5, 0-8.5, "8.5",
+             0.3.0-cli, 0.3-cli, 0-cli, cli,
+             0.3.0, "0.3", "0", latest]
+    - cell: {series: "8.5", sapi: fpm}
+      tags: [0.3.0-8.5-fpm, 0.3-8.5-fpm, 0-8.5-fpm, 8.5-fpm,
+             0.3.0-fpm, 0.3-fpm, 0-fpm, fpm]
+    - cell: {series: "8.4", sapi: cli}
+      tags: [0.3.0-8.4-cli, 0.3-8.4-cli, 0-8.4-cli, 8.4-cli,
+             0.3.0-8.4, 0.3-8.4, 0-8.4, "8.4"]
+    - cell: {series: "8.4", sapi: fpm}
+      tags: [0.3.0-8.4-fpm, 0.3-8.4-fpm, 0-8.4-fpm, 8.4-fpm]

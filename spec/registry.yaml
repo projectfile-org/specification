@@ -208,6 +208,19 @@ namespaces:
     status: stable
     shape: shapes/org.projectfile.build.yaml
 
+  "org.projectfile.image":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/image"
+    summary: >-
+      The image a project publishes, declared as PARTS and TEMPLATES: the
+      repository path, the tags each kind of build publishes (`heads`), and how
+      a build variant enters a tag (`variant`). The document declares every
+      naming rule; the extension fixes only the mechanism that expands them
+      (conformance/image/README.md) and the collisions a publisher refuses. Has
+      a dedicated standalone schema (schema/org.projectfile.image.v1.json).
+    status: draft
+    shape: shapes/org.projectfile.image.yaml
+
   # --- environment variable contract ---
 
   "org.projectfile.env":
