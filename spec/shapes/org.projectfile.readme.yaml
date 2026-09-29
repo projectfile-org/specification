@@ -154,6 +154,7 @@ org:
       #   commands  list of command lines, rendered as one fenced block
       #   postfix   OPTIONAL localized-string prose after the code block
       #   syntax    OPTIONAL fenced-block info string; default "sh"
+      #   per-cell  OPTIONAL true renders one headed fence per matrix cell
       #
       # Commands, prose, and badge URLs are interpolated (§3.8): any
       # ${<fieldpath>} resolves against the merged document, and anything that
