@@ -1,0 +1,22 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Shape: org.ignorelint extension namespace
+# Illustrative fragment — not a complete projectfile document.
+# See registry.yaml for ownership and status.
+
+org:
+  ignorelint:
+    fail-on: error  # OPTIONAL  error | warn | warning | info | none
+    format: human  # OPTIONAL  human | json | checkstyle | sarif
+    fix: false  # OPTIONAL
+    recursive: false  # OPTIONAL
+    verbose: false  # OPTIONAL
+    disabled-rules: [IG-020]  # OPTIONAL  list, or a comma-separated string
+    override:  # OPTIONAL  per-rule severity; info beats warning beats error on a shared code
+      error: [IG-021]
+      warning: []
+      info: [IG-001]

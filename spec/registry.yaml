@@ -695,3 +695,17 @@ namespaces:
       - url: "https://kiota.ch/damian-buho/spiderlint"
         title: "spiderlint"
         role: consumer
+
+  "org.ignorelint":
+    owner: "Damián Búho"
+    docs: "https://kiota.ch/damian-buho/ignorelint"
+    summary: >-
+      Lint policy for ignorelint, a linter for .gitignore, .dockerignore and
+      other *ignore files: failure threshold, output format, autofix,
+      discovery, disabled rules and per-rule severity overrides.
+    status: proposed
+    shape: shapes/org.ignorelint.yaml
+    links:
+      - url: "https://kiota.ch/damian-buho/ignorelint"
+        title: "ignorelint"
+        role: consumer
