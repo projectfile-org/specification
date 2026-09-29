@@ -20,7 +20,7 @@
 #   binary   command, path    the name a user types; the built file
 #   package  registry, name   which index, and the name published there
 #   module   module           an importable path
-#   service  ports            what it listens on (each port: name, protocol, path)
+#   service  ports, secrets   what it listens on (each port: name, protocol, path); what it must be given
 #   website  url              a reachable address
 #   ssh      url              a reachable address, ssh:// scheme
 #   archive  path             a bundle on disk
@@ -103,6 +103,8 @@ org:
             name: metrics
             # an HTTP port names the path a reader probes it at
             path: /metrics
+        # OPTIONAL  dotted secret names it refuses to start without; `${… | env}` spells each as its variable
+        secrets: [database.root.password]
 
       # what lighthouse / linkinator audit — one entry per deployment, because
       # the address a page auditor dials depends on where the run is happening

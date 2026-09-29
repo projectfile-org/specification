@@ -83,6 +83,20 @@
           "minLength": 1,
           "description": "The version this artifact is published at, when the document pins one. Usually ABSENT: a released version belongs to the release, not to the source document, and a stale value here is worse than none."
         },
+        "help": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" },
+          "description": "Arguments whose `<command> <args> --help` output a generator captures as usage documentation. The empty string is the top-level command."
+        },
+        "secrets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*(\\.[a-z0-9][a-z0-9_-]*)*$" },
+          "description": "Dotted names of the secrets a service artifact refuses to start without (`o9s.postgresql.password`). A generator spells each as the environment variable that carries it with the §3.8 `env` filter, so the names are declared once."
+        },
         "ports": {
           "type": "array",
           "minItems": 1,
