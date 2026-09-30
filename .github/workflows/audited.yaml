@@ -32,6 +32,8 @@ jobs:
       - run: echo source-is-audited
   source-is-secure:
     runs-on: ubuntu-26.04
+    env:
+      CI_IGNORE_VULNERABILITIES: ${{ vars.CI_IGNORE_VULNERABILITIES }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -53,6 +55,7 @@ jobs:
           version: ${{ env.M6E_TAG }}
           run: auto-grype
           env: |-
+            CI_IGNORE_VULNERABILITIES=${{ vars.CI_IGNORE_VULNERABILITIES }}
             M6E_SHARED_CACHE=N
           mounts: ${{ runner.temp }}/ci-cache/grype-db:/app/.cache/grype:rw
       - name: save grype-db
@@ -77,6 +80,7 @@ jobs:
           version: ${{ env.M6E_TAG }}
           run: auto-trivy fs
           env: |-
+            CI_IGNORE_VULNERABILITIES=${{ vars.CI_IGNORE_VULNERABILITIES }}
             M6E_SHARED_CACHE=N
             TRIVY_CACHE_BACKEND
           mounts: ${{ runner.temp }}/ci-cache/trivy-db:/app/.cache/trivy:rw
