@@ -202,4 +202,4 @@ org:
             - FROM ${org.projectfile.artifacts{kind=image}.ref}
       quick-start:
         - commands:
-            - ${org.projectfile.artifacts{kind=binary}.command} --help
+            - ${org.projectfile.artifacts{command}.command} --help

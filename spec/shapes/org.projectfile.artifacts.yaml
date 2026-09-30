@@ -17,7 +17,7 @@
 # Each entry declares a `kind` plus the address fields that kind is addressed by:
 #
 #   image    ref              a pull reference
-#   binary   command, path    the name a user types; the built file
+#   binary   path             the built file
 #   package  registry, name   which index, and the name published there
 #   module   module           an importable path
 #   service  ports, secrets   what it listens on (each port: name, protocol, path); what it must be given
@@ -25,6 +25,8 @@
 #   ssh      url              a reachable address, ssh:// scheme
 #   archive  path             a bundle on disk
 #   action   ref, path        a workflow step pin; its action.yaml
+#
+# Any kind MAY export a `command` — the name a user types — and `{command}` selects whatever does.
 #
 # `website` and `ssh` are the same PROTOCOL shape — one address, one scheme, one
 # live auditor selecting on `{kind=…}` — and every further protocol kind follows
@@ -93,8 +95,8 @@ org:
         name: "@projectfile/reader"
         # OPTIONAL  runs in a web page too, so a README offers the CDN line
         browser: true
-        # OPTIONAL  installs a command, so a README offers a machine-wide install instead of a project dependency
-        global: false
+        # OPTIONAL  a package exporting a command is installed for the machine, not added to a project
+        command: pf-reader
 
       # a service is addressed by what it LISTENS on — the one thing no generic
       # description of a service could supply
