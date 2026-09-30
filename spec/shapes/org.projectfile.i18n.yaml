@@ -85,7 +85,7 @@
 # directory docs/<lang>/<name>.d/, and the assembled variant renders under
 # docs/<lang>/ keeping the canonical basename.
 #
-#   docs/features.d/*.md        → FEATURES.md            (default language)
+#   docs/features.d/*.md        → docs/FEATURES.md       (default language)
 #   docs/es/features.d/*.md     → docs/es/FEATURES.md
 #   docs/uk/features.d/*.md     → docs/uk/FEATURES.md
 #

@@ -42,16 +42,16 @@ org:
       fragments:
         documents:  # OPTIONAL  shared shells, normally supplied by a conventions include
           - dir: docs/features.d  # REQUIRED  source fragment directory
-            out: FEATURES.md       # REQUIRED  assembled artefact path
+            out: docs/FEATURES.md  # REQUIRED  assembled artefact path
             title: Features        # REQUIRED  document H1; also the section heading base
           - dir: docs/roadmap.d
-            out: ROADMAP.md
+            out: docs/ROADMAP.md
             title: Roadmap
           - dir: docs/configuration.d
-            out: CONFIGURATION.md
+            out: docs/CONFIGURATION.md
             title: Configuration
           - dir: docs/usage.d
-            out: USAGE.md
+            out: docs/USAGE.md
             title: Usage
             inherit: false         # OPTIONAL  true by default; false keeps the parents list off this shell
         parents:  # OPTIONAL  flat per-project inheritance list, applied to every shell
