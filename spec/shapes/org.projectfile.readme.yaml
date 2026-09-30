@@ -156,6 +156,7 @@ org:
       #   postfix   OPTIONAL localized-string prose after the code block
       #   syntax    OPTIONAL fenced-block info string; default "sh"
       #   per-cell  OPTIONAL true renders one headed fence per matrix cell
+      #   cells     OPTIONAL axis template ("{GOOS}/{GOARCH}") whose matrix cells are listed under the fence
       #   file      OPTIONAL repo-relative file embedded as the block, SPDX header cut; absent drops the group
       #
       # Commands, prose, and badge URLs are interpolated (§3.8): any
