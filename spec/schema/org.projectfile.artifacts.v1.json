@@ -73,6 +73,14 @@
           "minLength": 1,
           "description": "Which package index `name` is published to: `npm`, `pypi`, `crates`, `maven`, `nuget`, `oci`, … Open vocabulary. It is what lets one selector distinguish two packages of the same kind — `{kind=package,registry=npm}` — so a project publishing to several indexes documents each install command separately."
         },
+        "browser": {
+          "type": "boolean",
+          "description": "A package that also runs in a web page, loadable straight from a CDN with no build step. Absent => false."
+        },
+        "global": {
+          "type": "boolean",
+          "description": "A package that installs a command, so a reader installs it once for the whole machine rather than into a project. Absent => false."
+        },
         "module": {
           "type": "string",
           "minLength": 1,
