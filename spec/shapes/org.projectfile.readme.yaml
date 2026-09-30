@@ -186,6 +186,7 @@ org:
       tag: latest                  # parsed field: referenced by the artifact
                                    # declarations that build a pull reference
       default-platforms: [linux/amd64]  # OPTIONAL — shown for an image declaring no platform
+      build-doc: true              # OPTIONAL — Building renders as docs/BUILD.md, the readme keeps one line linking it
       installation:
         - name: image
           prefix: "Pull the published image from the registry:"
