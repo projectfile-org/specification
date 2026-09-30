@@ -137,6 +137,9 @@ org:
           img: ${org.projectfile.readme.shields-base}/badge/license-${license.spdx}-4c1
           href: LICENSE
           alt: License
+        - name: commit-style
+          img: ${org.projectfile.readme.shields-base}/badge/commits-conventional-1877aa
+          documents: [contributing]   # OPTIONAL — documents it renders on; absent = [readme]
 
       # -------------------------------------------------------------------
       # Command sections: installation, quick-start, usage, building
