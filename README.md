@@ -48,6 +48,7 @@ Pipeline entry points:
 ## Links
 
 - [Projectfile Specification](https://projectfile.org)
+- [Read projectfile v1](https://projectfile.org/spec/v1/)
 
 ## License
 

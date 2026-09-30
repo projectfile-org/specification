@@ -50,6 +50,7 @@ Puntos de entrada de la canalización:
 ## Enlaces
 
 - [Especificación de Projectfile](https://projectfile.org)
+- [Lee projectfile v1](https://projectfile.org/spec/v1/)
 
 ## Licencia
 

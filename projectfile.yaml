@@ -92,6 +92,14 @@ links:
       - support
     type: bugs
     url: https://github.com/projectfile-org/specification/issues
+  - label:
+      en: Read projectfile v1
+      es: Lee projectfile v1
+      uk: Читати projectfile v1
+    tags:
+      - readme
+    type: documentation
+    url: https://projectfile.org/spec/v1/
 org:
   projectfile:
     ci:

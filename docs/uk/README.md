@@ -50,6 +50,7 @@ git clone --recurse-submodules https://codeberg.org/projectfile/specification sp
 ## Посилання
 
 - [Специфікація Projectfile](https://projectfile.org)
+- [Читати projectfile v1](https://projectfile.org/spec/v1/)
 
 ## Ліцензія
 
