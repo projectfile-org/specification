@@ -8,7 +8,7 @@ pf-cli-managed: yes
 
 # The Projectfile Specification
 
-Stack- and vendor-agnostic software project specification file.
+The normative specification of the projectfile: a single stack- and vendor-agnostic YAML file that describes a software project identity, build, CI and publishing. Holds the spec prose and v1 JSON Schema, dual-licensed MIT and CC-BY-4.0, rendered at projectfile.org and consumed by the pf-cli, pf-bridge and pf-ci tools.
 
 [![Stand with Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://damian-buho.github.io/support-ukraine/) [![Projectfile inside](https://badges.kiota.ch/static/v1?label=projectfile&message=inside&labelColor=0d0d0d&color=8c6723&style=flat-square)](https://projectfile.org) [![License](https://badges.kiota.ch/static/v1?label=license&message=MIT OR CC-BY-4.0&color=1e5913&style=flat-square)](LICENSE) [![Commit style](https://badges.kiota.ch/static/v1?label=commits&message=conventional%20v1.0.0&color=1877aa&style=flat-square)](https://www.conventionalcommits.org/en/v1.0.0/) ![Workflow](https://badges.kiota.ch/static/v1?label=workflow&message=git-flow&color=1877aa&style=flat-square) [![Versioning](https://badges.kiota.ch/static/v1?label=versioning&message=semantic%20v2.0.0&color=1877aa&style=flat-square)](https://semver.org/) [![PRs welcome](https://badges.kiota.ch/static/v1?label=PRs&message=welcome&color=1e5913&style=flat-square)](CONTRIBUTING.md) [![Citation](https://badges.kiota.ch/static/v1?label=citation&message=cff&color=1877aa&style=flat-square)](CITATION.cff) [![REUSE compliance](https://api.reuse.software/badge/codeberg.org/projectfile/specification)](https://api.reuse.software/info/codeberg.org/projectfile/specification)
 
@@ -19,6 +19,14 @@ Stack- and vendor-agnostic software project specification file.
 [![Publish pipeline on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/published.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Vulnerability audit on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/audited.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Dependency freshness on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/check-outdated.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions) [![Analysis sweep on kiota.ch](https://kiota.ch/projectfile/specification/badges/workflows/analyze.yaml/badge.svg?style=flat-square)](https://kiota.ch/projectfile/specification/actions)
 
 ## Building
+
+Clone the repository with its submodules:
+
+```sh
+git clone --recurse-submodules https://codeberg.org/projectfile/specification specification && cd specification
+```
+
+- [Makefile reference](docs/how-to/MAKEFILE.md)
 
 Run `make` with no arguments for the default target; run `make help` to list every target.
 

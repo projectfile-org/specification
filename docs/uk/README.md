@@ -10,7 +10,7 @@ pf-cli-managed: yes
 
 # The Projectfile Specification
 
-Файл специфікації програмного проєкту, незалежний від технологічного стека та постачальника.
+Нормативна специфікація projectfile: єдиний YAML-файл, незалежний від технологічного стека та постачальника, що описує ідентичність, збирання, CI та публікацію програмного проєкту. Містить текст специфікації та JSON-схему v1 з подвійною ліцензією MIT і CC-BY-4.0, відображається на projectfile.org і використовується інструментами pf-cli, pf-bridge та pf-ci.
 
 [![Stand with Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://damian-buho.github.io/support-ukraine/) [![Projectfile inside](https://badges.kiota.ch/static/v1?label=projectfile&message=inside&labelColor=0d0d0d&color=8c6723&style=flat-square)](https://projectfile.org) [![License](https://badges.kiota.ch/static/v1?label=license&message=MIT OR CC-BY-4.0&color=1e5913&style=flat-square)](LICENSE) [![Commit style](https://badges.kiota.ch/static/v1?label=commits&message=conventional%20v1.0.0&color=1877aa&style=flat-square)](https://www.conventionalcommits.org/uk/v1.0.0/) ![Workflow](https://badges.kiota.ch/static/v1?label=workflow&message=git-flow&color=1877aa&style=flat-square) [![Versioning](https://badges.kiota.ch/static/v1?label=versioning&message=semantic%20v2.0.0&color=1877aa&style=flat-square)](https://semver.org/lang/uk/) [![PRs welcome](https://badges.kiota.ch/static/v1?label=PRs&message=welcome&color=1e5913&style=flat-square)](CONTRIBUTING.md) [![Citation](https://badges.kiota.ch/static/v1?label=citation&message=cff&color=1877aa&style=flat-square)](CITATION.cff) [![REUSE compliance](https://api.reuse.software/badge/codeberg.org/projectfile/specification)](https://api.reuse.software/info/codeberg.org/projectfile/specification)
 
@@ -22,14 +22,22 @@ pf-cli-managed: yes
 
 ## Збирання
 
+Клонуйте репозиторій разом із підмодулями:
+
+```sh
+git clone --recurse-submodules https://codeberg.org/projectfile/specification specification && cd specification
+```
+
+- [Довідник із Makefile](../how-to/MAKEFILE.md)
+
 Виконайте `make` без аргументів для типової цілі; виконайте `make help`, щоб переглянути всі цілі.
 
 Точки входу конвеєра:
 
-- `make analyze` — Run the heavy analysis sweep (mutation testing, benchmarks)
-- `make audited` — Re-scan the pinned dependencies and published artifacts for new vulnerabilities
-- `make check-outdated` — Report every pinned dependency that lags upstream
-- `make ready-to-publish` — Run the pseudo-CI pipeline locally — build, test and scan, without publishing
+- `make analyze` — Запускає важкий аналіз (мутаційне тестування, бенчмарки)
+- `make audited` — Повторно сканує закріплені залежності й опубліковані артефакти на нові вразливості
+- `make check-outdated` — Звітує про кожну закріплену залежність, що відстає від upstream
+- `make ready-to-publish` — Запускає псевдо-CI локально — збирає, тестує й сканує без публікації
 
 ## Політики
 
