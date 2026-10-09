@@ -75,7 +75,7 @@
         },
         "browser": {
           "type": "boolean",
-          "description": "A package that also runs in a web page, loadable straight from a CDN with no build step. Absent => false."
+          "description": "A package that also runs in a web page, so consumers MAY show its bundle size. Absent => false."
         },
         "module": {
           "type": "string",

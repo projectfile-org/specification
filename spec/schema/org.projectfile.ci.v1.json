@@ -546,9 +546,13 @@
     "when": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["events"],
+      "minProperties": 1,
       "description": "OPTIONAL TRIGGER predicate: the abstract events on which this node — its gate and the tools it owns — is allowed to run. A vendor-NEUTRAL knob that knows nothing about any particular use (publish, release): a consumer composes POLICY on top of it (e.g. 'publish only on a tag', 'release on a push to main') as projectfile data, never the resolver. ABSENT => the node runs on EVERY event the workflow fires for (the back-compatible default). A non-empty predicate does two things in the lowering: it NARROWS the workflow trigger surface (GitHub/Forgejo `on:`, Tekton its trigger binding) and gates the node's jobs per event (a per-job `if:`). A tool named by several nodes runs UN-gated if ANY owning node omits `when` (it is needed on some path regardless of event); otherwise its predicate is the union of its owners'. The mapping to a vendor's `on:`/`if:` spelling lives in the lowering — the model carries only the neutral tokens.",
       "properties": {
+        "follows": {
+          "type": "string",
+          "description": "Name of another node whose resolved `when` this node adopts, so a node that only gates another (a signing preflight gating the push) carries every project override of that node with no per-project edit. When the target node is absent from the merged document the node keeps its own `events`, or runs ungated when it lists none. A follow cycle is rejected."
+        },
         "events": {
           "type": "array",
           "minItems": 1,

@@ -93,7 +93,7 @@ org:
         kind: package
         registry: npm
         name: "@projectfile/reader"
-        # OPTIONAL  runs in a web page too, so a README offers the CDN line
+        # OPTIONAL  runs in a web page too, so a README shows its bundle size
         browser: true
         # OPTIONAL  a package exporting a command is installed for the machine, not added to a project
         command: pf-reader
