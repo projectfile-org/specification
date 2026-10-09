@@ -114,6 +114,7 @@ tools:
   stylelint:
     image: D9T_JS_TOOLS_IMAGE
     run: auto-stylelint
+    keep-going: true                    # independent check: runs even when an earlier step of its job failed
   html-validate:
     image: D9T_JS_TOOLS_IMAGE
     run: auto-html-validate

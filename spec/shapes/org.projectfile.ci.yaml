@@ -169,6 +169,7 @@
 #              the rc into 0 after an advisory verdict line; a forge lowers it to the
 #              step-level non-blocking predicate it spells natively. Where guard/inputs
 #              decide WHETHER a tool runs, advisory decides what its EXIT STATUS means.
+#     keep-going: the step RUNS after an earlier step of its job failed, and the job still fails (absent => skipped).
 #     tags:    ADVISORY open-vocabulary labels (e.g. lint, test, fast) — for
 #              documentation/filtering only; no lowering semantics
 #     description: ADVISORY free-prose note on what the tool does (the manifest

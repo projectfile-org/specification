@@ -1,0 +1,17 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID subtree fixture — `keep-going` given as a STRING where the schema requires a boolean.
+
+nodes:
+  source-is-secure:
+    needs:
+      trivy-scan-source: true
+tools:
+  trivy-scan-source:
+    image: D9T_GO_TOOLS_IMAGE
+    run: auto-trivy fs
+    keep-going: "yes"   # <- must be a boolean, not a string: rejected
