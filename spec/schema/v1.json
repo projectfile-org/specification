@@ -13,7 +13,7 @@
       "required": ["$schema"]
     },
     {
-      "description": "TOML discriminator: spec_version must be present and equal '1' (spec §3.4). The #:schema magic comment is consumed by the TOML editor tooling and does not survive parse.",
+      "description": "TOML discriminator: spec_version must be present and equal '1' (spec §3.4). The schema cannot see the encoding, so validators enforce this branch for .toml files by extension; the #:schema magic comment is an editor hint and does not survive parse.",
       "required": ["spec_version"]
     }
   ],

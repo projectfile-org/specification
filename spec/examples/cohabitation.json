@@ -3,7 +3,8 @@
   "identity": {
     "namespace": "org.example",
     "name": "cohabitation",
-    "title": "Cohabitation Demo"
+    "title": "Cohabitation Demo",
+    "summary": { "en": "Shows what a v1 validator accepts and preserves." }
   },
   "technologies": ["python", "my-internal-runtime"],
   "vendor-policy": {

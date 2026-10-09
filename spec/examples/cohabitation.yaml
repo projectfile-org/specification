@@ -12,8 +12,9 @@
 #   - an unknown extension namespace (`com.never-heard-of.this` as nested map)
 #   - a technology tag outside the recommended vocabulary (`my-internal-runtime`)
 #   - a bare string for `identity.title` (shorthand for `{ und: "..." }`)
+#   - a mapped `identity.summary` beside it (mixed localized forms, Section 7)
 #
-# All four MUST be accepted by a v1 validator; their values MUST be preserved
+# All five MUST be accepted by a v1 validator; their values MUST be preserved
 # on round-trip. This is the contract that lets independently developed tools
 # share the same file.
 
@@ -23,6 +24,8 @@ identity:
   namespace: org.example
   name: cohabitation
   title: "Cohabitation Demo"
+  summary:
+    en: "Shows what a v1 validator accepts and preserves."
 
 technologies:
   - python
