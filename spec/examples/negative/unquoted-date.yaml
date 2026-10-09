@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — identity.created is a YAML timestamp, not a string (Section 4.3).
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: unquoted-date
+  created: 2026-04-22

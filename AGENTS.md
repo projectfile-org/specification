@@ -32,8 +32,7 @@ specification/
 ├── LICENSE                  MIT (code/schema)
 ├── LICENSES/CC-BY-4.0.txt   for spec text
 ├── CLAUDE.md / AGENTS.md    this guide
-├── projectfile.yaml         self-dogfood (PRIMARY)
-├── projectfile.json         self-dogfood (parity check)
+├── projectfile.yaml         self-dogfood
 ├── IDEA.md                  pre-spec notes; preserved as-is
 └── spec/
     ├── v1.md                NORMATIVE — the document
@@ -64,4 +63,6 @@ docker run --rm -v "$PWD:/w" -w /w python:3.14 sh -c '
 '
 ```
 
-Every file under `spec/examples/` (except `negative/`) MUST pass validation. Every file under `spec/examples/negative/` MUST fail validation. `projectfile.{yaml,json}` at the repository root MUST pass.
+Every file under `spec/examples/` (except `negative/`) MUST pass validation. Every file under `spec/examples/negative/` MUST fail it, except `unquoted-date.yaml`: `check-jsonschema` coerces YAML timestamps to strings, so only a validator evaluating the parsed tree (`pf-cli validate`) rejects it. Nothing in CI runs this check yet; it is manual.
+
+The root `projectfile.yaml` gets `identity.namespace` from an include, so it fails the raw schema by design; the `pf-validate` gate checks it after include merge.
