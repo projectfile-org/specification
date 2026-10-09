@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Field addresses, list indexes and first-match selectors resolve; everything
+  that is not a resolvable string scalar stays verbatim (spec §3.8).
+document:
+  $schema: https://projectfile.org/schema/v1.json
+  identity:
+    namespace: org.example
+    name: demo
+  license:
+    spdx: MIT
+  links:
+    - type: source-code
+      url: https://codeberg.org/example/demo
+    - type: source-code
+      url: https://github.com/example/demo
+    - type: bugs
+      url: https://codeberg.org/example/demo/issues
+  org:
+    projectfile:
+      artifacts:
+        cli:
+          kind: package
+          command: demo
+        lib:
+          kind: package
+        api:
+          kind: service
+          ports:
+            - port: 9101
+            - port: 8080
+          secrets:
+            - o9s.postgresql.password
+        worker:
+          kind: service
+
+cases:
+  - in: "${identity.name}"
+    out: "demo"
+  - in: "license-${license.spdx}-blue"
+    out: "license-MIT-blue"
+  - in: "${links[0].url}"
+    out: "https://codeberg.org/example/demo"
+  - in: "${links[-1].url}"
+    out: "https://codeberg.org/example/demo/issues"
+  - in: "${links[type=source-code].url}"
+    out: "https://codeberg.org/example/demo"
+  - in: "${links[type=homepage].url}"
+    out: "${links[type=homepage].url}"
+  - in: "${license}"
+    out: "${license}"
+  - in: "Pin a release with ${TAG}"
+    out: "Pin a release with ${TAG}"
+  - in: "$${identity.name}"
+    out: "${identity.name}"
+  - in: "$$[x]"
+    out: "$[x]"

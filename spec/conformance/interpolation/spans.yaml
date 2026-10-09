@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  Repeat spans render in place joined by a space, optional spans vanish with
+  their trailing space when empty, and the env filter maps a dotted name to an
+  environment variable (spec §3.8).
+document:
+  $schema: https://projectfile.org/schema/v1.json
+  identity:
+    namespace: org.example
+    name: demo
+  license:
+    spdx: MIT
+  links:
+    - type: source-code
+      url: https://codeberg.org/example/demo
+    - type: source-code
+      url: https://github.com/example/demo
+    - type: bugs
+      url: https://codeberg.org/example/demo/issues
+  org:
+    projectfile:
+      artifacts:
+        cli:
+          kind: package
+          command: demo
+        lib:
+          kind: package
+        api:
+          kind: service
+          ports:
+            - port: 9101
+            - port: 8080
+          secrets:
+            - o9s.postgresql.password
+        worker:
+          kind: service
+
+cases:
+  - in: "docker run $[org.projectfile.artifacts{kind=service}.ports[] | --publish ${port}:${port}] demo"
+    out: "docker run --publish 9101:9101 --publish 8080:8080 demo"
+  - in: "docker run $[?org.projectfile.artifacts{kind=service}.secrets[] | --env ${. | env}] demo"
+    out: "docker run --env O9S_POSTGRESQL_PASSWORD demo"
+  - in: "docker run $[?org.projectfile.artifacts{kind=package}.secrets[] | --env ${. | env}] demo"
+    out: "docker run demo"
+  - in: "docker run $[org.projectfile.artifacts{kind=package}.secrets[] | --env ${. | env}] demo"
+    out: "docker run $[org.projectfile.artifacts{kind=package}.secrets[] | --env ${. | env}] demo"
+  - in: "$[org.projectfile.artifacts{kind=service}.ports[] | -p ${missing}]"
+    out: "$[org.projectfile.artifacts{kind=service}.ports[] | -p ${missing}]"
+  - in: "${identity.name | env}"
+    out: "DEMO"
+  - in: "${identity.name | shout}"
+    out: "${identity.name | shout}"
+  - in: "$[org.projectfile.artifacts{kind=service}.ports[] | -p ${port}] -e $${HOME}"
+    out: "-p 9101 -p 8080 -e ${HOME}"
+  - in: "docker run $[org.projectfile.artifacts{kind=service}.ports[] | --publish ${port}:${port}] $[?org.projectfile.artifacts{kind=service}.secrets[] | --env ${. | env}] --volume $${HOME}/data:/data ${identity.name}"
+    out: "docker run --publish 9101:9101 --publish 8080:8080 --env O9S_POSTGRESQL_PASSWORD --volume ${HOME}/data:/data demo"

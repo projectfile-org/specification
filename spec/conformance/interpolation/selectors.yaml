@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+description: >-
+  A mapping selector yields every match. A consumer writing one string leaves a
+  multi-value reference verbatim; a consumer writing one line per value emits
+  one per match, and the cross product for several such references (spec §3.8).
+document:
+  $schema: https://projectfile.org/schema/v1.json
+  identity:
+    namespace: org.example
+    name: demo
+  license:
+    spdx: MIT
+  links:
+    - type: source-code
+      url: https://codeberg.org/example/demo
+    - type: source-code
+      url: https://github.com/example/demo
+    - type: bugs
+      url: https://codeberg.org/example/demo/issues
+  org:
+    projectfile:
+      artifacts:
+        cli:
+          kind: package
+          command: demo
+        lib:
+          kind: package
+        api:
+          kind: service
+          ports:
+            - port: 9101
+            - port: 8080
+          secrets:
+            - o9s.postgresql.password
+        worker:
+          kind: service
+
+cases:
+  - in: "${org.projectfile.artifacts{kind=package,command}.command}"
+    out: "demo"
+  - in: "${org.projectfile.artifacts{kind=service}.kind}"
+    out: "${org.projectfile.artifacts{kind=service}.kind}"
+    lines: ["service", "service"]
+  - in: "${links[].url}"
+    out: "${links[].url}"
+    lines:
+      - "https://codeberg.org/example/demo"
+      - "https://github.com/example/demo"
+      - "https://codeberg.org/example/demo/issues"
+  - in: "${links[type=source-code].url} ${org.projectfile.artifacts{kind=package}.kind}"
+    out: "https://codeberg.org/example/demo ${org.projectfile.artifacts{kind=package}.kind}"
+    lines:
+      - "https://codeberg.org/example/demo package"
+      - "https://codeberg.org/example/demo package"
