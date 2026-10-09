@@ -1,0 +1,5 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "includes": [{ "url": "https://presets.example.org/fragments/policies.json", "sha256": "ABC123" }],
+  "identity": { "namespace": "org.example", "name": "malformed-include-pin" }
+}

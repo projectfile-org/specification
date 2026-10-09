@@ -407,9 +407,22 @@
     "includes": {
       "type": "array",
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "description": "Relative path or HTTP(S) URL referencing a projectfile document to deep-merge before reading. Resolution is recursive: an included document MAY itself declare includes; relative paths resolve against the including document's directory; cycles MUST be rejected. See spec §4.9."
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "description": "Relative path or HTTP(S) URL referencing a projectfile document to deep-merge before reading. Resolution is recursive: an included document MAY itself declare includes; relative paths resolve against the including document's directory; cycles MUST be rejected. See spec §4.9."
+          },
+          {
+            "type": "object",
+            "required": ["url", "sha256"],
+            "properties": {
+              "url": { "type": "string", "pattern": "^https?://", "description": "HTTP(S) URL of the included document." },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Lowercase hex SHA-256 of the fetched bytes. Consumers MUST reject a mismatch (spec §4.9)." }
+            },
+            "description": "A pinned remote include (spec §4.9)."
+          }
+        ]
       },
       "description": "Documents to deep-merge into the base document. Later entries win over earlier ones; the base document always wins. Includes resolve recursively; cycles are rejected. See spec §4.9."
     }

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — a pinned include whose sha256 is not 64 lowercase hex digits (Section 4.9).
+
+$schema: https://projectfile.org/schema/v1.json
+
+includes:
+  - url: https://presets.example.org/fragments/policies.yaml
+    sha256: ABC123
+
+identity:
+  namespace: org.example
+  name: malformed-include-pin

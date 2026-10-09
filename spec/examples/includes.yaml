@@ -10,6 +10,9 @@ $schema: https://projectfile.org/schema/v1.json
 
 includes:
   - fragments/shared.yaml
+  # A pinned remote include: rejected if the fetched bytes differ.
+  - url: https://presets.example.org/fragments/policies.yaml
+    sha256: 15f1458aa2c3244f95374faebe6e91318f703d41a23450bf58dadb8717b496b2
 
 identity:
   name: includes

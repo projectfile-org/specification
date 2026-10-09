@@ -23,6 +23,7 @@ Negative fixtures in this directory are authored in YAML and JSON. Some breakage
 | `malformed-person-from`     | YAML, JSON | A `people[]` entry’s `from` is `"2025/09/12"` (slash-separated). Per-person `from` / `to` MUST be ISO-8601 `YYYY-MM-DD`; the schema’s `isoDate` pattern rejects the slashed form.                                                                                                                                  |
 | `absolute-license-file`     | YAML, JSON | `license.file` is an absolute path; path traversal prohibited (Section 8).                                                                                                                                                                                                                                         |
 | `unquoted-date`             | YAML       | `identity.created` is written unquoted, so YAML resolves it to a timestamp, not the string §4.3 requires. JSON has no date type and cannot express it. `check-jsonschema` coerces timestamps to strings before validating and passes it; a validator evaluating the parsed tree rejects it.          |
+| `malformed-include-pin`     | YAML, JSON | A pinned `includes` entry carries a `sha256` that is not 64 lowercase hex digits (§4.9).                                                                                                                                                                                                                         |
 
 ## Note on cohabitation (Section 3.7)
 
