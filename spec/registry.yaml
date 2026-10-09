@@ -143,7 +143,7 @@ namespaces:
       Every pattern is declared — a consumer derives none from technology tags,
       so each line traces to an `include` in the document or in a fragment it
       merged. `exclude` subtracts, which is the only way to lose an inherited
-      pattern: `includes` deep-merge unions lists (§4.9a). Flat-file targets
+      pattern: `includes` deep-merge unions lists (§4.9). Flat-file targets
       (.gitignore, .dockerignore, .containerignore, .npmignore, .claudeignore,
       .textlintignore, .fdignore) render one pattern per line; the yamllint
       target renders an `ignore:` block inside the .yamllint config (it has no

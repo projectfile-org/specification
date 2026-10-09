@@ -321,12 +321,12 @@
     "linkEntry": {
       "type": "object",
       "required": ["type", "url"],
-      "description": "A typed navigational URL. See spec §4.11.",
+      "description": "A typed navigational URL. See spec §4.10.",
       "properties": {
         "type":  {
           "type": "string",
           "minLength": 1,
-          "description": "URL category. Open vocabulary; consumers MUST NOT reject for unknown types. See spec §4.11 for recommended values.",
+          "description": "URL category. Open vocabulary; consumers MUST NOT reject for unknown types. See spec §4.10 for recommended values.",
           "examples": [
             "homepage", "source-code", "bugs", "documentation", "changelog",
             "chat", "forum", "contact", "translate", "donation",
@@ -341,7 +341,7 @@
         "label":     { "$ref": "#/$defs/localizedString" },
         "preferred": {
           "type": "boolean",
-          "description": "Marks the canonical entry of its type when more than one entry shares the same type. At most one entry per type MAY carry preferred = true. See spec §4.11."
+          "description": "Marks the canonical entry of its type when more than one entry shares the same type. At most one entry per type MAY carry preferred = true. See spec §4.10."
         },
         "derived": {
           "type": "boolean",
@@ -361,7 +361,7 @@
       "type": "object",
       "properties": {
         "browsers": {
-          "description": "Browser targets as Browserslist query strings (§4.9). A flat sequence applies to all environments; a mapping of environment names to query arrays generates per-environment [section] headers in .browserslistrc.",
+          "description": "Browser targets as Browserslist query strings (§4.8). A flat sequence applies to all environments; a mapping of environment names to query arrays generates per-environment [section] headers in .browserslistrc.",
           "oneOf": [
             {
               "type": "array",
@@ -398,9 +398,9 @@
       "items": {
         "type": "string",
         "minLength": 1,
-        "description": "Relative path or HTTP(S) URL referencing a projectfile document to deep-merge before reading. Resolution is recursive: an included document MAY itself declare includes; relative paths resolve against the including document's directory; cycles MUST be rejected. See spec §4.9a."
+        "description": "Relative path or HTTP(S) URL referencing a projectfile document to deep-merge before reading. Resolution is recursive: an included document MAY itself declare includes; relative paths resolve against the including document's directory; cycles MUST be rejected. See spec §4.9."
       },
-      "description": "Documents to deep-merge into the base document. Later entries win over earlier ones; the base document always wins. Includes resolve recursively; cycles are rejected. See spec §4.9a."
+      "description": "Documents to deep-merge into the base document. Later entries win over earlier ones; the base document always wins. Includes resolve recursively; cycles are rejected. See spec §4.9."
     }
   }
 }

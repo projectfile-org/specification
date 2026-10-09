@@ -7,7 +7,7 @@
 description: >-
   Composition + override: an included preset enables two tools; the base
   document drops one with `false`. The local `false` wins over the included
-  `true` (base wins over includes, spec §4.9a), so only the survivor runs.
+  `true` (base wins over includes, spec §4.9), so only the survivor runs.
 
 includes:
   - nodes:

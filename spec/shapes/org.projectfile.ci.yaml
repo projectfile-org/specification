@@ -53,7 +53,7 @@
 # ordering edge; an entry that names a bolt-on tool recipe is the leaf that
 # actually runs. "Building" is just running a build tool — no special node type.
 #
-# Override grammar (also the include-merge contract, spec §4.9a):
+# Override grammar (also the include-merge contract, spec §4.9):
 #     false        -> drop this target from the node
 #     true         -> enable, no args
 #     {args: "…"}  -> enable + pass args  ({} is tolerated as true)

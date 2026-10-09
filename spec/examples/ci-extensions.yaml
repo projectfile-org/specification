@@ -10,7 +10,7 @@
 # contract lives in spec/schema/org.projectfile.ci.v1.json and is exercised
 # separately by the fixtures under examples/ci/.
 #
-# `includes` (spec §4.9a) shows the composition pattern: a reusable CI DAG
+# `includes` (spec §4.9) shows the composition pattern: a reusable CI DAG
 # preset is merged first, then this document tunes it (base/local wins). A
 # preset author ships the common nodes/tools once; consumers don't copy them.
 

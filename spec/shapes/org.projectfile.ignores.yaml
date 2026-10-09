@@ -33,7 +33,7 @@ org:
       # lists and two mappings while a list meeting a mapping replaces it.
       #
       # `exclude` is the only way to LOSE a pattern: `includes` deep-merge
-      # unions lists (§4.9a), so a pattern an included fragment declared cannot
+      # unions lists (§4.9), so a pattern an included fragment declared cannot
       # otherwise be dropped downstream. It is not a re-include — a `!pattern`
       # entry belongs in `include`, and consumers MUST emit such entries after
       # the patterns they answer, since these formats resolve last-match-wins.

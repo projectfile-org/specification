@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://projectfile.org/conformance/ci/fixture.schema.json",
   "title": "org.projectfile.ci conformance fixture (v1)",
-  "description": "Structure of one behavioural conformance vector for the org.projectfile.ci CI-DAG extension. A vector is an INPUT (a CI subtree, optionally composed from an ordered `includes` chain per spec §4.9a) plus the vendor-NEUTRAL behaviour every conforming consumer must produce when it resolves and runs the graph. This meta-schema validates the vector FILES; the `input` (and each `includes` entry) MUST additionally satisfy schema/org.projectfile.ci.v1.json. A consumer (m6e->make, t4n->Tekton, GitHub/Forgejo->workflow) PASSES a vector iff: in accept mode the set of tools it executes for the goals equals `runs`, every `before` ordering holds, every `args` mapping is delivered, and every `counts` multiplicity (the per-cell fan-out a `matrix` produces) matches; in reject mode it refuses to build the graph for the stated reason.",
+  "description": "Structure of one behavioural conformance vector for the org.projectfile.ci CI-DAG extension. A vector is an INPUT (a CI subtree, optionally composed from an ordered `includes` chain per spec §4.9) plus the vendor-NEUTRAL behaviour every conforming consumer must produce when it resolves and runs the graph. This meta-schema validates the vector FILES; the `input` (and each `includes` entry) MUST additionally satisfy schema/org.projectfile.ci.v1.json. A consumer (m6e->make, t4n->Tekton, GitHub/Forgejo->workflow) PASSES a vector iff: in accept mode the set of tools it executes for the goals equals `runs`, every `before` ordering holds, every `args` mapping is delivered, and every `counts` multiplicity (the per-cell fan-out a `matrix` produces) matches; in reject mode it refuses to build the graph for the stated reason.",
 
   "type": "object",
   "additionalProperties": false,
@@ -14,7 +14,7 @@
     },
     "includes": {
       "type": "array",
-      "description": "OPTIONAL ordered include chain. Each entry is a CI subtree; they are deep-merged in order, then `input` is merged on top (base/local wins) per spec §4.9a. Inlined here so the suite is hermetic — no network, deterministic.",
+      "description": "OPTIONAL ordered include chain. Each entry is a CI subtree; they are deep-merged in order, then `input` is merged on top (base/local wins) per spec §4.9. Inlined here so the suite is hermetic — no network, deterministic.",
       "items": { "type": "object" }
     },
     "input": {

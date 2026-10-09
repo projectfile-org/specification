@@ -31,7 +31,7 @@ Each `*.yaml` validates against [`fixture.schema.json`](fixture.schema.json):
 ```yaml
 description: <one line>
 includes:            # OPTIONAL ordered include chain; each entry is a CI subtree.
-  - { nodes: { … } } #   Deep-merged in order, then `input` on top (base wins, §4.9a).
+  - { nodes: { … } } #   Deep-merged in order, then `input` on top (base wins, §4.9).
 input:               # REQUIRED: the base document's org.projectfile.ci subtree.
   nodes: { … }       #   a node may carry `goal: true` to mark a default target.
 expect:              # REQUIRED: accept mode (runs/counts/before/args) XOR reject mode.
@@ -91,7 +91,7 @@ A consumer **passes** a vector iff:
 | `closure-goal-exclusion.yaml` | a `goal: true` node runs only its closure; off-closure sink excluded                       |
 | `ordering-after-build.yaml`   | `needs` orders a validator strictly after the build tool                                   |
 | `sink-inference.yaml`         | no `goal` flag ⇒ every sink is a goal                                                      |
-| `include-false-override.yaml` | local `false` beats an included `true` (§4.9a)                                             |
+| `include-false-override.yaml` | local `false` beats an included `true` (§4.9)                                             |
 | `args-passthrough.yaml`       | `{args}` enables a tool and binds its arg string                                           |
 | `scalar-need.yaml`            | scalar `needs: <target>` shorthand == the one-entry sequence; a scalar naming a node is an |
 | `matrix-percell.yaml`         | a `matrix: true` CELL fans out across the axes’ product; an upstream SOURCE tool runs once |
