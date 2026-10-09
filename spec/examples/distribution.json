@@ -4,7 +4,7 @@
   "identity": {
     "namespace": "org.example",
     "name": "postgres-image",
-    "version": "16.2.0",
+    "version": "16.2",
     "title": { "en": "Example Postgres Image" },
     "summary": { "en": "Container packaging of PostgreSQL with example.org's runtime conventions" },
     "description": {

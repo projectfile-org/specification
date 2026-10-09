@@ -15,7 +15,7 @@ kind: SoftwareSourceCode
 identity:
   namespace: org.example
   name: postgres-image
-  version: "16.2.0"
+  version: "16.2"
   title:
     en: "Example Postgres Image"
   summary:

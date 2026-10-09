@@ -86,11 +86,11 @@
       "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$"
     },
 
-    "semver": {
+    "version": {
       "type": "string",
-      "description": "SemVer 2.0.0 version string.",
-      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
-      "examples": ["1.0.0", "2.1.3-rc.1", "1.4.0+build.42"]
+      "minLength": 1,
+      "description": "Project version in the project's own scheme. SemVer 2.0.0 is RECOMMENDED, not required (spec §4.3).",
+      "examples": ["1.0.0", "2.1.3-rc.1", "24.04", "16.2", "2026.10.1"]
     },
 
     "semverRange": {
@@ -124,7 +124,7 @@
       "properties": {
         "namespace":   { "$ref": "#/$defs/reverseDns" },
         "name":        { "$ref": "#/$defs/dnsLabel" },
-        "version":     { "$ref": "#/$defs/semver" },
+        "version":     { "$ref": "#/$defs/version" },
         "title":       { "$ref": "#/$defs/localizedString" },
         "summary":     { "$ref": "#/$defs/localizedString" },
         "description": { "$ref": "#/$defs/localizedString" },
