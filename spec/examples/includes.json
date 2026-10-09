@@ -1,0 +1,5 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "includes": ["fragments/shared.json"],
+  "identity": { "name": "includes" }
+}

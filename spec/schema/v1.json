@@ -5,12 +5,20 @@
   "description": "Schema for the projectfile specification, version 1. See https://projectfile.org/spec/v1. Applies to the in-memory tree resulting from parsing a projectfile.toml, projectfile.yaml, or projectfile.json file. The schema enforces the structural contract (required fields, types, identifier shapes). Semantic SHOULDs and recommended vocabularies (technology tags, OS/arch values, ) are intentionally NOT enforced — see spec §3.4 and §3.7 (peaceful cohabitation).",
 
   "type": "object",
-  "required": ["identity"],
+  "$ref": "#/$defs/fragment",
+
+  "if": { "required": ["includes"] },
+  "else": {
+    "description": "A document without includes carries its own identity. One with includes MAY take identity from them; validators check the merged document (spec §4.9).",
+    "required": ["identity"],
+    "properties": { "identity": { "required": ["namespace", "name"] } }
+  },
 
   "anyOf": [
     {
       "description": "YAML/JSON discriminator: $schema must be present and equal the v1 URL (spec §3.4).",
-      "required": ["$schema"]
+      "required": ["$schema"],
+      "properties": { "$schema": { "const": "https://projectfile.org/schema/v1.json" } }
     },
     {
       "description": "TOML discriminator: spec_version must be present and equal '1' (spec §3.4). The schema cannot see the encoding, so validators enforce this branch for .toml files by extension; the #:schema magic comment is an editor hint and does not survive parse.",
@@ -18,44 +26,48 @@
     }
   ],
 
-  "properties": {
-    "$schema": {
-      "const": "https://projectfile.org/schema/v1.json",
-      "description": "Discriminator for YAML/JSON encodings; pins the specification version."
-    },
-    "spec_version": {
-      "const": "1",
-      "description": "Discriminator for TOML encoding (paired with the #:schema magic comment); pins the specification version."
-    },
-    "kind": {
-      "type": "string",
-      "default": "SoftwareSourceCode",
-      "description": "Schema.org type. Recommended: SoftwareSourceCode, SoftwareApplication, WebApplication.",
-      "examples": ["SoftwareSourceCode", "SoftwareApplication", "WebApplication"]
-    },
-    "identity":     { "$ref": "#/$defs/identity" },
-    "repositories": { "$ref": "#/$defs/repositories" },
-    "license":      { "$ref": "#/$defs/license" },
-    "copyright":    { "$ref": "#/$defs/copyright" },
-    "upstream":     { "$ref": "#/$defs/upstream" },
-    "people":       { "type": "array", "items": { "$ref": "#/$defs/person" } },
-    "organizations": { "type": "array", "items": { "$ref": "#/$defs/organization" } },
-    "keywords":     { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/keyword" } },
-    "technologies": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/technology" } },
-    "requirements": { "$ref": "#/$defs/requirements" },
-    "includes":     { "$ref": "#/$defs/includes" },
-    "links":        { "type": "array", "items": { "$ref": "#/$defs/linkEntry" } }
-  },
-
-  "patternProperties": {
-    "^[a-z][a-z0-9-]*$": {
-      "description": "Top-level single-segment key. May be (a) an unknown reserved key not defined in this revision of Section 4 — accepted and preserved (peaceful cohabitation, §3.7); or (b) the first segment of a nested-mapping extension namespace — its subtree is opaque to this schema and MUST be preserved on round-trip. Dotted-string top-level keys are rejected by additionalProperties:false."
-    }
-  },
-
-  "additionalProperties": false,
-
   "$defs": {
+    "fragment": {
+      "type": "object",
+      "description": "Field shapes shared by a document and an includes fragment, with nothing required (spec §4.9).",
+      "properties": {
+        "$schema": {
+          "enum": ["https://projectfile.org/schema/v1.json", "https://projectfile.org/schema/v1-fragment.json"],
+          "description": "Discriminator for YAML/JSON encodings; pins the specification version. A fragment MAY name the fragment schema instead (spec §4.9)."
+        },
+        "spec_version": {
+          "const": "1",
+          "description": "Discriminator for TOML encoding; pins the specification version."
+        },
+        "kind": {
+          "type": "string",
+          "default": "SoftwareSourceCode",
+          "description": "Schema.org type. Recommended: SoftwareSourceCode, SoftwareApplication, WebApplication.",
+          "examples": ["SoftwareSourceCode", "SoftwareApplication", "WebApplication"]
+        },
+        "identity":     { "$ref": "#/$defs/identity" },
+        "repositories": { "$ref": "#/$defs/repositories" },
+        "license":      { "$ref": "#/$defs/license" },
+        "copyright":    { "$ref": "#/$defs/copyright" },
+        "upstream":     { "$ref": "#/$defs/upstream" },
+        "people":       { "type": "array", "items": { "$ref": "#/$defs/person" } },
+        "organizations": { "type": "array", "items": { "$ref": "#/$defs/organization" } },
+        "keywords":     { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/keyword" } },
+        "technologies": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/technology" } },
+        "requirements": { "$ref": "#/$defs/requirements" },
+        "includes":     { "$ref": "#/$defs/includes" },
+        "links":        { "type": "array", "items": { "$ref": "#/$defs/linkEntry" } }
+      },
+
+      "patternProperties": {
+        "^[a-z][a-z0-9-]*$": {
+          "description": "Top-level single-segment key. May be (a) an unknown reserved key not defined in this revision of Section 4 — accepted and preserved (peaceful cohabitation, §3.7); or (b) the first segment of a nested-mapping extension namespace — its subtree is opaque to this schema and MUST be preserved on round-trip. Dotted-string top-level keys are rejected by additionalProperties:false."
+        }
+      },
+
+      "additionalProperties": false
+    },
+
     "localizedString": {
       "description": "BCP 47 language-tagged string map. As a shorthand, a bare string is permitted and treated as { und: <string> } (§7).",
       "oneOf": [
@@ -120,7 +132,6 @@
 
     "identity": {
       "type": "object",
-      "required": ["namespace", "name"],
       "properties": {
         "namespace":   { "$ref": "#/$defs/reverseDns" },
         "name":        { "$ref": "#/$defs/dnsLabel" },

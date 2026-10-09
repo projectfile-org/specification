@@ -1,0 +1,6 @@
+{
+  "$schema": "https://projectfile.org/schema/v1-fragment.json",
+  "identity": { "namespace": "org.example" },
+  "license": { "spdx": "MIT" },
+  "links": [{ "type": "homepage", "url": "https://example.org/" }]
+}

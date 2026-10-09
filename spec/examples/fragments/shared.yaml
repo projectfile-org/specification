@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Fragment (Section 4.9) — shared metadata many documents include.
+# No discriminator, no identity.name: validate it against v1-fragment.json.
+
+$schema: https://projectfile.org/schema/v1-fragment.json
+
+identity:
+  namespace: org.example
+
+license:
+  spdx: MIT
+
+links:
+  - type: homepage
+    url: https://example.org/
