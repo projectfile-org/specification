@@ -73,6 +73,18 @@
           "minLength": 1,
           "description": "Which package index `name` is published to: `npm`, `pypi`, `crates`, `maven`, `nuget`, `oci`, … Open vocabulary. It is what lets one selector distinguish two packages of the same kind — `{kind=package,registry=npm}` — so a project publishing to several indexes documents each install command separately."
         },
+        "architecture": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "CPU architectures THIS artifact runs on, in the org.projectfile.architecture vocabulary (OCI image-spec: `amd64`, `arm64`, …). Overrides the project-level list for this artifact only, so a portable package can declare more than the image the project builds. Absent => the project-level org.projectfile.architecture applies."
+        },
+        "operating-system": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Operating systems THIS artifact runs on, in the org.projectfile.operating-system vocabulary (`linux`, `darwin`, `windows`, …). Overrides the project-level list for this artifact only. Absent => the project-level org.projectfile.operating-system applies."
+        },
         "browser": {
           "type": "boolean",
           "description": "A package that also runs in a web page, so consumers MAY show its bundle size. Absent => false."

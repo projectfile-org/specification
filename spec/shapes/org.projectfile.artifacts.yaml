@@ -97,6 +97,9 @@ org:
         browser: true
         # OPTIONAL  a package exporting a command is installed for the machine, not added to a project
         command: pf-reader
+        # OPTIONAL  platforms this artifact runs on; overrides org.projectfile.architecture / operating-system for it alone
+        architecture: [amd64, arm64]
+        operating-system: [linux, darwin]
 
       # a service is addressed by what it LISTENS on — the one thing no generic
       # description of a service could supply
