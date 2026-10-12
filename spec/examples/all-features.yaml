@@ -38,6 +38,7 @@ repositories:
   - url: https://codeberg.org/acme/snuggly-sunbeam.git
     type: git
     role: mirror
+    packages: true
 
 links:
   - type: homepage

@@ -149,7 +149,7 @@
     "repositories": {
       "type": "array",
       "minItems": 1,
-      "description": "Source-control clone endpoints. Each entry has a url and optional type/path/branch; role categorizes it (origin/mirror/archive, open vocab) and the reserved value role=origin marks the canonical entry, issues=true marks the forge used for issue tracking. Exactly one entry MUST carry role=origin when count > 1; a sole entry is implicitly origin. At most one entry MAY have issues=true. url accepts any scheme git accepts — https, ssh (git@host:path), git+ssh, etc. The forge landing page is NOT a repositories[] value; it goes in links[type=source-code]. See spec §4.3a.",
+      "description": "Source-control clone endpoints. Each entry has a url and optional type/path/branch; role categorizes it (origin/mirror/archive, open vocab) and the reserved value role=origin marks the canonical entry, issues=true marks the forge used for issue tracking, packages=true the one package registries name as the source. Exactly one entry MUST carry role=origin when count > 1; a sole entry is implicitly origin. At most one entry MAY have issues=true, and at most one packages=true. url accepts any scheme git accepts — https, ssh (git@host:path), git+ssh, etc. The forge landing page is NOT a repositories[] value; it goes in links[type=source-code]. See spec §4.3a.",
       "items": {
         "type": "object",
         "required": ["url"],
@@ -159,6 +159,7 @@
           "path":    { "type": "string" },
           "branch":  { "type": "string" },
           "issues":   { "type": "boolean", "description": "True for the repository whose forge issue tracker is the project's canonical bug tracker. At most one entry MAY carry issues = true. When absent on all entries, the origin entry is used." },
+          "packages": { "type": "boolean", "description": "True for the repository that package registries name as the project's source. At most one entry MAY carry packages = true. When absent on all entries, the origin entry is used." },
           "role":    {
             "type": "string",
             "description": "Open vocabulary; recommended values: origin, mirror, archive. The value origin is reserved: it marks the canonical entry (exactly one when the array has more than one element; the sole element is implicitly origin).",
@@ -173,7 +174,7 @@
           "maxItems": 1
         },
         {
-          "description": "Two or more entries — exactly one MUST carry role = origin; at most one MAY have issues = true.",
+          "description": "Two or more entries — exactly one MUST carry role = origin; at most one MAY have issues = true, and at most one packages = true.",
           "minItems": 2,
           "contains": {
             "type": "object",
@@ -188,6 +189,15 @@
                 "type": "object",
                 "properties": { "issues": { "const": true } },
                 "required": ["issues"]
+              },
+              "minContains": 0,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "packages": { "const": true } },
+                "required": ["packages"]
               },
               "minContains": 0,
               "maxContains": 1

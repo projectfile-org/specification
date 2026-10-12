@@ -1,0 +1,23 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# INVALID — two repository entries both carry packages: true; at most one may (§4.3a).
+
+$schema: https://projectfile.org/schema/v1.json
+
+identity:
+  namespace: org.example
+  name: two-packages
+
+repositories:
+  - url: https://github.com/example/two-packages
+    type: git
+    role: origin
+    packages: true
+  - url: https://codeberg.org/example/two-packages
+    type: git
+    role: mirror
+    packages: true

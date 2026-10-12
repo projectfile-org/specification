@@ -1,0 +1,21 @@
+{
+  "$schema": "https://projectfile.org/schema/v1.json",
+  "identity": {
+    "namespace": "org.example",
+    "name": "two-packages"
+  },
+  "repositories": [
+    {
+      "url": "https://github.com/example/two-packages",
+      "type": "git",
+      "role": "origin",
+      "packages": true
+    },
+    {
+      "url": "https://codeberg.org/example/two-packages",
+      "type": "git",
+      "role": "mirror",
+      "packages": true
+    }
+  ]
+}

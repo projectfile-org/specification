@@ -32,7 +32,8 @@
     {
       "url": "https://codeberg.org/acme/snuggly-sunbeam.git",
       "type": "git",
-      "role": "mirror"
+      "role": "mirror",
+      "packages": true
     }
   ],
   "links": [
