@@ -6,6 +6,7 @@
 
   "type": "object",
   "$ref": "#/$defs/fragment",
+  "properties": { "repositories": { "items": { "required": ["url"] } } },
 
   "if": { "required": ["includes"] },
   "else": {
@@ -149,10 +150,9 @@
     "repositories": {
       "type": "array",
       "minItems": 1,
-      "description": "Source-control clone endpoints. Each entry has a url and optional type/path/branch; role categorizes it (origin/mirror/archive, open vocab) and the reserved value role=origin marks the canonical entry, issues=true marks the forge used for issue tracking, packages=true the one package registries name as the source. Exactly one entry MUST carry role=origin when count > 1; a sole entry is implicitly origin. At most one entry MAY have issues=true, and at most one packages=true. url accepts any scheme git accepts — https, ssh (git@host:path), git+ssh, etc. The forge landing page is NOT a repositories[] value; it goes in links[type=source-code]. See spec §4.3a.",
+      "description": "Source-control clone endpoints. Each entry has a url (a fragment MAY omit it: its origin entry merges into the including document’s, spec §4.9) and optional type/path/branch; role categorizes it (origin/mirror/archive, open vocab) and the reserved value role=origin marks the canonical entry, issues=true marks the forge used for issue tracking, packages=true the one package registries name as the source. Exactly one entry MUST carry role=origin when count > 1; a sole entry is implicitly origin. At most one entry MAY have issues=true, and at most one packages=true. url accepts any scheme git accepts — https, ssh (git@host:path), git+ssh, etc. The forge landing page is NOT a repositories[] value; it goes in links[type=source-code]. See spec §4.3a.",
       "items": {
         "type": "object",
-        "required": ["url"],
         "properties": {
           "url":     { "type": "string", "minLength": 1, "description": "Clone endpoint. Any scheme git accepts — not constrained to http(s)." },
           "type":    { "type": "string", "examples": ["git", "hg", "svn", "fossil", "bzr"] },
