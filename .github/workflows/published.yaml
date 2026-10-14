@@ -9,7 +9,9 @@
 ---
 name: published
 "on":
-  push: {}
+  push:
+    branches: ["**", "!main"]
+    tags: ["**"]
   pull_request: {}
   workflow_dispatch:
 permissions:
@@ -24,20 +26,24 @@ jobs:
   artifacts-are-ok:
     runs-on: ubuntu-26.04
     needs: ["inputs-are-ok"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo artifacts-are-ok
   documentation-is-ok:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo documentation-is-ok
   inputs-are-ok:
     runs-on: ubuntu-26.04
     needs: ["documentation-is-ok", "projectfile-is-ok", "source-is-ok"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo inputs-are-ok
   projectfile-is-ok:
     runs-on: ubuntu-26.04
     needs: ["projectfile-is-valid"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -52,6 +58,7 @@ jobs:
           run: pf-bridge check
   projectfile-is-valid:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -67,15 +74,18 @@ jobs:
   published:
     runs-on: ubuntu-26.04
     needs: ["ready-to-publish"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo published
   ready-to-publish:
     runs-on: ubuntu-26.04
     needs: ["artifacts-are-ok"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo ready-to-publish
   source-is-compliant:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -91,10 +101,12 @@ jobs:
   source-is-ok:
     runs-on: ubuntu-26.04
     needs: ["source-is-compliant", "source-is-secure", "source-is-tested", "source-passes-lint"]
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo source-is-ok
   source-is-secure:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     env:
       CI_IGNORE_VULNERABILITIES: ${{ vars.CI_IGNORE_VULNERABILITIES }}
     steps:
@@ -172,10 +184,12 @@ jobs:
           overwrite: true
   source-is-tested:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - run: echo source-is-tested
   source-passes-lint:
     runs-on: ubuntu-26.04
+    if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
