@@ -415,9 +415,9 @@ namespaces:
     docs: "https://projectfile.org/extensions/org/projectfile/forge"
     summary: >-
       Portable, tool-agnostic forge-publishing metadata: any conforming tool
-      MAY read it to decide which description / homepage / topics get synced
-      from projectfile to GitHub / GitLab / Forgejo / Gitea repository
-      metadata. Top-level `push = false` is a global kill-switch; `fields.*`
+      MAY read it to decide which description / homepage / topics and which
+      branch and tag protection get synced from projectfile to GitHub /
+      GitLab / Forgejo / Gitea repositories. Top-level `push = false` is a global kill-switch; `fields.*`
       flips individual fields; `hosts.<host> = false` opts a single host out
       without removing it from repositories[]. All toggles default to true so
       an absent extension matches default behaviour.

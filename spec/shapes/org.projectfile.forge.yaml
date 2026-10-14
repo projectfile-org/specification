@@ -39,6 +39,8 @@ org:
         description: true
         homepage: true
         topics: true
+        # Branch and tag protection derived from org.projectfile.release branches.
+        protection: true
 
       # Per-host overrides. Hostname is the lowercased URL host. Missing host =
       # defaults apply (allow). Setting to false skips the host entirely.
