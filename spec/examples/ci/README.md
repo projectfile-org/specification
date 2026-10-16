@@ -19,6 +19,7 @@ validated against that subtree’s dedicated standalone schema:
 | `matrix-overrides.yaml`                      | `../../schema/org.projectfile.ci.v1.json` | MUST pass   |
 | `matrix-exclude.yaml`                        | `../../schema/org.projectfile.ci.v1.json` | MUST pass   |
 | `matrix-serialise.yaml`                      | `../../schema/org.projectfile.ci.v1.json` | MUST pass   |
+| `matrix-artifact.yaml`                       | `../../schema/org.projectfile.ci.v1.json` | MUST pass   |
 | `negative/bad-tool-override.yaml`            | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-node-key.yaml`                 | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |
 | `negative/bad-matrix-axis.yaml`              | `../../schema/org.projectfile.ci.v1.json` | MUST fail   |

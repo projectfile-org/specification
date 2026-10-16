@@ -265,6 +265,18 @@
                 "axes": { "$ref": "#/$defs/matrixAxes" },
                 "exclude": { "$ref": "#/$defs/matrixExclude" }
               }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["artifact"],
+              "properties": {
+                "artifact": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$",
+                  "description": "Names an org.projectfile.artifacts entry: the node is a cell over `TARGET_OS` × `TARGET_ARCH`, read from that artifact's `operating-system` and `architecture` (else the project-level lists, `operating-system` defaulting to `linux`) minus its `exclude` cells, so the platform set is declared once on the record."
+                }
+              }
             }
           ]
         },

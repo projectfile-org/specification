@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive subtree fixture — the VALUE at org.projectfile.ci. Each binary node fans over the
+# cells of the `cli` artifact record (TARGET_OS × TARGET_ARCH minus its exclude list).
+
+nodes:
+  binaries-built:
+    matrix: {artifact: cli}
+    needs:
+      build-binaries: true
+  binaries-analyzed:
+    matrix: {artifact: cli}
+    needs:
+      binaries-built: true
+      gsa: true
