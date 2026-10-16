@@ -1,0 +1,13 @@
+---
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Negative fixture — MUST FAIL against ../../../schema/org.projectfile.artifacts.v1.json.
+# An exclude cell names neither `os` nor `arch`, and a second one misspells the axis.
+
+cli:
+  kind: binary
+  path: dist/pf-cli
+  exclude: [{}, {platform: windows}]

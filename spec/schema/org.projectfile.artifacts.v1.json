@@ -85,6 +85,41 @@
           "uniqueItems": true,
           "description": "Operating systems THIS artifact runs on, in the org.projectfile.operating-system vocabulary (`linux`, `darwin`, `windows`, …). Overrides the project-level list for this artifact only. Absent => the project-level org.projectfile.operating-system applies."
         },
+        "exclude": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Cells of the `operating-system` × `architecture` product this artifact is NOT built for. A cell names an `os`, an `arch`, or both; one naming a single axis drops every cell with that value. Each value MUST appear in the effective list it filters (this artifact's, else the project-level one), so a typo fails validation instead of silently excluding nothing.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "os": { "type": "string", "minLength": 1 },
+              "arch": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1,
+          "description": "File name one built cell is published under. Placeholders: `{command}`, `{os}` (lowercased), `{arch}` (the name `uname -m` prints on that cell: `x86_64`, `aarch64`, `arm64` on darwin), `{ext}` (`.exe` on windows, else empty). Absent => `{command}-{os}-{arch}{ext}`, so a reader's `$(uname -s)-$(uname -m)` names the file for their own machine."
+        },
+        "package": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The package the toolchain builds into this artifact, relative to the project root (`./cmd/pf-cli` for Go). Absent => `.`."
+        },
+        "version-symbol": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Fully qualified variable a Go build stamps the version into with `-ldflags -X`. Absent => `main.version`."
+        },
+        "version-env": {
+          "type": "string",
+          "pattern": "^[A-Z_][A-Z0-9_]*$",
+          "description": "Environment variable a build reads the version from at compile time (Rust's `env!`). Absent => the upper-cased `command` with `-` as `_`, plus `_VERSION` (`PF_CLI_VERSION`)."
+        },
         "browser": {
           "type": "boolean",
           "description": "A package that also runs in a web page, so consumers MAY show its bundle size. Absent => false."

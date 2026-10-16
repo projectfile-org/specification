@@ -26,6 +26,14 @@ cli:
   command: pf-cli
   path: dist/pf-cli
   module: kiota.ch/projectfile/cli
+  # Build cells: the product of both lists, minus the excluded ones
+  operating-system: [linux, darwin, windows]
+  architecture: [amd64, arm64, riscv64]
+  exclude: [{os: darwin, arch: riscv64}, {os: windows, arch: riscv64}]
+  # Published file per cell; this is also the default
+  asset: "{command}-{os}-{arch}{ext}"
+  package: ./cmd/pf-cli
+  version-symbol: kiota.ch/projectfile/cli/internal/cmd.version
 
 # A published container image — one pull reference, registry host included.
 image:

@@ -81,6 +81,15 @@ org:
         path: dist/pf-cli
         # OPTIONAL  arguments whose `<command> <args> --help` is captured into docs/usage.d; "" is top-level
         help: ["", get, "cache purge"]
+        # OPTIONAL  build cells: overrides the project-level lists, minus the excluded cells
+        operating-system: [linux, darwin, windows]
+        architecture: [amd64, arm64, riscv64]
+        exclude: [{os: darwin, arch: riscv64}, {os: windows, arch: riscv64}]
+        # OPTIONAL  published file per cell; {arch} is what `uname -m` prints there, {ext} is .exe on windows
+        asset: "{command}-{os}-{arch}{ext}"
+        # OPTIONAL  what the toolchain builds and where it stamps the version; defaults `.` and `main.version`
+        package: ./cmd/pf-cli
+        version-symbol: projectfile.org/projectfile/cli/internal/cmd.version
 
       # the published image; `${image.basename}` is the derived namespace/name
       # path every lowering of this fleet already agrees on
