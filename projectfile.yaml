@@ -47,17 +47,17 @@ license:
   covers: project
 links:
   - label:
-      en: The Projectfile Specification on kiota.ch
-      es: The Projectfile Specification en kiota.ch
-      uk: The Projectfile Specification на kiota.ch
+      en: Repository on kiota.ch
+      es: Repositorio en kiota.ch
+      uk: Репозиторій на kiota.ch
     preferred: true
     priority: 10
     type: source-code
     url: https://kiota.ch/projectfile/specification
   - label:
-      en: The Projectfile Specification on Codeberg
-      es: The Projectfile Specification en Codeberg
-      uk: The Projectfile Specification на Codeberg
+      en: Repository on Codeberg
+      es: Repositorio en Codeberg
+      uk: Репозиторій на Codeberg
     priority: 90
     tags:
       - public
@@ -75,9 +75,9 @@ links:
     type: bugs
     url: https://codeberg.org/projectfile/specification/issues
   - label:
-      en: The Projectfile Specification on GitHub
-      es: The Projectfile Specification en GitHub
-      uk: The Projectfile Specification на GitHub
+      en: Repository on GitHub
+      es: Repositorio en GitHub
+      uk: Репозиторій на GitHub
     priority: 80
     tags:
       - public
