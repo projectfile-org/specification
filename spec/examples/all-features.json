@@ -5,6 +5,7 @@
     "namespace": "com.acme",
     "name": "snuggly-sunbeam",
     "version": "1.4.0",
+    "visibility": "public",
     "title": {
       "en": "Snuggly Sunbeam",
       "es": "Rayo de Sol Acogedor",
