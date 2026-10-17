@@ -27,6 +27,7 @@ identity:
     uk: 'Нормативна специфікація projectfile: єдиний YAML-файл, незалежний від технологічного стека та постачальника, що описує ідентичність, збирання, CI та публікацію програмного проєкту. Містить текст специфікації та JSON-схему v1 з подвійною ліцензією MIT і CC-BY-4.0, відображається на projectfile.org і використовується інструментами pf-cli, pf-bridge та pf-ci.'
   version: 1.14.0
   released: "2026-10-16"
+  visibility: public
 includes:
   - .makefile/core/ci.yaml
   - https://kiota.ch/damian-buho/metadata/raw/branch/main/forge/codeberg.yaml
