@@ -184,6 +184,19 @@ namespaces:
     status: proposed
     shape: shapes/org.projectfile.vulnerabilities.yaml
 
+  # --- test quality gates (tool-agnostic thresholds) ---
+
+  "org.projectfile.tests":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/tests"
+    summary: >-
+      Tool-agnostic minimum percentages a project’s test suite must reach:
+      statement coverage and mutation efficacy. Every language’s coverage and
+      mutation tools read the same two numbers, so a project states its bar
+      once and a gate below it fails whichever stack runs it.
+    status: proposed
+    shape: shapes/org.projectfile.tests.yaml
+
 
   # --- build image + argument surface ---
 
