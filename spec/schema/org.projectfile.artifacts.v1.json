@@ -120,6 +120,10 @@
           "pattern": "^[A-Z_][A-Z0-9_]*$",
           "description": "Environment variable a build reads the version from at compile time (Rust's `env!`). Absent => the upper-cased `command` with `-` as `_`, plus `_VERSION` (`PF_CLI_VERSION`)."
         },
+        "static": {
+          "type": "boolean",
+          "description": "A binary linked with no shared-library dependency, so one file runs on any distribution of its operating system. `false` links against the build host's shared libraries. Absent => true."
+        },
         "browser": {
           "type": "boolean",
           "description": "A package that also runs in a web page, so consumers MAY show its bundle size. Absent => false."

@@ -90,6 +90,8 @@ org:
         # OPTIONAL  what the toolchain builds and where it stamps the version; defaults `.` and `main.version`
         package: ./cmd/pf-cli
         version-symbol: projectfile.org/projectfile/cli/internal/cmd.version
+        # OPTIONAL  link with no shared-library dependency; default true, false links dynamically
+        static: true
 
       # the published image; `${image.basename}` is the derived namespace/name
       # path every lowering of this fleet already agrees on

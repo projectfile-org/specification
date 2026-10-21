@@ -34,6 +34,8 @@ cli:
   asset: "{command}-{os}-{arch}{ext}"
   package: ./cmd/pf-cli
   version-symbol: kiota.ch/projectfile/cli/internal/cmd.version
+  # No shared-library dependency; this is also the default
+  static: true
 
 # A published container image — one pull reference, registry host included.
 image:
