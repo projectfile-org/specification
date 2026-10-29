@@ -115,8 +115,8 @@
 # runner mechanism realising each cell still lives in org.{vendor}.ci.
 #
 # The cap is only as portable as the ENGINE, though, and one big engine does not
-# implement it: Forgejo (and Gitea) expand a matrix statically into independent job
-# rows, then dispatch each to any runner with a free slot — no scheduler stage sits
+# implement it: Forgejo (v16; Gitea added it in go-gitea/gitea#36357) expands a matrix statically into independent job
+# rows, then dispatches each to any runner with a free slot — no scheduler stage sits
 # between expansion and dispatch for a cap to act in, so `max-parallel` renders and is
 # ignored. A CELL node that must not run two cells together ANYWHERE therefore says
 # `serialise: <AXIS-KEY>` instead: the lowering walks that axis one job per value,
