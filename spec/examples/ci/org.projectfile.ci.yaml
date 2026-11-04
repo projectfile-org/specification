@@ -170,6 +170,7 @@ tools:
         to: /home/ubuntu/.cache/grype/db
     m6e:
       prefer-local: true              # m6e-only: prefer the host grype (first word of run) if installed
+      staged: ["**/*.js"]             # m6e-only: under a staged scope pass only matching files
   dockle-image:
     image: D9T_GO_TOOLS_IMAGE
     run: auto-dockle

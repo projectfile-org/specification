@@ -495,6 +495,12 @@
                 "prefer-local": {
                   "type": "boolean",
                   "description": "Prefer the HOST binary over the container when it is available: the m6e lowering runs `command -v` against the FIRST WORD of the tool's `run:` and, on hit, runs the tool directly on the host (no image, no caches); on miss it falls back to the container `image`. The command is derived from `run:`, never duplicated here. For developer-host tools commonly installed (grype, npm, trivy, pf-cli, reuse). Other lowerings ignore this and always use the container."
+                },
+                "staged": {
+                  "type": "array",
+                  "description": "Globs naming the files this tool accepts as arguments. Under a staged scope the make lowering passes only those files. Absent: the tool always runs on the whole tree.",
+                  "items": { "type": "string", "minLength": 1 },
+                  "uniqueItems": true
                 }
               }
             }

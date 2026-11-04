@@ -242,6 +242,7 @@
 #              out of make); an OBJECT `{prefer-local: true}` makes the m6e run prefer the HOST
 #              binary over the container — it runs `command -v` on the FIRST WORD of `run:` and,
 #              on hit, runs the tool on the host (no image); on miss, the container image.
+#              `staged: [globs]` names the files the tool takes as arguments under a staged scope.
 # A leaf with no manifest falls back to `auto-<name>` on the host runner.
 #
 # EVERYTHING IS A TOOL — no privileged build/live/checkout capability class. A
@@ -388,6 +389,7 @@ org:
               to: /home/ubuntu/.cache/grype/db
           m6e:
             prefer-local: true          # m6e-only: prefer the host grype (first word of run) if installed
+            staged: ["**/*.js"]         # m6e-only: under a staged scope pass only matching files
 
       # workflow TRIGGERS now live on the GOAL nodes above (per-goal files) — see
       # `midnight-audit` carrying its own `schedule:`/`dispatch:`.
