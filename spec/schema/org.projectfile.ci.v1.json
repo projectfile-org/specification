@@ -57,6 +57,13 @@
       "additionalProperties": { "type": "string", "minLength": 1 },
       "examples": [{ "m6e": "final", "gha": "distilled", "forgejo": "distilled" }]
     },
+    "build-memory": {
+      "type": "object",
+      "description": "OPTIONAL per-lowering memory cap for one container build, for a project whose build needs more than the runner’s default. Maps a lowering KEY to a size such as `16g`. Swap follows the cap, and the action clamps a value above the runner’s own cgroup limit. Absent keeps the runner’s default. A `buildx` lowering has no such cap and renders nothing.",
+      "propertyNames": { "enum": ["forgejo"] },
+      "additionalProperties": { "type": "string", "pattern": "^[1-9][0-9]*[mg]$" },
+      "examples": [{ "forgejo": "16g" }]
+    },
     "mount-cache": {
       "type": "boolean",
       "default": true,
