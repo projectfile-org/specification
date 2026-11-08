@@ -180,7 +180,8 @@ namespaces:
       .trivyignore (trivy), .grype.yaml (grype), osv-scanner.toml (osv). Declare
       a known-unfixable vuln once and every scanner drops it, so trivy, grype
       and osv can never disagree on whether it gates publish. `generate` opts a
-      project out of scanners it does not run (default: all).
+      project out of scanners it does not run (default: all). An entry’s
+      optional `name` holds the advisory title, cached from osv.dev.
     status: proposed
     shape: shapes/org.projectfile.vulnerabilities.yaml
 

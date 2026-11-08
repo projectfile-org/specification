@@ -23,7 +23,9 @@ org:
       #   .grype.yaml        (grype — ignore[].vulnerability; reason as comment)
       #   osv-scanner.toml   (osv — [[IgnoredVulns]] id/reason)
       # A bare string is accepted as shorthand for an entry with just an id.
+      # name is OPTIONAL: the advisory’s title, cached here from osv.dev.
       suppress:
         - id: CVE-2026-31608
+          name: "linux: kernel headers expose an out-of-bounds read"
           reason: unfixable kernel headers shipped by linux-libc-dev
         - id: CVE-2025-40190
