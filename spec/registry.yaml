@@ -694,6 +694,23 @@ namespaces:
     status: proposed
     shape: shapes/org.projectfile.fragments.yaml
 
+  "org.projectfile.pages":
+    owner: "projectfile.org (community-maintained)"
+    docs: "https://projectfile.org/extensions/org/projectfile/pages"
+    summary: >-
+      The page collections a project documents, one page per item, each
+      rendered by the project’s own executable: rules, presets, collectors,
+      plugins, formats, commands. A consumer knows collections, never a kind.
+      Each key names one, with a localized `title` and an optional argv
+      `command` (default: the artifact’s exported command followed by the
+      collection name). By convention `<command> --format json` prints the
+      catalog, committed as docs/<name>.json and docs/<lang>/<name>.json, and
+      `<command> --format markdown --output DIR --lang L` renders the pages, so
+      a page and the tool’s own terminal output never drift. Has a dedicated
+      standalone schema (schema/org.projectfile.pages.v1.json).
+    status: proposed
+    shape: shapes/org.projectfile.pages.yaml
+
   # --- Tool configuration ---
 
   "org.spiderlint":

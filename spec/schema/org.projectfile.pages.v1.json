@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://projectfile.org/schema/org.projectfile.pages.v1.json",
+  "title": "org.projectfile.pages extension (v1)",
+  "description": "Standalone contract for the value at the org.projectfile.pages subtree: the page collections a project documents, one page per item, each rendered by the project’s own executable. Rules are one kind of collection; presets, collectors, plugins, formats and commands are others, and a consumer knows collections, never a kind. Each key names a collection. By convention `<command> --format json` prints the collection’s catalog, committed as docs/<name>.json (docs/<lang>/<name>.json per declared language), and `<command> --format markdown --output DIR --lang L` renders one page per catalog item into DIR.",
+
+  "type": "object",
+  "propertyNames": { "$ref": "#/$defs/name" },
+  "additionalProperties": { "$ref": "#/$defs/collection" },
+
+  "$defs": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "description": "The collection name: lowercase words joined by single hyphens. It is the default subcommand and the catalog’s file name (docs/<name>.json), so it carries no character a shell or a file system would treat specially."
+    },
+
+    "collection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/localizedString",
+          "description": "The heading the collection’s part carries in every rendered language (`{en: Rules, es: Reglas}`)."
+        },
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "The argv that prints the catalog and renders the pages, before `--format`. Absent => the command exported by the project’s artifact (org.projectfile.artifacts{command}) followed by the collection name. An argv list, never a shell string, so no consumer has to split or quote it."
+        }
+      }
+    },
+
+    "localizedString": {
+      "description": "BCP 47 language-tagged string map, or a bare string treated as { und: <string> } (v1 §7).",
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^([a-zA-Z]{2,3}|und)(-[a-zA-Z0-9]+)*$": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

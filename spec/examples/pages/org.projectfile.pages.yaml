@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026 Damián Búho <damian.buho@proton.me>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: MIT
+
+# Positive fixture: MUST PASS against ../../schema/org.projectfile.pages.v1.json.
+
+rules:
+  title: {en: Rules, es: Reglas, uk: Правила}
+presets:
+  title: {en: Presets}
+  command: [spiderlint, list-presets]
+x:
+  title: Commands
+output-formats-2:
+  title: {und: Formats, pt-BR: Formatos}
+  command: [bin/tool]
