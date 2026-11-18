@@ -8,6 +8,6 @@
 org:
   projectfile:
     pages:
-      rules:  # collection name: default subcommand and docs/<name>.json
+      rules:  # collection name: default subcommand and docs/<name>.yaml
         title: {en: Rules, es: Reglas}  # REQUIRED  part heading per language
         command: [spiderlint, rules]  # OPTIONAL  argv before --format; default: artifact command + name
